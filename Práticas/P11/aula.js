@@ -54,12 +54,7 @@ class SucArit extends Suc{
 	}
 	
 	at(i) {
-		var final = this.first();
-		
-		for(var j = 0; j < i; j++){
-			final += this.inc;
-		}
-		return final;
+		return this.first() + (i-1)*this.inc;
 	}
 	
 	print(n) {
@@ -77,48 +72,68 @@ class SucArit extends Suc{
 
 class UnitTest {
 	
-	
-	static assertTrue(b) {
-		return b === true;
-	}
-	static assertFalse(b){
-		return b === false;
+	static logErr(a,b) {
+		console.error("Test Failed Receive '" + a + "' was expecting '" + b +"'");
 	}
 	static assertEquals(x,y){
 		if(x === y){
 			return true;
 		}
-		else{
-			console.log("Test Failed Receive '" + x + "' was expecting '" + y +"'");
-			//return false;
-		}
+		this.logErr(x,y);
+		return false;
+	}
+	
+	static assertTrue(b) {
+		return this.assertEquals(b,true);
+	}
+	static assertFalse(b){
+		return this.assertEquals(b,false);
+	}
+	
+	static assertUndefined(x){
+		return this.assertEquals(x,undefined);
+	}
+	
+	static assertNull(x){
+		return this.assertEquals(x,null);
 	}
 	
 }
 
-class Tests {
+class Tests extends UnitTest{
 	
     static testSucArit() {
         var a = new SucArit(10,1);
-		var ar = [1,2,[3]];
-		var br = [1,2,3];
+	
 		
-		//Array.prototype.toStri
-		console.log(UnitTest.assertEquals(ar.toString(),br.toString()));
+		super.assertEquals(a.curr(),10);
+		super.assertEquals(a.first(),10);
+		super.assertEquals(a.next(),10);
+		super.assertEquals(a.next(),11) ;
+        super.assertEquals(a.next(),12);
+        super.assertEquals(a.curr(),12);
+		super.assertEquals(a.at(10),19);
+		a.print(10);
+    }
+	
+	static testSucGeo() {
 		
-		console.log(UnitTest.assertEquals(a.curr(),10));
-		console.log(UnitTest.assertEquals(a.first(),10));
-		console.log(UnitTest.assertEquals(a.next(),10));
-		console.log(UnitTest.assertEquals(a.next(),11));
-        console.log(UnitTest.assertEquals(a.next(),12));
-        console.log(UnitTest.assertEquals(a.curr(),12));
-		console.log(UnitTest.assertEquals(a.at(10),20));
+        var a = new SucArit(10,1);
+	
+		super.assertEquals(a.curr(),10);
+		super.assertEquals(a.first(),10);
+		super.assertEquals(a.next(),10);
+		super.assertEquals(a.next(),11) ;
+        super.assertEquals(a.next(),12);
+        super.assertEquals(a.curr(),12);
+		super.assertEquals(a.at(10),19);
 		a.print(10);
     }
 
-
     static run() {
+		console.groupCollapsed("Test");
         this.testSucArit();
+		this.testSucGeo();
     }
 }
 
