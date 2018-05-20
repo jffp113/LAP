@@ -1,0 +1,570 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 19 (15/mai/2018)</H2>
+Linguagens de scripting. A linguagem Bash.
+<p>Elementos da linguagem JavaScript.
+<HR>
+
+
+<HR><h1>Linguagens de scripting</h1>
+
+As <b>linguagens de programação clássicas</b> são concebidas para criar estruturas de dados e algoritmos a partir do zero, usando os elementos primitivos da linguagem. Exemplos: OCaml, C, C++, Java.
+
+<p>Em constaste, nas <b>linguagens de scripting</b> assume-se que já existe uma coleção, pronta a ser usada, de componentes escritas noutras linguagens. As linguagens de scripting são concebidas para permitir ligar e organizar componentes existentes <b>de forma simples, expedita e flexível</b>. Exemplos: JavaScript, Bash, Tcl, Perl, PHP, Ruby, Python.
+
+<p>Por exemplo, quando se usa JavaScript para adicionar interatividade a uma página Web, as componentes em causa, são os objetos DOM que representam essa página Web.
+
+
+<p>Chama-se <b>script</b> a um programa escrito numa linguagem de scripting.
+
+<h2>Linguagens clássicas versus linguagens de scripting</h2>
+
+As linguagens clássicas são geralmente <b>estaticamente tipificadas</b> para permitir detetar cedo os erros que podem ocorrer quando se utilizam elementos primitivos na construção de estruturas de dados complexas.
+Em constaste, as linguagens de scripting são sempre <b>tipificadas dinamicamente</b> pois um sistema de tipos estático seria uma complicação burocrática que só serviria para atrasar a escrita de scripts.
+
+<p>Outra diferença é o facto das linguagens de scripting serem geralmente <b>interpretadas</b> e não compiladas. Um dos objetivos disso é acelerar o desenvolvimento do código. Outro objetivo é facilitar a geração dinâmica de scripts que possam ser executados imediatamente pelo interpretador. 
+
+<p>Nas linguagens de scripting dá-se pouca importância à questão eficiência. Em contrapartida dá-se a máxima importância à simplicidade, flexibilidade de utilização e a um grande poder expressivo que permita escrever scripts compactos. A questão da eficiência é pouco importante porque os scripts tendem a ser pequenos e porque a eficiência da linguagem é dominada pela eficiência das componentes, as quais são normalmente implementadas numa linguagens de programação clássica.
+
+<p>Algumas linguagem de scripting são também concebidas para serem usadas no interior duma aplicação de software, com o objetivo de fornecer ao utilizador um elevado grau de controlo do comportamento da aplicação, incluindo a adição de novas funcionalidades. Se é verdade que o utilizador não pode alterar o código de base da aplicação, ele pode escrever scripts para adaptar a aplicação às suas necessidades. Exemplos: Emacs Lisp é a linguagem de scripting do editor de texto emacs; JavaScript é linguagem de scripting mais usada nos browsers da WEB.
+
+<h2>Como escolher entre linguagem clássicas e de scripting</h2>
+
+Quando estão em causa aplicações que envolvem acima de tudo a coordenação de componentes já implementadas, podemos escolher programar essa aplicação numa linguagem clássica, e.g. Java, ou numa linguagem de scripting, e.g. JavaScript. Mas estudos mostram que se escolhermos uma linguagem de scripting, tanto o tempo de desenvolvimento como o tamanho da aplicação se reduzem num fator de 5 a 10, em média!
+
+<p>Quando estão em causa aplicações com algoritmos e estruturas de dados complexas, o melhor é usar uma linguagens de programação clássica. Usando uma linguagem de scripting, o script não ficaria mais pequeno, não haveria o benefício da tipificação estática para ajudar a apanhar antecipadamente erros subtis na utilização das estruturas de dados e, no final, o programa correria 10 vezes mais devagar.
+
+<h2>Complementaridade dos dois tipos de linguagens</h2>
+
+Se puderem ser usadas em conjunto, os dois tipos de linguagens permitem a criação de ambientes de desenvolvimento e execução de programas particularmente poderosos e flexíveis.
+
+<p>As linguagens de scripting sempre tiveram alguma popularidade, mas ultimamente a sua importância tem aumentado. A principal razão é a tendência atual para escrever aplicações baseadas em componentes já disponíveis. É o que se passa, por exemplo, quando está em causa o desenvolvimento de interfaces gráficas e de aplicações que correm sobre a WEB.
+
+
+<h2>Exemplo: linguagem Bash</h2>
+
+<b>Bash</b> (bourne-again shell) é uma linguagem de scripting muito usada no Linux na qual as "componentes" são as aplicações disponíveis e o sistema de ficheiros. Em Bash, um script implementa uma nova funcionalidade usando as aplicações do sistema. Uma das construções mais importantes do Bash é o <b>pipe</b>, que permite ligar o output duma aplicação ao input de outra aplicação. Em Bash também é possível testar o código-resultado duma aplicação e tomar decisões em conformidade (zero significa que a aplicação terminou sem erro; um valor diferente de zero representa um código de erro particular). Também é possível colocar o output duma aplicação numa variável e processar a seguir o conteúdo dessa variável.
+
+<p>Eis um exemplo de script em bash, retirado <A HREF="http://www.felixgers.de/teaching/shells/bash_script.html">daqui</A>. Este script lista na consola o nome de todos os ficheiros HTML que se encontram na diretoria corrente e, além disso, escreve a primeira linha de cada um desses ficheiros num ficheiro chamado FILE_HEADS.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#!/bin/bash
+# This is a comment
+echo "List of files:"
+ls -lA
+
+FILE_LIST="`ls *.html`"
+echo FILE_LIST: ${FILE_LIST}
+
+RESULT=""
+for file in ${FILE_LIST}
+do
+    FIRST_LINE=`head -1 ${file}`
+    RESULT=${RESULT}${FIRST_LINE}$'\n'
+done
+
+echo ${RESULT} | cat > FILE_HEADS
+
+echo "${RESULT}"
+echo "Script done."
+</pre></table></ul>
+
+No Windows, a linguagem de scripting chama-se PowerShell e foi introduzida em 2006 na versão Windows XP SP2. Antes do PowerShell usava-se a linguagem de scripting implementada pelo programa COMMAND.COM.
+
+<h2>Discussão</h2>
+
+As linguagens de scripting são geralmente concebidas para a execução de tarefas simples. Contudo, por vezes acabam por ser usadas em projetos grandes e de formas que ultrapassam as intenções originais. As características da linguagem que a tornam fácil de usar acabam por se revelar problemáticas nessas situações.
+
+<p>Quando comunidade de utilizadores é grande, então justifica-se fazer o seguinte:
+
+<ul>
+<li> Criar ferramentas que ajudam a detetar mais erros antes do programa começar a correr. Exemplos: <a href="http://en.wikipedia.org/wiki/JSLint">JSLint</a>,  <a href="http://en.wikipedia.org/wiki/Google_Closure_Tools">Google Closure Tools</a>.
+<p><li> Começa a ser melhorada a eficiência da implementação usando técnicas avançadas: <a href="http://en.wikipedia.org/wiki/V8_(JavaScript_engine)">V8 JavaScript Engine</a>.
+</ul>
+
+
+
+<HR><HR>
+<h1>Elementos da linguagem JavaScript</h1>
+
+<p>Regressemos ao estudo da linguagem JavaScrip, desta vez para apresentar os elementos de base mais importantes da linguagem.
+
+<HR><h1>Comparação do JavaScript com o Java</h1>
+
+A primeira é uma linguagens de scripting. A segunda é uma linguagem clássica.
+
+<ul><table border="1">
+<tr><td><b>JavaScript</b><td><b>Java</b>
+<tr><td>Suporte para programação funcional<td>Desde o Java 8 suporta programação funcional limitada
+<tr><td>Tipificação dinâmica<td>Tipificação estática
+<tr><td>Baseada em protótipos<td>Baseada em classes
+<tr><td>Herança usando o mecanismo dos protótipos<td>Herança através da hierarquia de classes
+<tr><td>Adição dinâmica de novos membros a objetos<td>Não é possível a adição dinâmica de novos membros
+<tr><td>Estilo livre onde a maioria das declarações são opcionais<td>Estilo rígido para ser possível detetar erros em tempo de compilação
+</table></ul>
+
+
+<HR><h1><a href="http://www.w3schools.com/js/js_reserved.asp">Palavras reservadas</a> do JavaScript</h1>
+
+Esta é a lista das principais palavras reservadas usadas em JavaScript:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+break     const      delete   for        import   new      this     void
+case      continue   do       function   in       return   typeof   while
+default   export     if       else       switch   var      with
+</pre></table></ul>
+
+Note que muitas das palavras anteriores são também palavras reservadas em Java.
+
+<p> As restantes palavras reservadas do Java, que não aparecem na lista anterior, também estão reservadas em
+JavaScript, apesar de não serem usadas de momento. Todos os interpretadores de
+JavaScript deveriam proibir a utilização destas palavras. Contudo alguns
+não o fazem.
+
+
+<hr><h1>Insersão automática dos pontos e vírgula (não usar)</h1>
+
+Em JavaScript, o ponto e vírgula é usado como terminador da maioria das instruções e declarações.
+
+<ul><pre class='notranslate'>
+a = 5 ; v = 6;
+</ul>
+
+<p>Mas se tivermos uma sucessão de instruções em linha diferentes, podemos omitir o ponto e vírgula porque o JavaScript insere implicitamente o terminador nesses casos. Exemplo:
+
+<ul><pre class='notranslate'>
+a = 5
+v = 6
+</ul>
+
+<p>A <b>insersão automática dos pontos e vírgula</b> foi feita para ajudar o programador, mas infelizmente as regras são um pouco complicadas. <b>O melhor será explicitar sempre os pontos e vírgula</b>, como estamos habituados em Java e C.
+
+<p>Um exemplo confuso tirado da expecificação do ECMAScript® 2017. No seguinte caso
+
+<ul><pre class='notranslate'>
+a = b + c
+(d + e).print()
+</ul>
+
+não é inserido ponto e vírgula, resultando o equivalente a
+
+<ul><pre class='notranslate'>
+a = b + c(d + e).print()
+</ul>
+
+
+
+<hr><h1>Variáveis</h1>
+
+O JavaScript é uma linguagem <b>dinamicamente tipificada</b>. Uma consequência disso é o facto das <b>variáveis não terem tipos associados</b>. Os tipos ficam associados aos valores e não  às variáveis. Exemplo:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var x = 34;    // x contém um inteiro
+x = "Hello!"   // agora x contém uma string
+</pre></table></ul>
+
+<h2>Definição de variáveis</h2>
+
+<p>A palavra <tt class='notranslate'>var</tt> permite definir variáveis. Factos diversos:
+
+<ul>
+<li>Dentro duma função, <tt class='notranslate'>var</tt> define uma <b>variável local</b>. 
+<li>O <b>argumento duma função</b>, também define implicitamente uma variável local (mas não se excreve a palavra var).
+<li>Usada fora duma função, <tt class='notranslate'>var</tt> define uma <b>variável global</b>. 
+<li>Usa-se <b>escopo estático</b> na resolução de nomes.
+<li>Uma variável definida dentro dum bloco têm como âmbito toda a função envolvente, ou seja, <b>não há âmbito de bloco</b>. [Na versão mais recente do JavaScript foi introduzida a palavra <tt class='notranslate'>let</tt> que permite definir variáveis com escopo de bloco. Para usar, basta trocar <tt class='notranslate'>var</tt> por <tt class='notranslate'>let</tt>.]
+</ul>
+
+Exemplo com variáveis globais e variáveis locais:
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var x = 5;
+var z = 7;
+
+function f(x) {
+    console.log(x);
+    console.log(y);   // Não inicializada ainda
+    x = 1;
+    var y = 2;
+    console.log(x);
+    console.log(y);
+    console.log(z);
+    return x;
+}
+
+f(6);
+console.log(x);
+
+// Output: 6  undefined  1  2  7  5
+</pre></table></ul>
+
+
+Exemplo com aninhamento de funções:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+function f(x) {
+    function g(y) {
+        var x = 10;
+        console.log(y);
+        console.log(x);    // Imprime o x local
+        return 0;
+    }
+    console.log(x);
+    g(1);
+    console.log(x);
+}
+
+f(6);
+
+// Output: 6  1  10  6
+</pre></table></ul>
+
+Exemplo relativo ao facto de não existir âmbito de bloco em JavaScript:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+function f() {
+    var x = 1;
+    {
+       var x = 2;
+    }
+    console.log(x);
+}
+
+f();
+
+// Output: 2
+</pre></table></ul>
+<h2>Variáveis indefinidas</h2>
+
+Variáveis definidas num determinado âmbito, ficam com o valor <tt class='notranslate'>undefined</tt> enquanto não forem inicializadas.
+
+<p>Exemplos sobre variáveis indefinidas:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+console.log(zzz);   // Lança a exceção ReferenceError se zzz nao estiver definida
+var zzz;
+if( zzz === undefined ) {   // Testar se uma variável está indefinida.
+    console.log("zzz is undefined");
+}
+if( !zzz ) {    // undefined comporta-se como false num contexto booleano
+    console.log("zzz is undefined");
+}
+</pre></table></ul>
+
+<h2>Atribuição a variáveis</h2>
+
+A atribuição efetua-se usando o operador <tt class='notranslate'>=</tt>. É possível efetuar uma atribuição a um nome ainda não definido. Nesse caso é automaticamente criada uma variável global inicializada. Para garantir que a variável fica local, é preciso declará-la usando <tt class='notranslate'>var</tt>.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+x = 5;
+y = 7 + 5;
+</pre></table></ul>
+
+
+<hr><h1>Constantes</h1>
+
+<p>A palavra <tt class='notranslate'>const</tt> permite definir constantes. Mas, cuidado, que isto não faz parte do JavaScript padrão. Contudo está disponível no Rhino e Node.js, por exemplo.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+const x = 5;
+</pre></table></ul>
+
+
+
+<hr><h1>Tipos primitivos</h1>
+
+Os tipos primitivos são os seguintes:
+
+<ul>
+<li><A HREF="http://www.javascriptkit.com/jsref/number.shtml"><b>number</b></A> - Mistura reais e inteiros. O maior valor em várias implementações é 1.7976931348623157e+308. 0377 é um valor em octal e 0xFF é um valor em hexadecimal.
+<li><A HREF="http://www.javascriptkit.com/jsref/boolean.shtml"><b>boolean</b></A> - Tem os valores <tt class='notranslate'>false</tt> e <tt class='notranslate'>true</tt>.
+<li><A HREF="http://www.javascriptkit.com/jsref/string.shtml"><b>string</b></A> - Por exemplo <tt class='notranslate'>""</tt>, <tt class='notranslate'>''</tt>, <tt class='notranslate'>"Hello"</tt>, <tt class='notranslate'>'Hello'</tt>, <tt class='notranslate'>"inner 'string' "</tt>, <tt class='notranslate'>'inner "string" '</tt>.
+<li><b>null</b> - Este tipo só tem o valor <tt class='notranslate'>null</tt> e serve para atribuir a uma variável para indicar que esta não tem valor.
+<li><b>undefined</b> - Este tipo só tem o valor <tt class='notranslate'>undefined</tt>, que é valor das variáveis não inicializadas.
+</ul>
+
+Note que em JavaScript, uma string não é um objeto. No entanto também há objetos de tipo String que simplesmente encapsulam valores primitivos de tipo string. Em Javascript as strings são imutáveis, tal como em Java.
+
+<p>Um literal de tipo string é uma porção de texto rodeada, ou por aspas ou plicas. Em código JavaScript, é comum usar plicas entre aspas e aspas entre plicas, como nestes exemplos: "He is called 'Neko-chan'"; 'He is called "Neko-chan"'.
+
+<p>O operador <tt class='notranslate'>typeof</tt> pode ser usado para saber o tipo de qualquer valor.
+
+<p>São efetuadas <b>conversões automáticas de tipo</b>, entre os tipos primitivos. Exemplos:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+"The answer is " + 42       // produz "The answer is 42"
+42 + " is the answer"       // produz "42 is the answer"
+"37" - 7                    // produz 30 ... !?
+"37" + 7                    // produz "377" ... !?
+true + 7                    // produz 8
+</pre></table></ul>
+
+<hr><h1>Operadores</h1>
+
+Eis a tabela de operadores do JavaScript ordenada por prioridade decrescente:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+member                    .  []
+call / create instance    ()  new
+negation/increment        !  ~  -  +  ++  --  typeof  void  delete
+multiply/divide           *  /  %
+addition/subtraction      +  -
+bitwise shift             <<  >>  >>>   (o último faz shift sem sinal)
+relational                <  <=  >  >=  in  instanceof
+equality                  ==  !=  ===  !==
+bitwise-and               &
+bitwise-xor               ^
+bitwise-or                |
+logical-and               &&
+logical-or                ||
+conditional               ?:
+assignment                =  +=  -=  *=  /=  %=  <<=  >>=  >>>=  &=  ^=  |=
+comma                     ,
+</pre></table></ul>
+
+
+
+<h2>Operadores de igualdade</h2>
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+==         Igualdade, produz true se os argumentos forem iguais (após possíveis conversões automáticas de tipo).
+!=         Desigualdade, produz true se os argumentos forem diferentes.
+===        Igualdade estrita, produz true se os argumentos forem iguais e do mesmo tipo.
+!==        Desigualdade estrita, produz true se os argumentos forem diferentes ou se forem de tipos diferentes.
+</pre></table></ul>
+
+<hr><h1>Expressões regulares</h1>
+
+O JavaScript suporta <A HREF="http://www.javascriptkit.com/jsref/regexp.shtml">expressões regulares</A> semelhantes às da linguagem Perl.
+
+<p>A seguinte expressão regular representa dois "a"s seguidos de zero ou mais dígitos:
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+re = /aa\d*/
+re = new RegExp("aa\\d*")          // Equivalente
+</pre></table></ul>
+
+A próxima expressão regular, mais abaixo na caixa, representa um "d" seguido de um ou mais "b"s seguido dum "d". As flags "i" e "g" indicam que o emparelhamento deve ignorar a caixa das letras e que deve ser global.
+
+<p>O método <tt class='notranslate'>test</tt> determina se uma string emparelha com a expressão regular.
+
+<p>O método <tt class='notranslate'>exec</tt> produz um array com o resultado do emparelhamento na posição 0 do array, mais os resultados dos emparelhamentos das sub-expressões entre parêntesis. Se a expressão regular tiver a flag "g" ligada, então sucessivas chamadas de <tt class='notranslate'>exec</tt> produzem sucessivos resultados de emparelhamentos até ser retornado <tt class='notranslate'>null</tt>; sem a flag "g" apenas o resultado do primeiro emparelhamento é retornado.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var re = /d(b+)(d)/ig;
+re = new RegExp("d(b+)(d)", "ig");        // Equivalente
+var b = re.test("cdbBdbsbz");             // resultado: true
+var arr = re.exec("cdbBdbsdbdz");         // primeiro resultado: ["dbBd", "bB", "d"]
+</pre></table></ul>
+
+As expressões regulares suportam ainda os métodos <tt class='notranslate'>match</tt>, <tt class='notranslate'>search</tt>, <tt class='notranslate'>replace</tt>, <tt class='notranslate'>split</tt>.
+
+
+
+<hr><h1>Arrays</h1>
+
+Em JavaScript os <A HREF="http://www.javascriptkit.com/jsref/arrays.shtml">arrays</A> podem ser inicializados, pelo menos de duas maneiras diferentes. Exemplo:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var colors = ["Red", "Green", "Blue"];
+var colors = new Array("Red", "Green", "Blue");    // Equivalente
+</pre></table></ul>
+
+Tal como em Java os índices começam em zero e existe uma propriedade <tt class='notranslate'>length</tt>.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var len = colors.length;                           // Vale 3
+</pre></table></ul>
+
+Eis um exemplo dum array de comprimento 6 com apenas 4 elementos. Dois elementos estão indefinidos.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var colors = ["Red", , , "Green", "Blue","Yellow"];
+</pre></table></ul>
+
+Ao contrário do Java, os arrays crescem automaticamente. Basta atribuir a uma posição inexistente para o array crescer.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var colors = [];                                   // Array vazio                                    
+colors[2] = "Blue";
+var len = colors.length;                           // Vale 3
+var t = typeof(colors[0]);                         // Vale undefined                            
+</pre></table></ul>
+
+Para fazer crescer um array na primeira posição livre, fazer assim:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+colors[colors.length] = "Yellow";
+colors.push("Yellow");                            // Equivalente
+</pre></table></ul>
+
+Para aceder e remover o último elemento dum array fazer:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var last = colors.pop();
+</pre></table></ul>
+
+É possível escrever diretamente na propriedade <tt class='notranslate'>length</tt> dum array para fazer um array crescer, ou para truncar o array:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+colors.length = 2;
+</pre></table></ul>
+
+Para percorrer os elementos dum array pode usar-se um <tt class='notranslate'>for</tt> clássico, mas também se pode fazer assim:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var colors = ["Red", "Green", "Blue"];
+colors.forEach(function(c) { console.log(c) });      // Iteração usando função anónima
+</pre></table></ul>
+
+ou assim:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var colors = ["Red", "Green", "Blue"];
+for( c of colors ) console.log(c);      // Iteração usando for-of
+</pre></table></ul>
+
+
+Eis um array a duas dimensões, 2x3:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var table = [[0, 1, 2],
+             [3, 4, 5]];
+var r = table[0][2];                             // Vale 2
+</pre></table></ul>
+
+Outros métodos disponíveis para arrays: <tt class='notranslate'>join</tt>, <tt class='notranslate'>reverse</tt>, <tt class='notranslate'>shift</tt>, <tt class='notranslate'>slice</tt>, <tt class='notranslate'>splice</tt>, <tt class='notranslate'>sort</tt>, e muitos outros.
+
+
+<hr><h1>Funções</h1>
+
+O JavaScript suporta o paradigma de programação funcional pois inclui funções anónimas, <A HREF="http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1.5/guide/fcns.html#1008302">funções</A> de ordem superior e funções que retornam outras funções.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+function square(n) { return n * n }
+var square = function(n) { return n * n };        // Equivalente
+</pre></table></ul>
+
+Eis um exemplo duma função de ordem superior, que depois é chamada usando uma função anónima como argumento:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+function map(f, a) {
+    var result = [];
+    for( var i = 0 ; i &lt; a.length ; i++ )
+        result[i] = f(a[i]);
+    return result;
+}
+
+var a = map(function(x) { return x * x }, [0, 1, 2, 3]);   // Vale [0, 1, 4, 9]
+</pre></table></ul>
+
+Nas chamadas das funções o número de argumentos não é validado: argumentos a mais na chamada são ignorados; argumentos a menos na chamada ficam indefinidos.
+
+<p>Dentro da cada função há um array predefinido chamado <tt class='notranslate'>arguments</tt> que representa a sequência de argumentos realmente usados na chamada. Assim é fácil implementar funções com um número variável de argumentos, como no seguinte exemplo:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+function allAll() {
+    var result = 0;
+    for( a of arguments )
+        result += a;
+    return result;
+}
+
+var res = allAll(1,2,3,4,5);                   // Vale 15
+</pre></table></ul>
+
+A passagem de argumentos de tipos primitivos é feita por valor. Os objetos são passados por referência.
+
+<p>Eis algumas funções predefinidas em JavaScript:
+
+<ul>
+<li><b>eval(string)</b> - Avalia uma string contendo código JavaScript.
+<li><b>isFinite(number)</b> - Testa se um número é finito.
+<li><b>isNaN(number)</b> - Teste se um número é a constante NaN.
+<li><b>parseInt(string, radix)</b> - Converte string em número inteiro. 
+<li><b>parseFloat(string)</b> - Converte string em número real.
+<li><b>Number(obj)</b> - Converte um objeto num número.
+<li><b>String(obj)</b> - Converte um objeto numa string.
+</ul>
+
+<h2>O argumento <b>this</b></h2>
+
+Todas as funções possuem automaticamente um primeiro argumento que não se declara e se chama <b>this</b>.
+
+<p>No caso de funções que não fazem parte de objetos, quando elas são chamadas, o argumento <b>this</b> fica associado a um objeto que depende da implementação. Por exemplo, no caso do Rhino e do Node.js, <b>this</b> fica associado a um objeto especial que guarda as ligações de todos os nomes globais. No seguinte exemplo, se a função <tt class='notranslate'>f</tt> abaixo for chamada assim - <tt class='notranslate'>f()</tt> - ela imprime-se a si própria de duas maneiras diferentes:
+
+<ul><pre class='notranslate'>
+function f() {
+    console.log(f);
+    console.log(this.f);
+}
+</pre></ul>
+
+No caso duma função <tt class='notranslate'>f</tt> ser um método dum objeto <tt class='notranslate'>obj</tt> e for chamada assim <tt class='notranslate'>obj.f()</tt>, o argumento <b>this</b> fica associado ao próprio objeto (aliás, como também acontece em Java).
+
+<h2>A operação primitiva <b>call</b></h2>
+
+Ao nível mais básico, em JavaScript todas as chamadas de função são feitas através da operação primitiva <b>call</b> que está disponível em todas as funções. Numa chamada de <b>call</b>, tem de se explicitar o primeiro argumento, <b>this</b>.
+
+<p>Todas as chamadas normais de funções são automaticamente traduzidas para invocações de <b>call</b>. Concretamente, a chamada duma função independente é assim traduzida, em Rhino:
+
+<ul><pre class='notranslate'>
+f(1,2,3)     -> f.call(global(),1,2,3)
+</pre></ul>
+
+A chamada do método dum objeto é assim traduzida:
+
+<ul><pre class='notranslate'>
+obj.f(1,2,3)     -> obj.f.call(obj,1,2,3)
+</pre></ul>
+
+<h2>A operação primitiva <b>apply</b></h2>
+
+Existe ainda outra operação primitiva chamada <b>apply</b>, semelhante a <b>call</b>, com a única diferença que se passa para ela um array com todos os argumentos que aparecem a seguinte a <b>this</b>. Se estiver em causa um método, as seguintes três chamadas são equivalentes:
+
+<ul><pre class='notranslate'>
+obj.f(1,2,3)   <->   obj.f.call(obj,1,2,3)   <->   obj.f.apply(obj,[1,2,3])
+</pre></ul>
+
+
+<hr><h1>Tratamento de exceções</h1>
+
+Semelhante ao Java. Exemplo:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+try {
+    undefinedFunction();
+    alert('Afinal a função existe');
+} catch(e) {
+    alert('Erro: ' + e.message);
+} finally {
+    alert('Chega sempre aqui, independentemente do que aconteceu antes.');
+}
+</pre></table></ul>
+
+<hr><h1>Objetos</h1>
+
+Em JavaScript para além dos tipos primitivos, temos os tipos objeto. Os arrays também são considerados objetos.
+
+<p>Como habitualmente, um <b>objeto</b> é um elemento de dados que possui identidade e que interage com outros objetos através da troca de mensagens.
+
+<p>Em JavaScript existem os seguintes objetos predefinidos, que oferecem funcionalidades úteis:
+<A HREF="http://www.javascriptkit.com/jsref/date.shtml">Date</A>,
+<A HREF="http://www.javascriptkit.com/jsref/arrays.shtml">Array</A>,
+<A HREF="http://www.javascriptkit.com/jsref/boolean.shtml">Boolean</A>,
+<A HREF="http://www.javascriptkit.com/jsref/function.shtml">Function</A>,
+<A HREF="http://www.javascriptkit.com/jsref/math.shtml">Math</A>,
+<A HREF="http://www.javascriptkit.com/jsref/number.shtml">Number</A>,
+<A HREF="http://www.javascriptkit.com/jsref/regexp.shtml">RegExp</A>
+e <A HREF="http://www.javascriptkit.com/jsref/string.shtml">String</A>
+</pre></table></ul>.
+
+<p>Mas no ambiente de execução envolvente, estão geralmente disponíveis mais objetos predefinidos. Por exemplo, no ambiente dum browser, todos os tipos de objetos previstos no DOM estão disponíveis: Document, Window, Form, Link, etc.
+
+
+
+
+
+<HR><HR>
+#100

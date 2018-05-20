@@ -1,0 +1,89 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 7</H2>
+<p> Estruturas ligadas em C. Exercícios de 37 a 38.
+<HR>
+
+<hr><li>37 - Copie o módulo fechado LinkedList da aula teórica 13, estude-o, e acrescente-lhe as seguintes operações, todas elas para programar sem usar recursividade mas usando iteração. A complexidade temporal das quatro primeiras funções deve ser linear (ou seja, não use a função <tt class='notranslate'>ListPutAtEnd</tt> das aulas teóricas, que gera soluções quadráticas).
+
+<p>Nestas funções vai sentir necessidade de usar todas as técnicas estudadas na aula teórica, nomeadamente a <b><i>técnica do apontador para o último nó</i></b> (que permite ir fazendo crescer a lista no final), e a <b><i>técnica do apontador atrasado</i></b> (que simplifica o código das funções que precisam de adicionar ou eliminar nós no interior da lista). [Saiba também que estas duas técnicas não são suficientes para resolver todos os problemas: problemas novos podem requerer a invenção de novas técnicas.]
+
+<p>Agora uma recomendação importante: na programação destas funções, escreva primeiro o ciclo interno e só depois pense na inicialização do ciclo e na finalização do ciclo.
+
+<ul>
+<li> <b><tt class='notranslate'>List listClone(List l) ;</tt></b>             // Cria uma cópia duma lista, em que todos os nós são novos.
+
+<p><li> <b><tt class='notranslate'>List listAppend(List l1, List l2) ;</tt></b>  // No final de l1, acrescenta uma cópia da lista l2 (chamando <tt class='notranslate'>listClone</tt>, claro)
+
+<p><li> <b><tt class='notranslate'>List listRev(List l) ;</tt></b>               // Inverte uma lista, duplicando todos os nós da lista original. [Repare que fica mais simples do que a função <tt class='notranslate'>listClone</tt>, pois é mais simples ir acrescentando na cabeça do que no final.]
+
+<p><li> <b><tt class='notranslate'>List listRevInPlace(List l) ;</tt></b>              // Inverte uma lista, aproveitando os nós da lista original. Só se alteram os apontadores <tt class='notranslate'>next</tt>
+
+<p><li> <b><tt class='notranslate'>List listUniq(List l) ;</tt></b>              // Elimina duma lista, todos os nós com valores repetidos.
+                                     Mantenha a ordem dos elementos que ficam.
+                                     No caso dos elementos repetidos, pode manter o nó que desejar.
+                                     Use a operação free. Neste problema, espera-se que a complexidade da solução seja quadrática.
+
+</ul>
+
+
+<hr><li>38 - A biblioteca standard do C oferece diversas operações úteis e interessantes: uma operação para  aceder ao relógio do sistema <b>time</b>; um gerador de números aleatórios com operações <b>srand</b> e <b>rand</b>; uma operação de ordenação genérica <b>qsort</b>.
+
+<ul>
+<li> a) Use as <i>man pages</i> do Linux para obter informação sobre estas operações;
+<ul>
+<li> <pre class='notranslate'>man 3 time</pre>
+<li> <pre class='notranslate'>man 3 rand</pre>
+<li> <pre class='notranslate'>man 3 qsort</pre>
+</ul>
+<p><li> b) Escreva um pequeno programa que faça o seguinte: definir um vetor de inteiros com 30 componentes; inicializar o gerador de números aleatórios usando o tempo do sistema; preencher o vetor com valores inteiros aleatórios; ordenar crescentemente o vetor usando a função de biblioteca <b>qsort</b>; mostrar na consola o vetor ordenado. É já oferecido este ponto de partida:
+
+<p>
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;stdbool.h>
+#include &lt;stdlib.h>
+#include &lt;time.h>
+
+#define N_ELEMS     30
+
+void fill(int vect[], int n) {
+    // FAZER
+}
+
+void sort(int vect[], int n) {
+    // FAZER
+}
+
+void show(int vect[], int n) {
+    int i;
+    printf("----------------\n");
+    for( i = 0 ; i < n ; i++ )
+        printf("%12d\n", vect[i]);
+    printf("----------------\n");
+}
+
+int main() {
+    int vect[N_ELEMS];
+    fill(vect, N_ELEMS);
+    show(vect, N_ELEMS);
+    sort(vect, N_ELEMS);
+    show(vect, N_ELEMS);
+    return 0 ;
+}
+</pre></table></ul>
+
+</ul>
+
+<p>Se tiver dúvidas sobre a passagem de vetores para funções, leia na teórica 12 a secção "Passagem de parâmetros para funções". 
+
+ 
+
+
+<hr><li>39 - Inspire-se no módulo fechado <tt class='notranslate'>LinkedList</tt> das aula teórica 13 para programar em C um novo módulo fechado de árvores binárias de inteiros chamado BinTree. Implemente nele as funções <tt class='notranslate'>newTreeNode</tt>, <tt class='notranslate'>treeSize</tt>, mais as principais funções da aula prática 3
+
+<p>As operações que geram árvores novas em OCaml, devem alterar diretamente as árvores passadas por argumento (ou seja, devem ser operações "destrutivas"). Como se trata de árvores, faz sentido usar recursividade em muitas das situações.
+
+
+<HR><HR>

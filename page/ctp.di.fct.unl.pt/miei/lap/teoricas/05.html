@@ -1,0 +1,230 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 05 (20/mar/2018)</H2>
+Tipos produto (tuplos e registos).
+<br>Tratamento de exceções.
+<br>Funções parciais.
+<p>
+<HR>
+
+<HR><h1>Tipos produto (tuplos e registos)</h1>
+
+A maioria das linguagens de programação incluem nos seus sistemas de tipos uma construção específica que permite representar agrupamentos de dados heterogéneos. O nome genérico dessa construção, independente da linguagem particular, é <b>tipo produto</b>.
+
+<P>Numa linguagem com tipos produto é possível definir, por exemplo, um tipo de dados <i>pessoa</i> constituído por um nome (de tipo string), um ano de nascimento (de tipo int), uma morada (de tipo string), etc.
+        
+<p>Os tipos produto do Pascal são os <i>registos</i>.
+<br>Os tipos produto do C são as <i>estruturas</i>.
+<br>Os tipos produto do Java, Smalltalk e C++ são as <i>classes</i>.
+<br>No Fortran, os tipos produto apareceram na versão Fortran 90 com o nome de <i>tipos derivados</i>.
+<p>Como é em OCaml?
+
+<h2>Tipos produto em OCaml</h2>
+
+Em OCaml há duas variedades de tipos produto: <b>tipos produto não etiquetados</b> e <b>tipos produto etiquetados</b>.
+
+<h3>Tipos produto não etiquetados (tuplos)</h3>
+
+<P>Os produtos cartesianos do OCaml são exemplos de tipos produto, neste caso ditos <b>não-etiquetados</b>, e também conhecidos por <b>tuplos</b>. Por exemplo, para representar <i>pessoas</i>, pode usar-se em OCaml o seguinte tipos produto não etiquetado:
+
+<ul><pre class='notranslate'>
+string * int * string
+</pre></ul>
+
+<b>Literais</b>: Para exemplificar, eis um valor do tipo anterior:
+
+<ul><pre class='notranslate'>
+("João ", 1970, "Lisboa")
+</pre></ul> 
+
+<b>Construção</b>: Para exemplificar vejamos uma função que muda a morada duma pessoa, criando um tuplo novo:
+<ul><pre class='notranslate'>
+let moveTo (x,y,_) city = (x, y, city) ;;
+</pre></ul>
+
+<b>Processamento</b>: Como se processam tuplos? De duas formas:
+<ul>
+<li>Usando emparelhamento de padrões:
+<ul><pre class='notranslate'>
+let getName p =
+    match p with
+      <b>(x, _, _)</b> -> x
+;;
+</pre></ul>
+<li>Ou usando as operações de acesso <b>fst</b> e <b>snd</b> predefinidas, se o registo tiver duas componentes:
+<ul><pre class='notranslate'>
+não aplicável ao nosso exemplo
+</pre></ul>
+</ul>
+
+
+
+<h3>Tipos produto etiquetados (registos)</h3>
+
+Mas o OCaml, também suporta <b>tipos produto etiquetados</b>, também conhecidos como <b>registos</b>, os quais requerem definição explícita. Eis um exemplo de tipo produto etiquetado:
+<ul><pre class='notranslate'>
+type pessoa = { nome:string ; anoNasc:int ; morada:string } ;;
+</pre></ul> 
+
+<b>Literais</b>: Eis um literal deste tipo:
+<ul><pre class='notranslate'> 
+{ nome = "João" ; anoNasc = 1970 ; morada = "Lisboa" }
+</pre></ul>
+
+
+<b>Construção</b>: Para exemplificar vejamos uma função que muda a morada duma pessoa, criando um registo novo:
+<ul><pre class='notranslate'>
+let moveTo p city =
+    { nome = p.nome ; anoNasc = p.anoNasc ; morada = city }
+;;
+</pre></ul>
+
+
+<b>Processamento</b>: Como se processam registos? De duas formas:
+<ul>
+<li>Usando emparelhamento de padrões:
+<ul><pre class='notranslate'>
+let getNome p =
+    match p with
+      <b>{ nome = x ; anoNasc = _ ; morada = _ }</b> -> x
+;;
+</pre></ul>
+<li>Ou usando a operação de acesso "." e que funciona em OCaml exatamente como em Pascal ou C:
+<ul><pre class='notranslate'>
+let getNome p = p.nome ;;
+</pre></ul>
+</ul>
+
+
+
+<HR><HR><h1><a href="http://en.wikipedia.org/wiki/Exception_handling">Tratamento de exceções</a> em OCaml</h1>
+
+Durante a execução de um programa, por vezes verificam-se determinadas condições (geralmente anómalas, mas nem sempre) às quais é necessário reagir alterando o fluxo de execução normal. Tais condições chamam-se <b>exceções</b>.
+
+<p>As exceções podem ser geradas:
+
+<ul>
+<li>Ao nível do hardware. Por exemplo, em virtude duma divisão por zero.
+<p><li>Ao nível do sistema operativo. Por exemplo, devido à impossibilidade de abrir um ficheiro inexistente, ou devido à tentativa de continuar a ler dum ficheiro que já chegou ao fim.
+<p><li>Deliberadamente pelos próprios programas, usando a construção <b>raise</b>, ou usando a função <b>failwith</b>, que também gera uma exceção, mas duma forma mais prática de escrever. Por exemplo, para lidar explicitamente com <b>argumentos proibidos</b>:
+<ul><pre class='notranslate'>
+let rec fact x =
+    if x = 0 then 1
+    else if x>0 then x * fact(x-1)
+    else <b>raise</b> (Arg.Bad "fact")
+;;
+
+let rec fact x =
+    if x = 0 then 1
+    else if x>0 then x * fact(x-1)
+    else <b>failwith</b> "fact"
+;;
+</pre></ul>
+</ul>
+
+
+<h2>Captura e tratamento de exceções</h2>
+
+Quando uma exceção é gerada, o controlo da execução do programa é transferido para o <b>tratador de exceções</b> (<i>exception handler</i>) mais recentemente cativado. É abortada a avaliação de todas as funções chamadas depois da ativação desse tratador de exceções.
+
+<p>Em OCaml, um tratador de exceções escreve-se usando uma expressão <b>try-with</b>, como se exemplifica de seguida. A expressão <tt class='notranslate'>exp</tt>, no seu interior, diz-se uma <b>expressão protegida</b>.
+<ul><pre class='notranslate'>
+<b>try</b>
+    exp
+<b>with</b> Sys_error _ -> exp1
+   | Division_by_zero -> exp2
+   | End_of_file -> exp3
+   ...
+;;
+</pre></ul>
+
+Como é avaliada uma expressão <tt class='notranslate'>try-with</tt>?
+<ul>
+<li> Começa-se por avaliar a expressão protegida <tt class='notranslate'>exp</tt>.
+<li> Caso nenhuma exceção seja gerada por <tt class='notranslate'>exp</tt>, então o <tt class='notranslate'>try-with</tt> não tem qualquer efeito e a expressão global <tt class='notranslate'>try-with</tt> tem o mesmo valor da expressão <tt class='notranslate'>exp</tt>.
+<li> Mas se for gerada alguma exceção por <tt class='notranslate'>exp</tt>, então o <tt class='notranslate'>try-with</tt> recebe o controlo da execução e usa emparelhamento de padrões para descobrir qual das expressões <tt class='notranslate'>exp1</tt>, <tt class='notranslate'>exp2</tt>, <tt class='notranslate'>exp3</tt>, etc., deve ser avaliada em substituição de <tt class='notranslate'>exp</tt>.
+<li> Finalmente, se o emparelhamento de padrões anterior falhar, então a exceção é propagada para o <tt class='notranslate'>try-with</tt> cronologicamente anterior.
+</ul>
+
+Existe um tratador de exceções de sistema que apanha as exceções não tratadas e aborta a execução do programa com uma mensagem de erro apropriada a cada caso. Exemplos:
+
+<ul><pre class='notranslate'>
+# 4/0;;
+Exception: Division_by_zero.
+
+# open_in "fdsg" ;;
+Exception: Sys_error "fdsg: No such file or directory".
+</pre></ul>
+
+<h2>Definição de novas exceções</h2>
+
+A lista de exceções predefinidas na linguagem encontra-se aqui:
+
+<A HREF="http://caml.inria.fr/pub/docs/manual-ocaml-312/libref/index_exceptions.html">Index of exceptions</A>.
+
+<p>O programador pode definir novas exceções. A sintaxe da definição duma nova exceção é igual à sintaxe da definição duma variante dum tipos soma.
+
+<p>Exemplos. O primeiro exemplo define uma exceção com argumento; o segundo define uma exceção sem argumento.
+
+<ul><pre class='notranslate'>
+exception Stack_overflow of string * int ;;
+exception I_m_so_out_of_here ;;
+</pre></ul>
+
+
+
+
+
+
+<HR><HR><h1><a href="http://en.wikipedia.org/wiki/Partial_function">Funções parciais</a></h1>
+
+
+Uma <b>função parcial</b> é uma função que só está definida em parte do seu domínio. (Não confundir com <i>aplicação parcial</i>, que é outra coisa.)
+
+<p>Por exemplo, a função <tt class='notranslate'>fact</tt> é parcial porque só está definida para valores não-negativos:
+
+<pre class='notranslate'>
+    let rec fact n = (* pre: n >= 0 *)
+        if n = 0 then 1
+        else n * fact (n-1)
+    ;;
+</pre>
+
+<p>Outro exemplo: A função <tt class='notranslate'>maxList</tt> é parcial porque só está definida para listas não-vazias:
+
+<pre class='notranslate'>
+    let rec maxList l = (* pre: l <> [] *)
+        match l with
+            [x] -> x
+          | x::xs -> max x (maxList xs)
+    ;;
+</pre>
+
+<u>Quando se escreve uma função parcial, espera-se que essa função seja sempre aplicada a argumentos válidos.</u> Mas os programas podem ter erros e é importante que os programas não disfarcem esses erros - é muito melhor a execução dum programar abortar do que terminar produzindo resultados errados. Por isso, convém garantir que a função não produz qualquer resultado quando aplicada a argumentos inválidos (por outras palavras, temos de obrigar o resultado a ser realmente <i>indefinido</i>).
+
+<p>A melhor forma de impedir uma função de produzir resultado, ao mesmo tempo gerando uma mensagem de erro clara, é gerar uma exceção. Assim:
+
+
+<ul><pre class='notranslate'>
+let rec fact n =  (* pre: n >= 0 *)
+    if n = 0 then 1
+    else if n > 0 then n * fact (n-1)
+    else failwith "fact: negative argument"
+;;
+
+let rec maxList l =  (* pre: l <> [] *)
+    match l with
+         [] -> failwith "maxList: empty list"
+        | [x] -> x
+        | x::xs -> max x (maxList xs)
+;;
+</pre></ul>
+
+Mas, repare, mesmo sem lançar exceções explícitas, as versões originais destas duas funções já garantem a não produção de resultados: a primeira aborta com "Stack overflow" e a segunda gera a exceção <tt class='notranslate'>Match_failure</tt>.
+
+<p>
+
+
+<HR><HR>
+#120

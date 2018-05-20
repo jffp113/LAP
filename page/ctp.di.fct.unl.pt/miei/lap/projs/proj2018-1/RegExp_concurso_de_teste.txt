@@ -1,0 +1,36 @@
+%COMMAND
+ocaml -noprompt -open RegExp RegExp.cmo | tail -n +3
+%end
+
+
+%T01
+matchAtStart "aabbcc" (Str "aa");;
+matchAtStart "aabbcc" (Str "ab");;
+matchAtStart "aaarest" (ZeroOrMore (Str "a"));;
+%end
+
+%T02
+firstMatch "aabbcc" (Str "bb");;
+firstMatch "aabbcc" (Str "d");;
+%end
+
+%T03
+allMatches "aabbabb" (Str "a");;
+allMatches "aabbabb" (Str "z");;
+%end
+
+%T04
+replaceAllMatches "aabbabb" "Q" (Str "ab");;
+%end
+
+%T05
+allMatchesFile "file.txt" (Str "bb");;
+%end
+
+%T06
+allMatchesOverlap "aabbabb" (Str "a");;
+%end
+
+%T07
+matchAtStartGreedy "aabbcc" (Str "aa");;
+%end

@@ -1,0 +1,278 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#FFE0FF" link="#0000EE" vlink="#551A8B" #FF0000">
+
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 17 (08/mai/2018)</H2>
+Sistemas de tipo e sua utilidade.<br>
+Tipificação estática. Tipificação dinâmica.<br>
+Sistemas de tipos com e sem falhas de proteção.<br>
+Polimorfismo e variedades de polimorfismo.
+<p>
+<HR>
+
+<HR><H1><a href="http://en.wikipedia.org/wiki/Data_type">Tipos</a></H1>
+
+Um <b>tipo</b> representa uma coleção de elementos de dados e tem associados um conjunto de <i>literais</i> mais um conjunto de <i>operações</i>.
+
+<p>Por exemplo, em OCaml o tipo <tt class='notranslate'>int</tt> representa o conjunto do inteiros, tem associados os literais ..., -2, -1, 0, 1, 2, etc., e as operações <tt class='notranslate'>+</tt>, <tt class='notranslate'>-</tt>, <tt class='notranslate'>*</tt>, <tt class='notranslate'>div</tt>, <tt class='notranslate'>mod</tt>, <tt class='notranslate'>succ</tt>, etc.
+
+<p>Numa linguagem sem tipos, e.g. Assembler, uma operação pode ser aplicada a quaisquer dados sem que qualquer validação seja feita. Os dados são vistos como simples sequências de bits e cada operação interpreta uma sequências de bits da maneira que lhe convém.
+
+<p>Numa linguagem com tipos, cada elemento de dados tem um tipo associado. Ao tentar aplicar uma operação a valores que não têm o tipo esperado obtém-se um <b>erro de tipo</b>.
+
+<p>Por outras palavras, ao associar um tipo a uma sequência de bits, estamos a atribuir um significado a essa sequência de bits. A linguagem de programação usa a informação de tipo para determinar que as utilizações da sequência de bits fazem sentido ou não. Quando não fizerem sentido, estamos perante um <b>erro de tipo</b>.
+
+
+
+
+<H2>Géneros de tipos</H2>
+
+Cada linguagem de programação oferece um conjunto de tipos simples e um conjunto de construtores de tipos. É assim possível distinguir dois géneros de tipos:
+
+<ul>
+<li><b>Tipos simples:</b> tipos predefinidos cujos valores são escalares, ou seja valores atómicos: inteiros, carateres, reais, booleanos, enumerados.
+<p><li><b>Tipos estruturados:</b> tipos compostos definidos pelo programador aplicando determinadas construções a tipos existentes:	arrays, registos, listas, tuplos, classes, funções, apontadores.
+</ul>
+
+
+<H2>Utilidade dos tipos</H2>
+
+<p>Para que servem os tipos?
+
+<p>No caso das linguagens com <u>tipificação estática</u>:
+<ul>
+<li>Permitem a deteção antecipada de erros, em tempo de compilação. <b>O compilador deve garantir que um programa validado já não vai ter erros de tipo em tempo de execução.</b>
+<li>Ajudam a documentar os programas, tornando mais claras as intenções do programador (exceto se for usada inferência de tipos).
+<li>Suportam a definição de módulos, que ocultam a representação interna dos valores.
+<li>São úteis na otimização de código gerado.
+</ul>
+
+<p>No caso das linguagens com <u>tipificação dinâmica</u>:
+<ul>
+<li>Suportam um modelo de execução no qual se lança uma exceção logo que seja detetado que um erro de tipo. <b>O código errado já não chega a ser executado.</b>
+</ul>
+
+
+
+<HR><H1><a href="http://en.wikipedia.org/wiki/Type_system">Sistemas de tipos</a></H1>
+
+Um <b>sistema de tipos</b> é um conjunto de regras que:
+
+<ul>
+<li>Associa tipos aos literais e às expressões duma linguagem. Por exemplo o literal <tt class='notranslate'>2</tt> e a expressão <tt class='notranslate'>2+5*3</tt> têm tipo inteiro.
+<li>Determina quais são as manipulações permitidas dos valores de cada tipo. Por exemplo, em OCaml os inteiros podem ser manipulados usando apenas as operações associadas ao tipo inteiro.
+<li>Define como os valores dos vários tipos interagem. Por exemplo, em C a expressão <tt class='notranslate'>2 + 5.2</tt> e considerada válida, mas o valor <tt class='notranslate'>2</tt> é automaticamente convertido em inteiro.
+</ul>
+
+Para exemplificar, eis três regras que fazem parte do sistema de tipos da linguagem OCaml:
+
+<ul><b><pre class='notranslate'>
+                                          exp : bool    exp' : bool
+--------------        -------------      ---------------------------
+ false : bool          true : bool           exp && exp' : bool
+</pre></b></ul>
+
+Nestas regras, por cima da barra são colocadas pré-condições e por baixo da barra são colocadas conclusões. As duas primeiras regras são axiomas e dizem que <tt class='notranslate'>false</tt> e <tt class='notranslate'>true</tt> são valores válidos de tipo <tt class='notranslate'>bool</tt>; a terceira regra diz que se <tt class='notranslate'>exp</tt> e <tt class='notranslate'>exp'</tt> forem expressões válidas de tipo <tt class='notranslate'>bool</tt>, então <tt class='notranslate'>exp&nbsp;&&&nbsp;exp'</tt> é também uma expressão válida de tipo <tt class='notranslate'>bool</tt>.
+
+<p>Não mostramos mais regras, pois a formalização de sistemas de tipo não é matéria de LAP. Mas, pelo menos, fica a ideia.
+
+<p>Estas regras são úteis por várias razões. Por exemplo, servem para o utilizador compreender melhor a linguagem, servem para provar que o sistema de tipos é consistente (ou seja, que a cada expressão é associado um tipo único), servem como base para a escrita duma parte importante do compilador.
+
+<HR><H1>Verificação de tipos (<a href="http://en.wikipedia.org/wiki/Type_checking#Type_checking">Type checking</a>)</H1>
+
+
+Chama-se <b>verificação de tipos</b> ao processo de validação dum programa face às regras dum sistema de tipos.
+
+<H2>Tipificação estática e suas limitações</H2>
+
+Diz-se que uma linguagem usa <b>tipificação estática</b> se a verificação de tipos for efetuada em tempo de compilação. Os erros de tipo são detetados antes do programa começar a correr. Nestas linguagens declaram-se os tipos das variáveis, dos argumentos e do resultado das funções para o compilador ter uma base para fazer as suas validações. Em algumas linguagens, como o OCaml, não se declaram tipos porque é feita inferência de tipos.
+
+<p>As seguintes linguagens usam tipificação estática: OCaml, C, C++ e Java.
+
+<p>Numa linguagem com tipificação estática, repare que os tipos são associados às expressões que aparecem no texto dos programas e é o próprio texto que é validado. Depois, durante a execução do programa já compilado, os tipos dos valores são ignorados porque o compilador já garantiu a ausência de erros de tipo.
+
+<p>Mas atenção: Num programa validado, ou seja num programa sem erros de tipo, podem mesmo assim ocorrer outro género de problemas durante a execução:
+
+<ol>
+<li>Certos <b>valores particulares</b> podem gerar exceções: <b>zero</b> usado como denominador duma divisão, ou <b>null</b> usado como recetor de mensagem. O sistema de tipos lida com classes de valores (os tipos) e não com valores individuais.
+<li>O programa pode entrar num <b>ciclo infinito</b>.
+<li>O programa pode estar <b>incorreto</b>, ou seja ter erros do lógica. Apesar de funcionar, não faz o que o programador pretendia.
+</ol>
+
+
+<H2>Tipificação estática e conservadorismo</H2>
+
+Uma característica importantíssima dos sistemas de tipos das linguagens com tipificação estática é serem <b>conservadores</b>. Repare que quando se usa tipificação estática, os tipos representam informação incerta, correspondendo a "aproximações" dos valores que realmente serão usados em tempo de execução (os valores exatos não se podem prever, em geral). Para garantir segurança, o compilador tem sempre de assumir o pior caso.
+
+<p>Por exemplo, no código Java que se segue, a variável <tt class='notranslate'>a</tt>, de tipo <tt class='notranslate'>Animal</tt> recebe um gato. Depois, mais adiante, tenta-se fazer miar o animal referido pela variável <tt class='notranslate'>a</tt>. Mas o compilador tem considerar que, nessa altura, a variável <tt class='notranslate'>a</tt> poderá já não referir um gato e, por isso, produz um erro de compilação; no entanto, em tempo de execução até podia não haver problema se estivesse um gato na variável...
+
+<ul><pre class='notranslate'>
+Animal a = new Cat() ;
+...
+a.meou() ;   // ERRO DE TIPO
+</pre></ul>
+
+<H2>Tipificação dinâmica e suas limitações</H2>
+
+Diz-se que uma linguagem usa <b>tipificação dinâmica</b> se a verificação de tipos for efetuada em tempo de execução. Os erros de tipo são detetados durante a execução dos programas. Nestas linguagens não de declaram os tipos das variáveis, dos argumentos e do resultado das funções. Nestas linguagens uma mesma variável pode conter valores de tipos diferentes, em diferentes momentos da execução.
+
+<p>As seguintes linguagens usam tipificação dinâmica: JavaScript, Prolog, Lisp, Perl, Python, Ruby, APL e Smalltalk.
+
+<p>Numa linguagem com tipificação dinâmica, os tipos são associados aos valores que são usados em tempo de execução e não às variáveis. Portanto, em tempo de execução tem de existir informação de tipo associada aos valores. Sempre que se aplica uma operação a alguns valores, o tipo desses valores é testado pelo sistema de execução.
+
+<p>A limitação característica dos sistemas de tipos dinâmicos é o facto dos erros de tipo só serem detetados durante a execução dos programas. Mesmo um erro de tipo básico pode ficar por descobrir durante muito tempo, por se se situar em código que é executado muito raramente. O erro só será apanhado quando esse código for executado pela primeira vez.
+
+<p>Repare também que numa linguagem com tipificação dinâmica se gasta mais memória com a informação de tipo que é guardada nos valores e se gasta mais tempo a fazer validação de tipos em tempo de execução.
+
+<H2>Tipificação dinâmica e ausência de conservadorismo</H2>
+
+Os sistemas de tipos das linguagens com tipificação dinâmica <b>não precisam de ser conservadores</b> pois exercem a sua influência durante a execução dos programas, quando os argumentos exatos das operações são conhecidos e estão disponíveis para teste.
+
+<p>Por exemplo, no código JavaScript que se segue, a variável <tt class='notranslate'>a</tt> recebe um gato. Depois, mais adiante, tenta-se fazer miar o animal referido por essa variável <tt class='notranslate'>a</tt>. O compilador aceita o código, mas depois em tempo de execução, poderá ser detetado ou não um erro de tipo. Se a variável <tt class='notranslate'>a</tt> referir mesmo um gato, tudo correrá bem. Se referir um valor de outro tipo, então ocorrerá um erro de tipo e será lançada uma exceção.
+
+<ul><pre class='notranslate'>
+var a = NEW(Cat) ;
+...
+a.meou() ;
+</pre></ul>
+
+
+<H2>Elementos de tipificação dinâmica dentro de linguagens com tipificação estática</H2>
+
+Há linguagens de programação com tipificação estática que incluem alguns elementos de tipificação dinâmica.
+
+<p>Um exemplo em Java: a operação <b>instanceof</b> permite ao programador testar dinamicamente o tipo de qualquer objeto; a operação de cast aplicada a um objeto também executa um teste de tipo implícito em tempo de execução. Para isto funcionar, os objetos em Java precisam de registar a classe a que pertencem.
+
+
+<H2>Duas escolas de programação</H2>
+
+Nos dias de hoje, entre as linguagens de programação mais usadas encontram-se tanto linguagens com tipificação estática como linguagens com tipificação dinâmica. Existem alguns adeptos enquadrados em cada uma das duas escolas de programação, os quais defendem renhidamente a sua "dama" (veja por exemplo esta <a href="http://lambda-the-ultimate.org/node/983">discussão</a>).
+
+<p> Por exemplo, os adeptos da tipificação estática acreditam que os seus programas são mais seguros depois de verificados, mas os adeptos da tipificação dinâmica argumentam que conseguem programar melhor as suas ideias sem constrangimentos artificiais e que apesar de tudo os seus programas têm provado ser robustos e conter poucos erros.
+
+<p>Na verdade é perfeitamente possível ser bons resultados dentro de cada uma das escolas de programação desde que se usem boas técnicas de desenvolvimento de software. Uma das técnica mais importante é certamente a técnica de escrever muitos <a href="http://en.wikipedia.org/wiki/Unit_test">testes unitários</a> para validar sistematicamente todos os aspetos do software em desenvolvimento.
+
+<p>Só uma curiosidade: O CLIP, o sistema da informação da FCT, é um exemplo de software da escola da tipificação dinâmica - está escrito em Prolog.
+
+
+
+<HR><H1>Sistemas de tipos com e sem falhas de proteção</H1>
+
+Um sistema de tipos diz-se <b>sem falhas</b> (em Inglês, <b><i>safe</i></b>) se conseguir garantir que todos os erros de tipo são detetados e que código com erros de tipo nunca chegará a ser executado.
+
+<p>Os sistemas de tipos do C e C++ têm falhas porque:
+
+<ul>
+<li>Alguns casts permitem violar o sistema de tipos de forma muito básica. Por exemplo é possível converter um inteiro num apontador para função.
+<li>Mesmo sem usar um cast, usando aritmética de apontadores é fácil pôr um apontador inteiro a apontar para uma variável de tipo double e depois escrever nela (ou em parte dela) um inteiro.
+<li>A gestão explícita de memória também é um problema. Suponhamos que temos um apontador para uma variável dinâmica inteira e que libertamos essa variável. Suponhamos que logo a seguir criarmos uma  variável dinâmica de tipo double. Suponhamos ainda que, por acaso, a variável é criada na zona de memória anteriormente libertada, mas ainda apontada pelo apontador inteiro...
+</ul>
+
+<p>Exemplos de linguagens com sistemas de tipos sem falhas:
+
+<ul>
+<li>OCaml
+<li>Java
+<li>Smalltalk
+<li>JavaScript
+</ul>
+
+<p>Repare que na lista de linguagens com sistemas de tipos sem falhas aparecem linguagens com tipificação estática e linguagens com tipificação dinâmica.
+
+
+<HR><HR><H1>Polimorfismo</H1>
+
+Os programadores gostam de escrever código geral que possa ser aplicado a vários tipos de dados. É penoso, e causador de erros, ter de reescrever um algoritmo com ligeiras variações só porque surgiu a necessidade de o aplicar a um tipo de dados diferente.
+
+<p>Uma <b>função polimórfica</b> é uma função que pode ser aplicada a argumentos de vários tipos. A nossa conhecida função <tt class='notranslate'>len</tt> em OCaml é polimórfica pois aplica-se a listas de qualquer tipo:
+
+<ul><pre class='notranslate'>
+len : 'a list -> int
+</pre></ul>
+
+<p>Um <b>tipo polimórfico</b> é um tipo cujas operações se aplicam a valores de mais do que um tipo. Em OCaml o tipo da listas <tt class='notranslate'>'a list</tt> é polimórfico. Em Java o tipo <tt class='notranslate'>Vector&lt;E></tt> também é.
+
+<p>Uma <b>variável polimórfica</b> é uma variável mutável que pode conter valores de tipos diferentes. Em Java, uma variável de tipo <tt class='notranslate'>Animal</tt> pode referir qualquer objeto cujo tipo seja subtipo de <tt class='notranslate'>Animal</tt>. Em C uma variável de tipo <tt class='notranslate'>void *</tt> pode guardar qualquer apontador. 
+
+<p>Entidades que não sejam polimórficas dizem-se <b>monomórficas</b>.
+
+<p>Muitas das linguagens com tipificação estática modernas suportam polimorfismo. Todas as linguagens com tipificação dinâmica suportam polimorfismo de forma inerente.
+
+<H2>Variedades de polimorfismo</H2>
+
+O seguinte diagrama identifica as variedades e subvariedades de polimorfismo de funções em linguagens com tipificação estática, de acordo com <a href="http://lucacardelli.name/Papers/OnUnderstanding.A4.pdf">Cardelli</a>:
+
+
+<ul>
+Polimorfismo
+<ul>
+<li>Universal
+<ul>
+<li>Paramétrico
+<li>Inclusão (ou subtipo)
+</ul>
+<li>Ad hoc
+<ul>
+<li>Overloading
+<li>Coerção
+</ul>
+</ul>
+</ul>
+
+<p><b>Polimorfismo universal</b> - A função trabalha de forma uniforme sobre uma diversidade infinita de tipos que partilham a mesma estrutura. A implementação é única e o mesmo código consegue lidar com todos os tipos considerados.
+
+
+<p><b>Polimorfismo paramétrico</b> - É uma forma de polimorfismo universal onde a função polimórfica tem um parâmetro de tipo implícito ou explicito. Na chamada da função o parâmetro de tipo pode ser ou não inferido. A  função <tt class='notranslate'>len</tt> em OCaml é polimórfica paramétrica, sendo <tt class='notranslate'>'a</tt> o nome do parâmetro de tipo:
+
+<ul><pre class='notranslate'>
+len : 'a list -> int
+
+let rec len l =
+    match l with
+        [] -> 0
+      | x::xs -> 1 + len xs
+;;
+</pre></ul>
+
+A seguinte função em Java é polimórfica paramétrica, sendo <tt class='notranslate'>T</tt> o nome do parâmetro de tipo:
+
+<ul><pre class='notranslate'>
+&lt;T> void fromArrayToCollection(T[] a, Collection&lt;T> c) {
+  for (T o : a) {
+   c.add(o) ;
+}}
+</pre></ul>
+
+
+<p><b>Polimorfismo de inclusão</b> - É uma forma de polimorfismo universal que resulta da noção de subtipo. Uma função que declare aceita argumentos dum dado tipo, digamos <tt class='notranslate'>Animal</tt>, também aceita argumentos de subtipos desse tipo, digamos <tt class='notranslate'>Cat</tt> ou <tt class='notranslate'>Lion</tt>. Qualquer linguagens com subtipos suporta polimorfismo de inclusão.
+
+<p>A seguinte função em Java é polimórfica de inclusão:
+
+<ul><pre class='notranslate'>
+int weight(Animal a) { ... } 
+</pre></ul>
+
+<p><b>Polimorfismo ad hoc</b> - A função trabalha de forma não uniforme sobre uma diversidade finita de tipos que não partilham a mesma estrutura. Existem múltiplas implementações, uma para cada tipo considerado.
+
+
+
+<p><b>Overloading</b> - O mesmo nome de função é usado para denotar diferentes implementações monomórficas. No ponto da chamada usa-se o contexto para descobrir qual das implementações deve ser usada. Portanto esta forma de polimorfismo não é mais do que uma conveniência sintática. Um exemplo: o operador "+" em Java denota três operações monomórficas distintas, não relacionadas entre si: (1) soma de inteiros; (2) soma de reais; (3) concatenação de strings.
+
+
+<p><b>Coerção</b> - Uma coerção é uma conversão automática de tipo. As coerções fazem com que funções essencialmente monomórficas se tornem polimórficas, pois passam a poder ser chamadas com argumentos de diferentes tipos. A seguinte função em C foi escrita para ser monomórfica
+
+<ul><pre class='notranslate'>
+double inc(double d) { return d + 1 ; } 
+</pre></ul>
+
+mas devido ao facto de em C existir coerção de inteiros para doubles, a função passa a poder ser aplicada tanto a reais como inteiros.
+
+<p>Lendo as descrição anteriores, percebe-se porque razão o "polimorfismo ad hoc" também se chama "polimorfismo aparente". É apenas "açúcar sintático" que está em jogo.
+
+
+
+
+<HR><HR>
+#100
+
+<!-- http://stackoverflow.com/questions/9551037/calling-javascript-function-in-a-js-file-from-java -->

@@ -1,0 +1,596 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 20 (17/mai/2018)</H2>
+Programação orientada pelos objetos em JavaScript.
+<p>
+<HR>
+
+<!--
+<hr><h1>Objetos</h1>
+
+Em JavaScript para além dos tipos primitivos, que são muito poucos, temos os tipos objeto. Os arrays são considerados objetos.
+
+<p>Como habitualmente, um <b>objeto</b> é um elemento de dados que possui identidade e que interage com outros objetos através da troca de mensagens.
+
+<p>Em JavaScript os objetos predefinidos principais são os seguintes:
+<A HREF="http://www.javascriptkit.com/jsref/date.shtml">Date</A>,
+<A HREF="http://www.javascriptkit.com/jsref/arrays.shtml">Array</A>,
+<A HREF="http://www.javascriptkit.com/jsref/boolean.shtml">Boolean</A>,
+<A HREF="http://www.javascriptkit.com/jsref/function.shtml">Function</A>,
+<A HREF="http://www.javascriptkit.com/jsref/math.shtml">Math</A>,
+<A HREF="http://www.javascriptkit.com/jsref/number.shtml">Number</A>,
+<A HREF="http://www.javascriptkit.com/jsref/regexp.shtml">RegExp</A>
+e <A HREF="http://www.javascriptkit.com/jsref/string.shtml">String</A>
+</pre></table></ul>.
+Mas no ambiente de execução envolvente, estão geralmente disponíveis muitos mais objetos. Por exemplo, no ambiente dum browser, todos os tipos de objetos previstos no DOM estão disponíveis: Document, Window, Form, Link, etc.
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+b.hasOwnProperty('q') --- > true
+b.hasOwnProperty('p') --- > false
+</pre></table></ul>
+
+-->
+
+
+<hr><h1>Objetos literais</h1>
+
+Em JavaScript, os objetos são praticamente simples dicionários, que mapeiam etiquetas em valores. Existe uma sintaxe própria para definir objetos diretamente.
+
+<p> Eis um exemplo de <b>objeto literal</b>, que define uma pessoa:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var p = {name: "Pedro", address: "Lisboa", age: 42};
+</pre></table></ul>
+
+Para aceder a uma componente dum objeto, há duas notações disponíveis:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var n = p.name;                    // Notação 1
+var n = p["name"];                 // Notação 2
+p.name = "Pedrinho";               // Muda nome
+</pre></table></ul>
+
+Se atribuirmos a um membro inexistente dum objeto, esse membro passa imediatamente a existir para esse objeto individual:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+p.born = "Porto";
+</pre></table></ul>
+
+Para apagar um membro, usa-se a palavra <tt class='notranslate'>delete</tt>:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+delete p.born;
+</pre></table></ul>
+
+Eis um objeto mais complexo:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var myStructure = {
+  name: {
+    first: "Mel",
+    last: "Smith"
+    fullname: function() { return this.first + " " + this.last} 
+  },
+  age: 33,
+  hobbies: [ "chess", "jogging" ]
+}
+</pre></table></ul>
+
+<p> Agora uma definição mais rigorosa e completa de objeto: um objeto é um dicionário enriquecido por uma propriedade privada especial que se chama <b>prototype</b>.
+
+<hr><h1>Programação baseada em protótipos</h1>
+
+Para criar múltiplos objetos semelhantes e para reutilizar código, o JavaScript original não usa classes mas sim <b>protótipos</b>. Esta técnica foi inventada em meados dos anos 1980 no contexto da linguagem Self. É uma técnica natural no contexto duma linguagem dinâmica.
+
+<p>Comecemos por falar um pouco da linguagem Self.
+
+<p>Em Self, a criação de novos objetos é efetuada a partir de objetos existentes. Sempre que um objeto P é usado como base para a criação de novos objetos, diz-se que P é um <b>protótipo</b>.
+
+<p>A criação dum novo objeto a partir dum protótipo P (designemos a operação por <tt class='notranslate'>copy(P)</tt>) é muito simples: cria-se um objeto vazio (sem propriedades) e faz-se a propriedade especial <tt class='notranslate'>prototype</tt> do novo objeto referir o protótipo P. Todos os objetos criados a partir dum protótipo P começam vazios e ficam a referir esse mesmo P.
+
+<p>Cada objeto <b>herda dinamicamente</b> do respetivo protótipo. A herança funciona assim: quando se tenta aceder a um membro dum objeto, se esse membro não estiver diretamente disponível no objeto, então a procura continua no respetivo protótipo. Se também não estiver diretamente disponível no protótipo, então procura-se no protótipo do protótipo. E assim sucessivamente, ao longo duma cadeia de protótipos.
+
+<p>Note que qualquer objeto pode ser usado como protótipo. Qualquer objeto passa a ser considerado um protótipo a partir do momento em que é usado para criar novos objetos.
+
+<p>Agora regressemos à linguagem JavaScript.
+
+<p>Em JavaScript, os objeto são idênticos aos do Self na medida em que contêm uma propriedade especial que identifica um protótipo, e cada objeto herda dinamicamente do seu protótipo.
+
+No entanto, o mecanismo disponível para a criação de objetos é mais complicado do que o do Self (veremos esse mecanismo na secção seguinte).
+
+<p>Em JavaScript, o protótipo dum objeto é guardado na seguinte propriedade privada:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+[[Prototype]]
+</pre></table></ul>
+
+Algumas implementações de JavaScript expõem essa propriedade através da propriedade pública <tt class='notranslate'>__proto__</tt>. Nas implementações de JavaScript usadas na nossa cadeira (Rhino e NodeJS), esta propriedade pública está disponível e é usada como se exemplifica:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+obj.__proto__
+</pre></table></ul>
+
+De qualquer maneira, a maneira padronizada de testar se <tt class='notranslate'>proto</tt> é protótipo de <tt class='notranslate'>obj</tt>, é a seguinte:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+proto.isPrototypeOf(obj)
+</pre></table></ul>
+
+Todos os objetos definidos através dum literal partilham automaticamente um protótipo predefinido que se escreve:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+Object.prototype
+</pre></table></ul>
+
+Veja esta pequena sessão interativa que prova de duas maneiras diferentes que os objetos literais herdam realmente de <tt class='notranslate'>Object.prototype</tt>:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+> var a = {name: "Pedro", address: "Lisboa", age: 42}
+> Object.prototype.isPrototypeOf(a)
+true
+> a.__proto__ === Object.prototype    // "===" verifica se dois objetos são o mesmo.
+true
+</pre></table></ul>
+
+
+<hr><h1>Programação orientada pelos objetos em JavaScript usando construtores</h1>
+
+Em JavaScript, qual o mecanismo previsto para criar novos objetos e lhes associar o protótipo de onde herdam?
+
+<p>Convém começar por dizer que o mecanismo usado no JavaScript é um pouco complicado e foge ao que é tradicional nas linguagem baseadas em protótipos (que costumam imitar o Self). Foi provavelmente a pensar nos programadores de Java que se decidiu introduzir um mecanismo com alguma aparência de familiaridade.
+
+<p> O mecanismo usado em JavaScript para criar objetos é o mecanismo dos <b>construtores</b>. Um <b>construtor</b> serve para inicializar diversos objetos do mesmo tipo, que herdam do mesmo protótipo.
+
+<p>Um construtor <tt class='notranslate'><b>C</b></tt> é um função com as seguintes particularidades:
+
+<ul>
+<li>Destina-se a ser chamada no contexto do operador <tt class='notranslate'>new</tt>, com esta sintaxe <tt class='notranslate'><b>new C()</b></tt>. O operador <tt class='notranslate'>new</tt> cria um objeto vazio que depois é inicializado pelo construtor. Dentro do construtor, o objeto novo é conhecido por <tt class='notranslate'>this</tt> e a sua inicialização envolve tipicamente apenas campos de dados; não campos funcionais.
+<li>O construtor <tt class='notranslate'><b>C</b></tt> é dono dum objeto vazio, que se tornará o protótipo de todos os objetos criados a partir desse construtor. Esse objeto escreve-se <tt class='notranslate'><b>C.prototype</b></tt> e diz-se que é o <i>protótipo do construtor</i>.
+</ul>
+
+Regra geral, os campos funcionais são adicionados no protótipo do construtor, para ficarem acessíveis por herança. Quando se adicionam novas funções ao protótipo, ele deixa de ser vazio. Repare bem: geralmente, os campos de dados pertencem a cada objeto e não são partilhados; os campos funcionais são metidos no protótipo e são partilhados por herança (pois não vale a pena repeti-los em cada objeto).
+
+<p>Abaixo define-se um construtor chamado Car para representar e inicializar automóveis. Neste exemplo, cada objeto fica com três campos de dados próprios. Os campos funcionais são seguidamente instalados no protótipo de Car e ficam disponíveis através de herança. Veja tudo com atenção:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+function Car(make, model, year) {
+   this.make = make;
+   this.model = model;
+   this.year = year;
+}
+
+Car.prototype.toString = function() {
+    return "A Beautiful " + this.year + " " + this.make + " " + this.model;
+}
+
+Car.prototype.changeMake = function(make) {
+    this.make = make;
+}
+
+var car1 = new Car("Toyota", "Corolla", 2002);
+</pre></table></ul>
+
+<!--
+<p>Um objeto definido através dum objeto literal, considera-se que foi definido usando o construtor predefinido <tt class='notranslate'>Object</tt>.
+-->
+
+<p>Para aceder ao construtor dum objeto <tt class='notranslate'>obj</tt> escreve-se:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+obj.constructor
+</pre></table></ul>
+
+<p>Para aceder ao protótipo dum construtor <tt class='notranslate'>C</tt> escreve-se:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+C.prototype
+</pre></table></ul>
+
+<p>Para testar se o construtor dum objeto <tt class='notranslate'>obj</tt> é <tt class='notranslate'>C</tt>, escreve-se:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+obj instanceof C
+</pre></table></ul>
+
+
+<h4>Criação de hierarquias através dos construtores</h4>
+
+Manipulando diretamente o membro <tt class='notranslate'>prototype</tt> dos construtores é possível criar uma hierarquia de protótipos.
+
+<p>Eis um exemplo simples, que introduz um subtipo de Car. Repare que se muda o protótipo de FlyingCar para ser um objeto de tipo Car (em vez do habitual objeto vazio inicial).
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+function FlyingCar(make, model, year, maxFlightLevel) {
+   this.make = make;
+   this.model = model;
+   this.year = year;
+   this.maxFlightLevel = maxFlightLevel;
+   this.flightLevel = 0;
+}
+
+FlyingCar.prototype = new Car("", "", 0); // muda-se aqui o protótipo!!!
+
+FlyingCar.prototype.fly = function() {
+    return "Flying level = " + this.flightLevel;
+}
+
+var flyingCar1 = new FlyingCar("Toyota", "CFly", 2099, 100);
+</pre></table></ul>
+
+Para tirar possível dúvidas sobre o mecanismo de herança, estudemos a seguinte chamada:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+flyingCar1.fly();
+</pre></table></ul>
+
+Primeiro procura-se um campo <tt class='notranslate'>fly</tt> no objeto <tt class='notranslate'>flyingCar1</tt>. Não se encontra. Depois procura-se no protótipo desse objeto. Encontra-se!
+
+<p>Estudemos agora a chamada:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+flyingCar1.toString();
+</pre></table></ul>
+
+<P> Primeiro procura-se um campo <tt class='notranslate'>toString</tt> no objeto no objeto <tt class='notranslate'>flyingCar1</tt>. Não se encontra. Depois procura-se no protótipo desse objeto. Não se encontra. Depois procura-se no protótipo do protótipo. Encontra-se!
+
+
+
+<hr><h1>Programar em JavaScript, imitando as classes do Java</h1>
+
+No ECMAScript 6, em 2015, foram introduzidas <b>classes</b> para trabalhar com objetos e herança. Essas <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Classes">classes</a> fazem lembrar as classes do Java. Oferecem sintaxe familiar para lidar com os objetos do JavaScript. Estão disponíveis as mesmas palavras reservadas do Java, com significados absolutamente idênticos: <b><tt>class</tt></b>, <b><tt>extends</tt></b>, <b><tt>this</tt></b>, <b><tt>super</tt></b>,  <b><tt>static</tt></b>, <b><tt>new</tt></b> e <b><tt>instanceof</tt></b>.
+
+<p>A única falha das classes do JavaScript é não existir suporte direto para membros de dados privados. Os nossos membros de dados serão todos públicos.
+
+<p>Uma diferença de detalhe: em Java os construtores não são herdados mas em JavaScript são herdados. Concretamente, em JavaScript, se uma subclasse não definir um construtor, herda o construtor da superclasse.
+
+<p>As classes do JavaScript são apenas <b>açúcar sintático</b>, porque internamente usam-se os objetos e os protótipos originais do JavaScript.
+
+<p>Comparando com a sintaxe do Java, há duas grandes diferenças: (1) ausência de tipos e (2) necessidade de escrever constantemente <b>this</b> para referir os campos do próprio objeto.
+
+<p>Os dois exemplos que se seguem ilustram a forma de programar em JavaScript usando classes, imitando fielmente o estilo do Java.
+
+<h1>Exemplo 1</h1>
+
+Hierarquia de classes para representar pontos a uma dimensão, duas dimensões e três dimensões. Fatoriza-se o código ao máximo, inclusivamente usando a construção <tt class='notranslate'>super</tt> sempre que for aplicável.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+<b>class</b> Point1 {
+
+    <b>constructor</b>(x) {
+        this.x = x;
+    }
+
+    <b>static</b> zero() {
+        return <b>new</b> Point1(0);
+    }
+
+    equals(that) {
+        return this.x == that.x;
+    }
+
+    shift(deltax) {
+        this.x += deltax;
+    }
+
+    show() {
+        console.log("(" + this.x + ")");
+    }
+
+    a() {
+       console.log(1);
+    }
+}
+
+<b>class</b> Point2 <b>extends</b> Point1 {
+
+    <b>constructor</b>(x, y) {
+        <b>super</b>(x);
+        this.y = y;
+    }
+
+    <b>static</b> zero() {
+        return <b>new</b> Point2(0, 0);
+    }
+
+    equals(that) {
+        return <b>super</b>.equals(that) && this.y == that.y;
+    }
+
+    shift(deltax, deltay) {
+        <b>super</b>.shift(deltax);
+        this.y += deltay;
+    }
+
+    show() {
+        console.log("(" + this.x + ", " + this.y + ")");
+    }
+
+    a() {
+       console.log(2);
+    }
+
+    b() {
+       <b>super</b>.a();
+    }
+}
+
+<b>class</b> Point3 <b>extends</b> Point2 {
+
+    <b>constructor</b>(x, y ,z) {
+        <b>super</b>(x, y);
+        this.z = z;
+    }
+
+    <b>static</b> zero() {
+        return <b>new</b> Point3(0, 0, 0);
+    }
+
+    equals(that) {
+        return <b>super</b>.equals(that) && this.z == that.z;
+    }
+
+    shift(deltax, deltay, deltaz) {
+        <b>super</b>.shift(deltax, deltaz);
+        this.z += deltaz;
+    }
+
+    show() {
+        console.log("(" + this.x + ", " + this.y + ", " + this.z + ")");
+    }
+
+    a() {
+       console.log(3);
+    }
+
+    test() {
+        this.a();
+        <b>super</b>.a();
+        this.b();
+        <b>super</b>.b();   
+    }
+}
+
+<b>class</b> Tests {
+    <b>static</b> testInheritance() {
+        var a = <b>new</b> Point3(1,2,3);
+        var b = <b>new</b> Point3(6,7,8);
+        a.show(); b.show();
+        a.shift(1, 1, 1); a.show(); b.show();
+        console.log("---");
+        b.shift(1, 1, 1); a.show(); b.show();
+    }
+
+    <b>static</b> testMixedTypes() {  // a parte inválida das operações não tem efeito.
+        var a = <b>new</b> Point1(1);
+        var b = <b>new</b> Point2(6,7);
+        a.show(); b.show();
+        a.shift(1, 1, 1); a.show(); b.show();
+        console.log("---");
+        b.shift(1, 1, 1); a.show(); b.show();
+    }
+
+    <b>static</b> run() {
+        this.testInheritance();
+        console.log("++++++++++++++++");
+        this.testMixedTypes();
+        console.log("++++++++++++++++");
+        var a = Point3.zero();
+        a.test();
+    }
+}
+
+Tests.run()
+
+// Run tests
+
+> Tests.run()
+(1, 2, 3)
+(6, 7, 8)
+(2, 3, 4)
+(6, 7, 8)
+---
+(2, 3, 4)
+(7, 8, 9)
+++++++++++++++++
+(1)
+(6, 7)
+(2)
+(6, 7)
+---
+(2)
+(7, 8)
+++++++++++++++++
+3
+2
+1
+1
+</pre></table></ul>
+
+<h1>Exemplo 2</h1>
+
+Representação de expressões algébricas, onde pode ocorrer uma variável "x".
+
+<p>A representação natural usa uma árvore com nós de tipos variados. 
+
+<p>Fatoriza-se o código ao máximo usando classes abstratas e <tt class='notranslate'>super</tt>.
+
+<p>Por exemplo, a classe <tt class='notranslate'>BinNode</tt>, consideramo-la abstrata porque captura a noção abstrata de nó binário e porque não tencionamos criar objetos desse tipo. Algum do código das classes concretas <tt class='notranslate'>AddNode</tt> e <tt class='notranslate'>MultNode</tt> é fatorizado na classe <tt class='notranslate'>BinNode</tt>.
+
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+class ExpNode {
+    <b>constructor</b>() {}
+    big() { return size() > 1000; }
+}
+
+<b>class</b> BinNode <b>extends</b> ExpNode {
+    <b>constructor</b>(l, r) { <b>super</b>(); this.l = l; this.r = r; }
+    size() { return 1 + this.l.size() + this.r.size(); }
+    height() { return 1 + Math.max(this.l.height(), this.r.height()); }
+}
+
+<b>class</b> UnaryNode <b>extends</b> ExpNode {
+    <b>constructor</b>(e) { <b>super</b>(); this.e = e; }
+    size() { return 1 + this.e.size(); }
+    height() { return 1 + this.e.height(); }
+}
+
+<b>class</b> ZeroNode <b>extends</b> ExpNode {
+    <b>constructor</b>() { <b>super</b>(); }
+    size() { return 1; }
+    height() { return 1; }
+}
+
+<b>class</b> AddNode <b>extends</b> BinNode {
+    <b>constructor</b>(l, r) { <b>super</b>(l, r); }
+    eval(v) { return this.l.eval(v) + this.r.eval(v); }
+    deriv() { return <b>new</b> AddNode(this.l.deriv(), this.r.deriv()); }
+}
+
+<b>class</b> MultNode <b>extends</b> BinNode {
+    <b>constructor</b>(l, r) { <b>super</b>(l, r); }
+    eval(v) { return this.l.eval(v) * this.r.eval(v); }
+    deriv() { return <b>new</b> AddNode(<b>new</b> MultNode(this.l, this.r.deriv()),
+                                        <b>new</b> MultNode(this.l.deriv(), this.r)); }
+}
+
+<b>class</b> SimNode <b>extends</b> UnaryNode {
+    <b>constructor</b>(e) { <b>super</b>(e); }
+    eval(v) { return -this.e.eval(v); }
+    deriv() { return <b>new</b>SimNode(this.e.deriv()); }
+}
+
+<b>class</b> ConstNode <b>extends</b> ZeroNode {
+    <b>constructor</b>(c) { <b>super</b>(); this.c = c; }
+    eval(v) { return this.c; }
+    deriv() { return <b>new</b> ConstNode(0); }
+}
+
+<b>class</b> VarNode <b>extends</b> ZeroNode {
+    <b>constructor</b>() { <b>super</b>(); }
+    eval(v) { return v; }
+    deriv() { return <b>new</b> ConstNode(1); }
+}
+
+<b>class</b> Tests2 {
+    <b>static</b> test1() {
+        var e = <b>new</b> MultNode(
+                       <b>new</b> AddNode(<b>new</b> ConstNode(4), <b>new</b> VarNode),
+                       <b>new</b> ConstNode(6.5));
+
+        console.log("((4 + x) * 6.5)' (3) = " + e.deriv().eval(3));
+    }
+}
+
+// Run tests
+
+> Tests2.test1()
+((4 + x) * 6.5)' (3) = 6.5
+</pre></table></ul>
+
+
+<HR>
+
+<!--
+
+
+
+<hr>
+<h2>Método <b>hasOwnProperty</b></h2>
+
+Se estivermos na dúvida se uma dada propriedade está presente num objeto de forma direta ou indireta através de herança, podemos confirmar isso usando este método. Exemplo:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+> class P { constructor() { this.a = 0; } }
+> class Q extends P { constructor() { supthis.a = 0; } }
+
+
+
+> var x = new P
+> x.hasOwnProperty('a')
+> x.hasOwnProperty('b')
+
+
+> x.a = 5;
+> x.hasOwnProperty('a');
+
+// Output
+false
+5
+true
+</pre></table></ul>
+
+
+
+
+
+<h2>Propriedades privadas em objetos</h2>
+
+Quando se escreve um objeto literal, esse objeto fica com todas as suas propriedades públicas. Nos objetos literais, não há suporte para propriedades privadas. No entanto, conseguimos obter um efeito equivalente usando funções anónimas com variáveis locais. Essas variáveis locais vão funcionar como campos privados dum objeto.
+
+<p>Estude o seguinte exemplo:
+
+<p> O seguinte objeto literal tem todos os campos públicos:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var pub = {
+    x: 0,
+    y: 5,
+    show: function() { print("(" + this.x + " ," + this.y + ")") }
+};
+pub.show();   // Output: (0, 5)
+</pre></table></ul>
+
+Para tornar privado o campo 'y', usa-se o esquema abaixo. Note que "this.y" foi reescrito "y".
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+var priv = (function () {
+    var y = 5;
+    return {
+           x: 0,
+           show: function() { print("(" + this.x + " ," + y + ")") }
+     }
+})();
+priv.show();   // Output: (0, 5)
+</pre></table></ul>
+
+<p>Explicação: Escreve-se uma função anónima com uma variável local chamada 'y'. No contexto dessa função define-se um objeto, o qual pode usar a variável 'y'. A função está preparada para retornar esse objeto quando for chamada. A função é chamada imediatamente e assim o objeto fica disponível no exterior; mas a variável 'y' permanece privada e só pode ser acedida a partir dos métodos do objeto.
+
+
+
+
+<!--
+function f(x, y) {
+    print(arguments[0]);
+    print(arguments[1]);
+}
+function g(x, y) {
+    f.apply(this, arguments);
+}
+g(1,2)
+
+
+    proto1._super_ = function(f) {
+        proto[f].apply(this, Array.prototype.slice.apply(arguments).slice(1))
+    }
+
+         this._super_("INIT", x)
+
+
+http://yehudakatz.com/2011/08/11/understanding-javascript-function-invocation-and-this/
+
+    if( arguments.length > 1 )
+
+
+
+function _super_(t, f) {
+    return t.__proto__.__proto__[f].apply(t,
+            Array.prototype.slice.apply(arguments).slice(2))
+}
+-->
+
+<HR><HR>
+#80

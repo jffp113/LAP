@@ -1,0 +1,59 @@
+%T01
+%INPUT
+1
+%OUTPUT
+A KDw VIs gNo rSk ACXg ANcc AYhY AjmU AurQ BFwM BRBI BcGE BnLA ByPw CJUs CUZo Cfek Cqjg DBoc DMtY DXyU DjDQ DuIM EFNI EQSE EbXA Embw Exgs FIlo FTqk Fevg FqAc GBFY GMKU GXPQ GiUM GtZI HEeE HPjA Hanw Hlss 
+%end
+
+%T02
+%INPUT
+2
+%OUTPUT
+"ola" = 2
+"lalalx" = 1
+"lalalz" = 1
+%end
+
+%T03
+%INPUT
+3
+%OUTPUT
+"one" = 1
+"two" = 3
+"z" = 4
+%end
+
+%T04
+%INPUT
+4
+%OUTPUT
+"ola" = 2 = "A"
+"lalalx" = 1 = "Y"
+"lalalz" = 1 = "a"
+%end
+
+%T05
+%INPUT
+5
+%OUTPUT
+"A"
+"Y"
+"a"
+%end
+
+%T06
+%INPUT
+6
+%OUTPUT
+B=one, C=qqq A=two=33 A A
+%end
+
+%T07
+%INPUT
+7
+%OUTPUT
+"ola"
+"troloro"
+%end
+
+

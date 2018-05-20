@@ -1,0 +1,297 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 08 (03/abr/2018)</H2>
+Funções recursivas. Usando o método indutivo.
+<br>O método indutivo aplicado à resolução de problemas sobre: inteiros, listas, árvores binárias, árvores n-árias, ficheiros, strings.
+<br>Categorias de funções recursivas: funções de categoria 1, 2, 3 e 4. 
+<p>
+
+
+<HR><HR><h1>Funções recursivas (indutivas)</h1>
+
+Uma função recursiva bem definida faz sempre uma <I>análise de casos</I> sobre os seus parâmetros. Por exemplo, a função "fib" considera três casos relativamente ao seu parâmetro "n":
+
+<pre class='notranslate'>
+    let rec fib n =
+         if n = 0 then 1
+         else if n = 1 then 1
+         else <U>fib (n-1)</U> + <U>fib (n-2)</U>
+    ;;
+</pre>
+
+Existem sempre dois géneros de casos que uma função recursiva tem sempre de tratar: <I>casos base</I> e <I>casos gerais</I> (ou <I>casos indutivos</I>). Os <B>casos base</B> são aqueles que não conduzem, nem direta nem indiretamente, a chamadas recursivas da função; os <B>casos gerais</B> são aqueles que conduzem, direta ou indiretamente, a chamadas recursivas da função. A função "fib" trata dois casos base, n=0 e n=1, e trata um caso geral, n>=2.
+
+<p>Toda a função recursiva deve tratar pelo menos um caso base e um caso geral. Além disso todas as chamadas recursivas que estão associadas aos casos gerais devem corresponder <B>problemas mais simples</B> do que o problema que a função, no seu todo, resolve (<i>problema mais simples</i> significa <i>problema mais próximo de algum dos casos base</i>). Apenas este conjunto de condições garante terminação.
+
+<p>Para nós, <b>função indutiva</b> é apenas outro nome para uma função recursiva definida nos termos atrás descritos.
+
+<HR><h1>Usando o método indutivo</h1>
+
+O <B>método indutivo</B>, introduzido na aula teórica 3, ajuda a programar os casos indutivos das funções recursivas (indutivas). Concretamente, dá alguma orientação sobre como fazer a <i>redução de problemas a problemas mais simples</i>.
+
+<p>Quando se usa o método indutivo, <B>devem-se ter em mente</B> apenas as propriedades lógicas do problema a resolver. <b>Não se devem ter em mente</b> quaisquer preocupações relacionadas com as propriedades operacionais da função que está a ser programada. Misturar do uso do método indutivo com preocupações de natureza operacional é uma receita para o desastre.
+
+<p>De qualquer forma, depois de programada a função, já não há problema em tentar compreendê-la operacionalmente. Pode mesmo valer a pena escrever uma avaliação da função para se ganhar confiança nela. Exemplo: avaliação de (len [1;5;3;8]):
+<pre class='notranslate'>
+    len [1;5;3;8] =
+        1 + len [5;3;8] =
+        1 + 1 + len [3;8] =
+        1 + 1 + 1 + len [8] =
+        1 + 1 + 1 + 1 + len [] =
+        1 + 1 + 1 + 1 + 0 =
+        4
+</pre>
+
+<HR><h1>Categorias de funções recursivas</h1>
+
+Vamos agora estudar 4 categorias de funções recursivas, todas programadas usando o método indutivo: funções de categoria 1, de categoria 2, de categoria 3 e de categoria 4.
+
+<p>Na avaliação da qualidade duma função, um dos critérios que surge em primeiro lugar é o da <B>facilidade em compreender a função</B>. As funções de categoria 1 e 2 tendem a ser as mais simples de perceber, mas nem todos os problemas podem ser resolvidos diretamente usando apenas funções de categoria 1 e 2.
+
+
+<HR><h1>Funções de categoria 1</h1>
+
+<p>As <B>funções de categoria 1</B> são programadas usando o método indutivo e caracterizam-se pela seguinte propriedade:
+
+<ul>
+<li> A estrutura da função baseia-se num dos <u>esquemas rígidos predefinidos</u>, indicados a seguir. Repare que em todos esses esquemas, os argumentos das chamadas recursivas são subpadrões dos padrões que representam os argumentos da função.
+</ul>
+
+<p>Nesses esquemas, o PONTO DE PARTIDA PARA COMEÇAR A RACIOCINAR aparece sublinhado.
+
+<p><b>Orientação prática</b>: Quando se tenta resolver um problema, convém começar por procurar construir uma função de categoria 1 já que estas são as mais fáceis de escrever e compreender, na maioria dos casos.
+
+
+<h4>Inteiros</h4>
+<pre class='notranslate'>
+    let rec f n =
+        if n = 0 then ...
+        else ... <U>f (n-1)</U> ...
+    ;;
+</pre>
+
+<h4>Listas</h4>
+<pre class='notranslate'>
+    let rec f l =
+        match l with
+            [] -> ...
+          | x::xs -> ... <U>f xs</U> ...
+    ;;
+</pre>
+
+<h4>Árvores binárias</h4>
+<pre class='notranslate'>
+    let rec f t =
+        match t with
+            Nil -> ...
+          | Node(x,l,r) -> ... <U>f l</U> ... <U>f r</U> ...
+    ;;
+</pre>
+
+<h4>Árvores n-árias</h4>
+<ul><pre class='notranslate'>
+let rec f t =
+    match t with
+        NNil -> ...
+      | NNode(x,cs) -> ... lf cs ...
+and lf tl =
+    match tl with
+        [] -> ...
+      | t::ts -> ... f t ... lf ts ... 
+;;
+</pre></ul>
+
+<h4>Ficheiros: leitura de sequência</h4>
+<pre class='notranslate'>
+    let rec f ci =
+       try
+           let s = input_line ci in
+               ... <U>f ci</U> ...
+       with End_of_file -> ...
+    ;;
+</pre>
+
+<h4>Strings</h4>
+<pre class='notranslate'>
+    let cut s = (String.get s 0, String.sub s 1 ((String.length s)-1)) ;;
+    let rec f s =
+        if s = "" then ...
+        else
+            let (x,xs) = cut s in
+                ... <U>f xs</U> ...
+    ;;
+</pre>
+
+
+<p>Exemplos de funções de categoria 1: fact, len, append, rev, belongs, union, power, height, size, zeros, treeToList, balanced, subTrees, etc. (em suma, a maioria das funções estudadas até ao momento).
+
+<p>Mais exemplos de funções de categoria 1:
+
+<P><pre class='notranslate'>
+<i>stringAsList: converte string em lista de caracteres</i>
+    let cut s = (String.get s 0, String.sub s 1 ((String.length s)-1)) ;;
+    let rec stringAsList s =
+        if s = "" then []
+        else
+            let (x,xs) = cut s in
+                x::<U>stringAsList xs</U>
+    ;;
+
+<i>sortList: ordena lista</i>
+    let rec insOrd v l =
+        match l with
+            [] -> [v]
+          | x::xs ->
+              if v &lt;= x then v::x::xs
+              else x::<U>insOrd v xs</U>
+    ;;
+    let rec sortList l =
+        match l with
+            [] -> []
+          | x::xs ->
+              insOrd x (<U>sortList xs</U>)
+    ;;
+</pre>
+
+<HR><h1>Funções de categoria 2</h1>
+
+<p>As <B>funções de categoria 2</B> são programadas usando o método indutivo e caracterizam-se pelas duas seguintes propriedades:
+<ul>
+<li>Os argumentos das chamadas recursivas são subpadrões dos padrões que representam os argumentos da função.
+<li>Fogem aos esquemas rígidos das funções de categoria 1.
+</ul>
+
+<p><b>Orientação prática</b>: Quando se tenta escrever uma função de categoria 1, por vezes descobre-se que é necessário ou conveniente fazer alguns pequenos ajustamentos ao esquema rígido de base. Desta forma somos levados a inventar uma função de categoria 2. O PONTO DE PARTIDA PARA COMEÇAR A RACIOCINAR envolve um pouco de descoberta mas, em geral, é fácil de descobrir esse ponto de partida pois os argumentos das chamadas recursivas são subpadrões dos padrões que representam os argumentos da função.
+
+
+<p>Exemplos de funções de categoria 2: maxList, fall, fib.
+
+<p>Mais exemplos de funções de categoria 2:
+
+<pre class='notranslate'>
+<i>halfHalf: reparte os elementos duma lista por duas listas, alternadamente</i>
+<i>     (esta versão é programada com base na ideia de processar os elementos da lista dois a dois)</i>
+    let rec halfHalf l =
+        match l with
+            [] -> ([],[])
+          | [x] -> ([x],[])
+          | x::y::xs ->
+                let (us,vs) = <U>halfHalf xs</U> in
+                    (x::us, y::vs)
+    ;;
+
+<i>addEvenPos: soma todos os elementos duma lista que estão em posições de índice par (0, 2, 4, ...)</i>
+    let rec addEvenPos l =
+        match l with
+            [] -> 0
+          | [x] -> x
+          | x::_::xs ->
+                x + <U>addEvenPos xs</U>
+    ;;
+</pre>
+
+<HR><h1>Funções de categoria 3</h1>
+
+<p>As <B>funções de categoria 3</B> são programadas usando o método indutivo e caracterizam-se pelas seguinte propriedade:
+<ul>
+<li>A chamada recursiva envolve expressões que <i>não são</i> subpadrões dos padrões que representam os argumentos da função. As expressões que constituem os argumentos da chamada recursiva são <i>calculados</i>.
+</ul>
+
+<p><b>Orientação prática</b>: As funções de categoria 3 surgem geralmente quando se tenta resolver um problema aplicando uma estratégia previamente pensada, em vez de se tentar encontrar uma solução baseada nos esquemas predefinidos que caracterizam as funções de categoria 1.
+
+<p><b>Precaução</b>: Programar uma função de categoria 3 em vez duma de categoria 1 ou 2 significa, quase sempre, <b>complicar desnecessariamente</b>. Além disso, as funções de categoria 3 são mais difíceis de perceber do que as funções de categoria 1 ou 2. Em todo o caso, ocasionalmente surge uma boa razão para se escrever uma função de categoria 3: por exemplo, o aumento da eficiência (se for caso disso, porque por vezes a função fica menos eficiente).
+
+<p>Exemplo de função de categoria 3:
+<pre class='notranslate'>
+<i>quickSort: ordena lista eficientemente (reduz-se o tratamento de
+              uma lista ao tratamento de duas secções dessa lista)</i>
+    let rec partition p l =
+        match l with
+            [] -> ([],[])
+          | x::xs ->
+               let (a,b) = partition p xs in
+                   if x &lt;= p then (x::a,b) else (a, x::b)
+    ;;
+    let rec quickSort l =
+        match l with
+            [] -> []
+          | x::xs ->
+               let (us,vs) = partition x xs in
+                   (<U>quickSort us</U>) @ [x] @ (<U>quickSort vs</U>)
+    ;;
+
+<i>minSort: ordena lista usando o algoritmo de seleção direta</i>
+    let rec removeFromList v l =
+        match l with
+            [] -> []
+          | x::xs ->
+                 if x = v then xs
+                 else x::removeFromList v xs
+    ;;
+    let rec minList l =
+        match l with
+            [x] -> x
+          | x::xs -> min x (minList xs)
+    ;;
+    let rec minSort l =
+        match l with
+            [] -> []
+          | list ->
+              let m = minList list in
+                  m::<U>minSort (removeFromList m list)</U>
+    ;;
+</pre>
+
+A função <tt class='notranslate'>quickSort</tt> permite ganhar eficiência. Já a função <tt class='notranslate'>minSort</tt> é muito mais complicada do que a função de categoria 1 <tt class='notranslate'>sortList </tt> e não é mais eficiente.
+
+
+<HR><h1>Funções de categoria 4</h1>
+
+Uma <B>função de categoria 4</B> é uma função não recursiva que se define à custa de funções auxiliares de categoria 1, 2, ou 3.
+
+<p><b>Orientação prática</b>: Existem problemas que não podem ser resolvidos diretamente usando o método indutivo. Nestes casos surge a necessidade de escrever uma função de categoria 4. Quase sempre é  preciso inventar um novo problema que já se consiga resolver usando o método indutivo e que ajude a resolver o problema original.
+
+
+<p>Exemplos de funções de categoria 4:
+<pre class='notranslate'>
+<i>prime: determina de um inteiro é ou não primo</i>
+
+    let rec hasDiv n a z =
+        if a > z  then false
+        else (n mod a = 0) or (hasDiv n (a+1) z)
+    ;;
+    let prime n =
+       n > 1 && not (hasDiv n 2 (n-1))
+    ;;
+
+<i>width: determina a largura duma árvore binária</i>
+
+    type 'a tree = Nil | Node of 'a * 'a tree * 'a tree ;;
+
+    let rec maxList l =
+        match l with
+            [x] -> x
+          | x::xs -> max x (maxList xs)
+    ;;
+    let rec sumLists l1 l2 =
+        match l1,l2 with
+            [],l -> l
+          | l,[] -> l
+          | x::xs, y::ys -> (x+y)::sumLists xs ys
+    ;;
+    let rec levels t =
+        match t with
+            Nil -> []
+          | Node(x,l,r) -> 1::sumLists (levels l) (levels r)
+    ;;
+    let width t =
+         if t = Nil then 0
+         else maxList (levels t) ;;
+</pre>
+
+Os dois problemas anteriores não são indutivos. Porquê?
+
+<p>
+<HR><HR>
+#100

@@ -1,0 +1,501 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 04 (15/mar/2018)</H2>
+
+Tipos soma (uniões). Os tipos somas árvore binária e árvore n-ária.
+
+<br>Padrões. Padrões disjuntos. Emparelhamento de padrões.
+<p>
+
+<HR>
+
+<HR><h1>Tipos soma (uniões)</h1>
+
+Muitas linguagens de programação incluem uma construção específica para a definição de tipos cujos valores podem assumir <b>diferentes variantes</b>, disjuntas entre si. Essa construção designa-se genericamente por <b>tipo soma</b>.
+
+<P>Por exemplo, numa linguagem com suporte para tipos soma é possível definir um tipo de dados <i>cshape</i>, para representar formas geométricas coloridas cujos valores podem assumir as três seguintes variantes: <i>Line</i>, <i>Circle</i> e <i>Rect</i>.
+
+<P> Um tipo soma permite conciliar o <b>geral</b> com o <b>particular</b>. Por um lado os elementos das variantes <i>Line</i>, <i>Circle</i> e <i>Rect</i> são formas geométricas coloridas com algumas propriedades comuns: no mínimo todas têm um cor! Por outro lado são variantes, cada uma delas com dados específicos associados: um círculo tem um centro e um raio, uma linha tem dois pontos extremos, etc.
+
+<p>Os tipos soma do Pascal chamam-se <i>registos com variante</i>.
+<br>Os tipos soma do C são as <i>uniões</i>.
+<br>Os tipos soma do Java, Smalltalk e C++ são as <i>classes abstratas</i> (imagine uma classe abstrata <i>cshape</i> com três subclasses concretas <i>Line</i>, <i>Circle</i> e <i>Rect</i>). [Em rigor, as classes abstratas são um bocadinho diferentes dos tipos soma: os tipos soma são entidades fechadas enquanto que as classes abstratas são extensíveis.]
+<p>Como é em OCaml?
+
+
+<h2>Tipos soma em OCaml</h2>
+
+Para exemplificar, o tipo soma <tt class='notranslate'>cshape</tt> atrás referido pode ser definido em OCaml da seguinte forma, usando os tipos auxiliares color e point:
+<ul><pre class='notranslate'>
+type color = int ;;
+type point = float*float ;;
+
+type cshape = Line of color*point*point
+            | Circle of color*point*float
+            | Rect of color*point*point ;;
+</pre></ul>
+
+Repare que o nome dos tipos definidos pelo utilizador começa sempre por letra minúscula e o nome de cada variante começa sempre por letra maiúscula. Chamam-se <b>etiquetas</b>, aos nomes das variantes.
+
+<p>Continuando a usar o mesmo exemplo, vejamos agora quais são os mecanismos essenciais para escrever e manipular valores de tipos soma.
+
+
+<p><b>Literais</b>:  Eis dois literais de tipo cshape. Repare como o nome de cada variante é usado para marcar os respetivos literais.
+
+<ul><pre class='notranslate'>
+let a = Line (34658, (2.5, 7.8), (-24.005, 1000.0001)) ;;
+let b = Circle (11111, (-24.005, 1000.0003), 3.1233333) ;;
+</pre></ul>
+
+<b>Construção</b>: Por exemplo, a seguinte função cria círculos centrados no ponto zero:
+
+<ul><pre class='notranslate'>
+let zeroCircle c r = Circle (c, (0.0, 0.0), r) ;;
+</pre></ul>
+
+
+<b>Processamento</b>: Eis uma função que calcula a área duma forma colorida. Os elementos de qualquer tipo soma são processados usando emparelhamento de padrões.
+
+<ul><pre class='notranslate'>
+let area cs =
+    match cs with
+        Line   (_, _, _) -> 0.0
+      | Circle (_, _, r) -> 3.14159 *. r *. r
+      | Rect   (_, (tx,ty), (bx,by)) -> abs_float ((bx -. tx) *. (by -. ty))
+;;
+</pre></ul>
+
+Eis uma função que determina o raio duma forma. Só está definida para círculos.
+
+<ul><pre class='notranslate'>
+let radius (Circle (_, _, r)) = r ;;
+</pre></ul>
+
+<h2>Alguns tipos soma predefinidos em OCaml</h2>
+
+<ol>
+<li> O tipo <b>'a list</b> é um tipo soma. Internamente a sua definição assemelha-se a:
+
+<ul><pre class='notranslate'>
+type 'a list = Nil | Node of 'a * 'a list ;;
+</pre></ul>
+
+
+<p><li> O tipo <b>bool</b> também é um tipo soma, internamente é definido da seguinte forma:
+
+<ul><pre class='notranslate'>
+type bool = false | true ;;
+</pre></ul>
+
+O OCaml abre uma exceção neste caso, e permite que o nome das variantes comece por letra minúscula.
+
+<p><li> O tipo <b>'a option</b> é um tipo soma que permite representar o conceito de <b>ausência de valor</b>, em situações que tal possa ser útil. Internamente, é definido assim:
+
+<ul><pre class='notranslate'>
+type 'a option = None | Some of 'a ;;
+</pre></ul>
+</ol>
+
+
+<h2>Os três papéis das etiquetas dum tipo soma</h2>
+As etiquetas dum tipo soma tem três papéis:
+<ul>
+<li>Na definição do tipo, Identificam os vários ramos.
+<li>Denotam os <i>construtores</i> que o sistema cria automaticamente para o tipo em causa. Um <i>construtor</i> é uma função especial que gera valores dum tipo soma. Quando escrevemos Circle(111, (0.0, 0.0), 12.4) estamos a chamar um construtor das nossas formas.
+<li>São elementos constituintes de novos padrões que a linguagem passa a reconhecer automaticamente.
+</ul>
+
+<HR>
+
+<HR><h1>Árvores binárias</h1>
+
+<img src="images/tree.png" align=right>
+
+Em programação, as <a href="http://en.wikipedia.org/wiki/Binary_tree">árvores binárias</a> permitem exprimir informação hierarquizada e permitem organizar dados por forma a aumentar a velocidade de acesso a eles.
+
+<p>O tipo soma <b>árvore binária</b> não está predefinido em OCaml, mas é fácil de definir usando um tipo soma:
+<ul><pre class='notranslate'>
+type 'a tree = Nil | Node of 'a * 'a tree * 'a tree ;;
+</pre></ul>
+
+<b>Literais</b>: Eis uma constante do tipo <tt class='notranslate'>int tree</tt>:
+<ul><pre class='notranslate'>
+let t = Node(1, Node(2,Nil,Nil), Node(3,Nil,Nil)) ;;
+</pre></ul>
+
+<b>Construção</b>: Por exemplo, a seguinte função cria folhas da árvore:
+
+<ul><pre class='notranslate'>
+let makeLeaf v = Node(v, Nil, Nil) ;;
+</pre></ul>
+
+
+<b>Processamento</b>: Eis uma função que determina o número total de nós duma árvore binária:
+
+<ul><pre class='notranslate'>
+let rec size t =
+    match t with
+        Nil -> 0
+      | Node(x,l,r) ->
+            1 + size l + size r
+;;
+</pre></ul>
+
+<p>Eis um exemplo de avaliação duma expressão envolvendo uma chamada da função "size":
+<ul><pre class='notranslate'>
+  size (Node(1, Node(2,Nil,Nil), Node(3,Nil,Nil)))
+= 1 + size (Node(2,Nil,Nil)) + size (Node(3,Nil,Nil))
+= 1 + (1 + size Nil + size Nil) + (1 + size Nil + size Nil)
+= 1 + (1 + 0 + 0) + (1 + 0 + 0)
+= 1 + 1 + 1
+= 3
+</pre></ul>
+
+<h3>Vocabulário relativo a árvores</h3>
+
+<ul>
+<li>Raiz - nó sem ascendentes
+<li>Nó interno - nó diferente da raiz com pelo menos um filho
+<li>Folha - nó sem filhos
+</ul>
+
+<h1>Método indutivo aplicado a árvores binárias</h1>
+
+No caso das árvores binárias, o método indutivo consiste na seguinte técnica:
+<ul>
+<li>Para programar o caso geral G duma função recursiva, assume-se como PONTO DE PARTIDA PARA COMEÇAR A RACIOCINAR que os resultados L, R de aplicar a própria função a argumentos <i>mais simples do que os iniciais</i> (por exemplo às duas subárvores) já se encontram disponíveis. O problema que é então preciso resolver é o seguinte: COMO É QUE A PARTIR DE L E R SE CHEGA A G?
+</ul>
+
+<h2>Exemplo de utilização do método indutivo</h2>
+
+<b>Problema:</b> Programar uma função "size" que determine o número total de nós duma árvore binária:
+
+<P><b>Resolução:</b> A função "size" aplica-se a uma árvore, a qual será, naturalmente, processada usando emparelhamento de padrões. Aplicando o método indutivo ao caso geral "G=Node(x,l,r)", vamos começar por assumir que já temos o problema resolvido para os casos "L=size l" e "R=size r". Obtemos assim o seguinte PONTO DE PARTIDA PARA COMEÇAR A RACIOCINAR:
+
+
+<ul><pre class='notranslate'>
+ let rec size t =
+    match t with
+         Nil ->  ...
+       | Node(x,l,r) ->
+             ... size l ... size r ...
+;;
+</pre></ul>
+
+O problema que temos para resolver é o seguinte: <i>Como é que se obtém o valor de "G=size (Node(x,l,r))" a partir dos valores "L=size l" e "R=size r"?</i> Mas este problema é simples. De facto, basta adicionar uma unidade a L+R para se obter G!
+
+<P>Preenchendo o que falta no esquema anterior, surge a solução final:
+
+<ul><pre class='notranslate'>
+let rec size t =
+    match t with
+        Nil -> 0
+      | Node(x,l,r) ->
+            1 + (size l) + (size r)
+;;
+</pre></ul>
+
+
+<h3>Mais duas funções sobre árvores binárias</h3>
+
+<p>Altura duma árvore:
+
+<ul><pre class='notranslate'>
+(* height: 'a tree -> int *)
+
+let rec height t =
+    match t with
+       Nil -> 0
+     | Node(x,l,r) ->
+           1 + max (height l) (height r)
+;;
+</pre></ul>
+
+<p>Árvore ao espelho:
+
+<ul><pre class='notranslate'>
+(* mirror: 'a tree -> 'a tree *)
+
+let rec mirror t =
+    match t with
+      Nil -> Nil
+    | Node (x,l,r) ->
+           Node (x,mirror r,mirror l) (* o r e l trocam de posição *)
+;;
+</pre></ul>
+
+<HR>
+<HR><h1>Árvores n-árias</h1>
+
+Numa <a href="http://en.wikipedia.org/wiki/Tree_%28data_structure%29">árvore n-ária</a>, cada nó pode ter um número qualquer (ilimitado) de filhos.
+
+<p>O tipo soma <b>árvore n-ária</b> pode definir-se assim em OCaml:
+<ul><pre class='notranslate'>
+type 'a ntree = NNil | NNode of 'a * 'a ntree list ;;
+</pre></ul>
+
+Repare que enquanto numa folha duma árvore binária se usam dois Nil para indicar que não há filhos, numa folha duma árvore n-ária usa-se uma lista vazia para indicar a mesma coisa.
+
+
+<p><b>Literais</b>: Eis uma constante de tipo "int ntree":
+<ul><pre class='notranslate'>
+let nt = NNode(1, [NNode(2,[]); NNode(3,[]); NNode(4,[])]) ;;
+</pre></ul>
+
+<p><b>Construção</b>: Por exemplo, a seguinte função cria folhas:
+
+<ul><pre class='notranslate'>
+let makeLeaf v = NNode(v, []) ;;
+</pre></ul>
+
+
+
+<b>Processamento</b>: A função <tt class='notranslate'>size</tt> determina o número de nós duma árvore n-ária. Note que se usa uma função auxiliar que processa uma lista de árvores.
+
+<ul><pre class='notranslate'>
+(* size: 'a ntree -> int *)
+
+let rec size t =
+    match t with
+        NNil -> 0
+      | NNode(x,cs) -> 1 + lsize cs
+and lsize tl =
+    match tl with
+        [] -> 0
+      | t::ts -> size t + lsize ts
+;;
+</pre></ul>
+
+<p>Esquema geral da utilização do método indutivo no tratamento de árvores n-árias:
+
+<ul><pre class='notranslate'>
+let rec f t =
+    match t with
+        NNil -> ...
+      | NNode(x,cs) -> ... lf cs ...
+and lf tl =
+    match tl with
+        [] -> ...
+      | t::ts -> ... f t ... lf ts ... 
+;;
+</pre></ul>
+
+
+
+
+<p>Árvore ao espelho:
+<ul><pre class='notranslate'>
+(* mirror: 'a ntree -> 'a ntree *)
+
+let rec mirror t =
+    match t with
+        NNil -> NNil
+      | NNode(x,cs) -> NNode(x,lmirror cs)
+and lmirror tl =
+    match tl with
+        [] -> []
+      | t::ts -> lmirror ts @ [mirror t]
+;;
+</pre></ul>
+
+
+<p><b>Invariante</b>: A representação das árvores n-árias é ambígua pois a mesma árvore pode ser apresentada de várias formas. Isto acontece porque ocorrências de <tt>NNil</tt> numa lista de filhos não acrescentam nada de útil. Por exemplo, as seguintes árvores n-árias são equivalentes e representam sempre a mesma folha:
+
+<ul><pre class='notranslate'>
+NNode(5, [])
+NNode(5, [NNil])
+NNode(5, [NNil; NNil])
+NNode(5, [NNil; NNil; NNil])
+</pre></ul>
+
+Para evitar esta ambiguidade, vamos introduzir o seguinte invariante:
+
+<ul>
+<li> O literal <tt>NNil</tt> representa a árvore vazia isolada e proibimos que <tt>NNil</tt> ocorra como parte de outra árvore.
+</ul>
+
+<p> Para ajudar a cumprir o invariante, introduzimos a função auxiliar <tt>ncons</tt>. A função acrescenta uma árvore n-ária à cabeça duma lista de árvores n-árias apenas se a árvore não for vazia:
+
+
+<ul><pre class='notranslate'>
+(* ncons : 'a ntree -> 'a ntree list -> 'a ntree list *)
+
+let ncons t l =
+    if t = NNil then l  (* ignora NNil *)
+    else t::l           (* acrescenta *)
+;;
+</pre></ul>
+
+<p>Um exemplo que usa <tt>ncons</tt>: Eliminar duma árvore <tt>t</tt>, todas as subárvores com um dado valor <tt>v</tt> na raiz:
+<ul><pre class='notranslate'>
+(* delete: 'a -> 'a ntree -> 'a ntree *)
+
+let rec delete v t =
+    match t with
+        NNil -> NNil
+      | NNode(x,cs) -> if x = v then NNil
+                       else NNode(x,ldelete v cs)
+and ldelete v tl =
+    match tl with
+        [] -> []
+      | t::ts -> ncons (delete v t) (ldelete v ts)
+;;
+</pre></ul>
+
+<HR><hr><h1>Padrões</h1>
+Um <b>padrão</b> é uma expressão especial que representa um <b>conjunto de valores</b>. A sintaxe dum padrão fornece geralmente uma boa intuição sobre a estrutura dos valores em causa.
+
+<p>A utilização de padrões torna as funções mais fáceis de escrever e de entender. Os padrões são, portanto, bons amigos do/a programador/a. As linguagens funcionais antigas (e.g. Lisp) não usavam padrões, mas as linguagens funcionais modernas (e.g. OCaml, Haskell) não os dispensam.
+
+<p>Exemplos de padrões:
+   
+<ul><pre class='notranslate'>
+Padrão          Conjunto de valores representados
+~~~~~~          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[]              lista vazia
+[x]             listas com um elemento
+[x;y]           listas com dois elementos
+x::xs           listas não vazias
+x::y::xs        listas com pelo menos dois elementos
+5::xs           listas cujo primeiro elemento é 5
+x               todos os valores (padrão universal)
+_               padrão universal anónimo
+(x,y)           todos os pares ordenados
+(0,y)           todos os pares ordenados cuja 1ª componente é 0
+8               inteiro 8
+(x,y)::xs       lista não vazia de pares ordenados
+'a'..'z'        letras de 'a' a 'z'
+</pre></ul>
+
+Numa expressão <b>match</b> podem ocorrer padrões em número variável. Durante a avaliação, esses padrões são explorados sequencialmente, de cima para baixo.
+
+<p>Por exemplo, o que faz a seguinte função?
+
+<ul><pre class='notranslate'>
+let rec count5 l =
+    match l with
+        <b>[]</b> -> 0
+      | <b>5::xs</b> -> 1 + count5 xs
+      | <b>_::xs</b> -> count5 xs
+;;
+</pre></ul>
+
+E o que faz esta outra função?
+
+<ul><pre class='notranslate'>
+let rec count5x l =
+    match l with
+        <b>[]</b> -> 0
+      | <b>_::xs</b> -> count5x xs
+      | <b>5::xs</b> -> 1 + count5x xs
+;;
+</pre></ul>
+
+<h2>Onde podem ocorrer os padrões?</h2>
+
+Na sintaxe do OCaml, está previsto que os padrões ocorrem nos seguintes contextos:
+
+<ul>
+<li> Atrás das setas das expressões <b>match</b>:
+
+<ul><pre class='notranslate'>
+let rec len l =
+    match l with
+        <b>[]</b> -> 0
+      | <b>_::xs</b> -> 1 + len xs
+;;
+</pre></ul>
+
+<li> No sítio dos argumentos das funções:
+
+<ul><pre class='notranslate'>
+fun <b>(x,y)</b> -> (y,x)
+
+let f <b>(x,y)</b> =
+    (y,x)
+;;
+</pre></ul>
+
+<li> Atrás do sinal de <b>=</b> das expressões <b>let-in</b>:
+
+<ul><pre class='notranslate'>
+let <b>(x,y)</b> = g 0 in
+    x + y
+;;
+</pre></ul>
+</ul>
+
+<h2>Atenção ao contexto!</h2>
+<ul>
+<li> Nos contextos atrás indicados, as expressões são interpretadas como padrões. Por exemplo, num desses contextos, <b>x::xs</b> representa o conjunto de todas as listas não vazias.
+
+<P><li> Fora dos contextos anteriores, as expressões são interpretadas da forma habitual. Por exemplo, fora desses contextos, <b>x::xs</b> representa a aplicação do construtor "cons" aos nomes x e xs.
+</ul>
+
+
+<h2>Padrões disjuntos</h2>
+Dois padrões dizem-se <b>disjuntos</b> se os conjuntos que eles representam são disjuntos. Numa expressão <b>match</b>, a ordem dos casos só é irrelevante se os padrões forem disjuntos entre si.
+
+<p>Exemplos:
+<ul>
+<li>Os dois padrões que ocorrem na função <tt class='notranslate'>len</tt> <b>são disjuntos</b>:
+<ul><pre class='notranslate'>
+let rec len l =
+     match l with
+        <b>[]</b> -> 0
+      | <b>x::xs</b> -> 1 + len xs
+;;
+</pre></ul>
+
+<li>Os dois padrões que ocorrem na função <tt class='notranslate'>fact</tt> <b>não são disjuntos</b>:
+<ul><pre class='notranslate'>
+let rec fact n =
+     match n with
+       <b>0</b> -> 1
+     | <b>n</b> -> n * fact (n-1)
+;;
+</pre></ul>
+</ul>
+
+<h2>Emparelhamento</h2>
+
+Como resultado do <b>emparelhamento dum valor com um padrão</b>, há duas consequências possíveis:
+<ol>
+<li> Falhanço;
+<li> Sucesso, e os nomes que ocorrem no padrão ficam ligados a valores.
+</ol>
+
+<h2>Restrições</h2>
+
+<ul>
+<li> Num padrão, não se permite a repetição de nomes. Por exemplo o padrão <tt class='notranslate'>(x,x)::xs</tt> é inválido.
+<li> Todos os nomes que ocorrem num padrão são considerados nomes novos, mesmo que esses nomes ocorram no ambiente envolvente.
+</ul>
+
+<p>A seguinte função aplica-se a uma lista de pares ordenados, e conta o número de pares com as duas componentes iguais:
+
+<ul><pre class='notranslate'>
+let rec eqPairs l =
+    match l with
+      [] -> 0
+    | (x,y)::xs ->    <i>(* o padrão </i>(x,x)::xs<i> parece melhor, mas seria inválido *)</i>
+         if x=y then 1 + eqPairs xs
+         else eqPairs xs
+;;
+</pre></ul>
+
+<p>A seguinte função aplica-se a uma lista de pares ordenados, e conta o número de pares em que a segunda componente é igual a um valor dado:
+
+<ul><pre class='notranslate'>
+let rec countPairs v l =
+    match l with
+      [] -> 0
+    | (x,y)::xs ->    <i>(* o padrão </i>(x,v)::xs<i> parece melhor, mas não interessa pois contém um </i>v "novo"<i> *)</i>
+         if y=v then 1 + countPairs v xs
+         else countPairs v xs
+;;
+</pre></ul>
+
+<HR><HR>
+#120

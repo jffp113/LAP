@@ -1,0 +1,322 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 6</H2>
+<p>
+Primeiros exercícios sobre a linguagem C. Exercícios de 31 a 35.
+<HR>
+
+<HR><h2>Guião para usar a linguagem C na consola</h2>
+
+<ol>
+<li> Usar um editor de texto qualquer para escrever um ficheiro "test.c"
+<li> Gravar
+<li> cc -o test test.c
+<li> ./test
+</ol>
+
+<HR><h2>Guião para usar a linguagem C dentro do Eclipse</h2>
+
+<ol>
+<li> Ativar Eclipse, escrevendo "eclipse" num consola.
+<li> Window > Open Perspective...  mudar perspetiva para C/C++
+<li> File > New > Project...
+<li> Selecionar "C Project"
+<li> Escrever "Test" e selecionar "Hello World ANSI C Project" e "Linux GCC"
+<li> Fazer "Finish" (ignorar o "Next")
+<li> File > New > Source File
+<li> Dar o nome "Test.c" ao ficheiro
+<li> Escrever o programa no ficheiro "Test.c"
+<li> Ctrl-S (save) para gravar
+<li> Carregar seta branca e verde da barra de tools para compilar e correr o programa.
+<li> Se o programa não correr logo, ir ao menu Project, forçar um build manual, e depois mandar o programa correr por duas vezes na seta verde. Da segunda vez, o programa já corre.
+</ol>
+
+<p> <b>Instalação:</b> Já está instalado nos laboratórios. Para instalar no seu computador pessoal, use o comando do Eclipse "Help>Install New Software...". Na caixa "Work with:" insira "http://download.eclipse.org/tools/cdt/releases/_versao_" e depois escolha apenas "CDT Main features".
+
+<hr>
+
+<!--
+<hr><li>31 - Simplifique tanto quanto for possível as seguintes expressões em C. Não se preocupe com a perda de informação respeitante a efeitos laterais. As variáveis x e y são de tipo int. A alínea a) já está resolvida. 
+
+<ul>
+<li> a) x * ((x>0) - (x&lt;0))   <i>[Solução: abs(x)  ou  (x>0?x:-x)]</i>
+<p><li> b) x * !!x
+<p><li> c) x * ~~x
+<p><li> d) x * !~!x
+<p><li> e) x++ + ++y
+<p><li> f) x = y++
+<p><li> g) x = ++x
+<p><li> h) x = x++   <i>[Solução: resultado indefinido]</i>
+</ul>
+
+-->
+
+<hr><li>31 - Considere a seguinte variável global x e as seguintes funções f e g:
+
+<ul><pre class='notranslate'>
+int x;
+
+int f(int a) { x = a + 1; return x; }
+int g(int a) { x = a - 1; return x; }
+</pre></ul>
+
+Suponha que f e g são usadas num segmento de programa da seguinte forma:
+<ul><pre class='notranslate'>
+...
+x = 10;
+s1 =  f(x) + g(x);
+x = 10;
+s2 = g(x) + f(x);
+</pre></ul>
+
+<p>Quais os valores que ficam em s1 e s2, assumindo que os operandos nas expressões são avaliados da esquerda para a direita. Note que, em geral, os compiladores têm a liberdade de definir a ordem de avaliação ou seja a ordem de avaliação das sub-expressões está indefinida ao nível da linguagem. Isso recomenda que evitemos escrever código do género do que está contido neste exemplo. 
+
+<hr><li>32 - Analise o programa incompleto abaixo. No início, define-se um tipo <tt class='notranslate'>Byte</tt> para representar bytes de memória. Também se define um tipo <tt class='notranslate'>Block</tt> para representar sequências de bytes em memória. A função <tt class='notranslate'>blockZero</tt> inicializa um bloco com zeros, e a função <tt class='notranslate'>blockPrint</tt> mostra o conteúdo dum bloco.
+
+<p>Pedimos-lhe para completar as funções <tt class='notranslate'>blockFill_char_uint_double</tt> e <tt class='notranslate'>blockPrint_char_uint_double</tt>.
+
+<p>A função <tt class='notranslate'>blockFill_char_uint_double</tt> guarda no início dum bloco três valores de diferentes tipos, sem qualquer alinhamento: um char, um unsigned int e um double.
+
+<p>A função <tt class='notranslate'>blockPrint_char_uint_double</tt> extrai e imprime (um por linha) três valores do início dum bloco, com os tipos: char, um unsigned int e um double. 
+
+<p>A função <tt class='notranslate'>main</tt> já está escrita e serve para testar se você escreveu bem as funções anteriores.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+
+#define BLOCK_SIZE 32
+
+typedef unsigned char Byte;
+typedef Byte Block[BLOCK_SIZE]; 
+
+void blockZero(Block b) {
+    int i;
+    for( i = 0 ; i < BLOCK_SIZE ; i++ )
+        b[i] = 0;
+}
+
+void blockPrint(Block b) {
+    int i;
+    for( i = 0 ; i < BLOCK_SIZE ; i++ )
+        printf("%02x ", b[i] & 0xFF);
+    printf("\n");
+}
+
+void blockFill_char_uint_double(Block b, char c, unsigned int i, double d) {
+    Byte *pt = b;
+    <b>// fazer</b>
+}
+
+void blockPrint_char_uint_double(Block b) {
+    Byte *pt = b;
+    <b>// fazer</b>
+    printf("\n");
+}
+
+int main(void) {
+    Block b;
+    blockZero(b); blockPrint(b);
+    blockFill_char_uint_double(b, 'a', ~0, 667.6e-22); blockPrint(b);
+    blockPrint_char_uint_double(b);
+    return 0;
+}
+</pre></table></ul>
+
+<hr><li>33 - Escreva em C um programa introspetivo que olhe para a sua própria pilha de execução e escreva os dados necessários para poder responder às seguintes perguntas:
+
+<ul>
+<li> Em que sentido cresce a pilha de execução na implementação de C que está a usar.
+<li> Por que ordem são empilhados os argumentos das funções.
+<li> Por que ordem são arrumadas as variáveis locais nos registos de activação.
+</ul>
+
+Use o seguinte código como ponto de partida. Vai precisar de usar um apontador.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;stdint.h>
+
+#if defined(__LP64__)
+    typedef uint64_t Word;
+#else
+    typedef uint32_t Word;
+#endif
+typedef Word *Ptr;
+
+void f(Word a1, Word a2, Word a3) {
+    Word local1 = 55555;
+    Word local2 = 66666;
+    Word local3 = 77777;
+    // ...
+}
+
+int main(void) {
+    f(11111, 22222, 33333);
+    return 0;
+}
+</pre></table></ul>
+
+
+<hr><li>34 - Considere novamente o tipo soma Shape apresentado na teórica 11. Desta vez é também oferecido um construtor de pontos e um construtor de linhas.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;math.h>
+#include &lt;stdlib.h>
+
+typedef enum { LINE, CIRCLE, RECTANGLE } ShapeKind ;
+typedef struct { double x, y; } Point;
+typedef struct { Point p1, p2; } Line;
+typedef struct { Point centre; int radius; } Circle;
+typedef struct { Point top_left; double width, height; } Rectangle;
+
+typedef struct {   // Isto é um tipo SOMA, programado com a ajuda duma UNION
+    ShapeKind kind;
+    int color;
+    union {
+        Line line; 
+        Circle circle;
+        Rectangle rectangle; 
+    } u;
+} Shape;
+
+Point point(double x, double y) // construtor de pontos
+{
+    Point p = {x, y};
+    return p;
+}
+
+Shape line(Point p1, Point p2, int color) // construtor de linhas
+{
+    Line l = {p1, p2};
+    Shape s = {LINE, color};
+    s.u.line = l;
+    return s;
+}
+
+int main(void)
+{
+    Shape c = circle(point(0,0), 1, 99);
+    printf("%lf\n", area(c));
+    Shape t = triangle(point(0,0), point(5,10), point(10,5), 99);
+    printf("%lf\n", area(t));
+    return 0;
+}
+</pre></table></ul>
+
+
+<ul>
+<p>a) Escreva os constutores que faltam.
+<p>b) Escreva uma função chamada area para calcular a área duma Shape.
+<p>c) Faça todas as modificações necessárias para adicionar triângulos representados por três vértices. (<a href="http://www.mathopenref.com/coordtrianglearea.html">área do triângulo</a>)
+</ul>
+
+
+<hr><li>35 - Escreva em C um programa avaliador de expressões aritméticas inteiras onde podem ocorrer os operadores + e *. O programa lê uma linha completa da consola, avalia a expressão nela contida e escreve o resultado na consola. Quando testar, não introduza espaços em branco, pois o programa não está preparado para lidar com eles.
+
+<p>Para processar as fórmulas, escreva uma coleção de funções, seguindo a estrutura da gramática LL1 abaixo. Gramáticas LL1, vão ser estudadas em TC. Têm a particularidade de admitirem uma tradução simples à mão para código que implementa um reconhecedor da liguagem em causa. [Este exercício é um simples pretexto para programar em C algo de útil e interessante, num momento em que a matéria sobre esta linguagem apenas começou a ser dada nas teóricas.]
+<ul><pre class='notranslate'>
+S -> E\n
+E -> TX
+X -> +TX | &lambda;
+T -> FY
+Y -> *FY | &lambda;
+F -> I | (E)
+I -> DZ
+Z -> DZ | &lambda;
+D -> 0 | 1 | ... | 8 | 9
+</pre></ul>
+
+O programa já está 80% escrito. Estude o que já está feito, comparando com a gramática, e escreva as três funções que faltam: as funções T, Y e F.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;string.h>
+#include &lt;stdbool.h>
+
+#define MAX_LINE     1000
+
+char line[MAX_LINE];
+int curr;
+
+void error(char *mesg) {
+    fprintf(stderr, "ERROR: %s\n", mesg);
+    exit(1);
+}
+
+bool isDigit(char c) {
+    return '0' &lt;= c && c &lt;= '9';
+}
+
+int D(void) {
+    if( isDigit(line[curr]) ) {
+        int val = line[curr] - '0';
+        curr++;
+        return val;
+    }
+    else error("Expected digit");
+}
+
+int Z(int val) {
+    if( isDigit(line[curr]) )
+        return Z(val * 10 + D());
+    else
+        return val;
+}
+
+int I(void) {
+    return Z(D());
+}
+
+// Faltam T, Y, F
+
+int X(int val) {
+    if( line[curr] == '+' ) {
+        curr++;
+        return X(val + T());
+    }
+    else
+        return val;
+}
+
+int E(void) {
+    return X(T());
+}
+
+int S(void) {
+    int val = E();
+    if( line[curr] != '\0' )
+        error("Texto a mais depois do final da expressão");
+    return val;
+}
+
+int main(void) {
+    for(;;) {
+        printf("> ");
+        fflush(stdout);
+        fgets(line, MAX_LINE, stdin);   // faça "man fgets" para aprender...
+        line[strlen(line)-1] = '\0';
+        curr = 0;
+        printf("%s = %d\n", line, S());
+    }
+}
+</pre></table></ul>
+
+<hr><li>36 - Enriqueça o programa anterior com 26 variáveis mutáveis (use os nomes 'a'..'z') e uma operação de atribuição denotada "=". As variáveis podem receber valores de expressões e as expressões podem conter variáveis. Quando o programa arranca, todas as variáveis começam com o valor zero.
+
+<ul><pre class='notranslate'>
+S -> E\n | =VE\n                // =VE\n adicionado
+E -> TX
+X -> +TX | &lambda;
+T -> FY
+Y -> *FY | &lambda;
+F -> I | V | (E)                // V adicionado
+I -> DZ
+Z -> DZ | &lambda;
+D -> 0 | 1 | ... | 8 | 9
+V -> a | b | ... | y | z        // linha adicionada
+</pre></ul>
+
+<HR><HR>

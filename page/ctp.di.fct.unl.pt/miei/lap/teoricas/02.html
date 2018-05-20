@@ -1,0 +1,355 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 02 (08/mar/2018)</H2>
+Paradigma de programação funcional
+<br>Elementos essenciais da linguagem OCaml.
+<br>Avaliação de expressões em OCaml. 
+<br>Tipos em OCaml. Tipos básicos e tipos estruturados. Inferência de tipos. Funções monomórficas e funções polimórficas. Não há sobreposição.
+<br>Listas. Construtores de listas. Emparelhamento de padrões. Exemplos.
+<p>
+<HR>
+
+
+<hr>
+<br />
+Numa das próximas aulas teóricas (provavelmente na teórica 7) iremos discutir a noção de <b>paradigma de programação</b> em geral e identificar os conceitos de base de alguns paradigmas concretos como o paradigma imperativo e o paradigma orientado pelos objetos.
+
+<p>Para já, eis as características essenciais do...
+
+
+<h1><a href="http://en.wikipedia.org/wiki/Functional_programming">Paradigma de programação funcional</a></h1>
+<ul>
+<li>Os conceitos essenciais deste paradigma, usados para pensar e escrever os programas, são três: <b>função</b>, <b>aplicação</b>, <b>avaliação de expressões</b>.
+<p><li>Uma <b>função</b> é uma entidade que sabe produzir um resultado a partir dos seus argumentos.
+<p><li>A <b>computação</b> consiste na avaliação de expressões onde podem ocorrer aplicações de funções a argumentos. O processo de avaliação envolve múltiplos passos de simplificação chamados <b>reduções</b>. A avaliação termina quando se chega a uma expressão que não pode ser mais simplificada (essa expressão chama-se "resultado").
+<p><li>Neste paradigma não existe a noção de "estado", ou seja não existem "variáveis mutáveis" nem "atribuição". Também não existem ciclos ("iteração"), sendo a recursividade a única forma de obter repetição.
+<p><li>Também não está prevista, por não ser necessária, uma noção de "sequenciação". Ou seja, o paradigma não define por que ordem deve ser executado um programa. O resultado dum programa que termine é sempre o mesmo, independentemente da ordem de execução.
+</ul>
+
+Um pouco mais abaixo, poderá observar alguns exemplos de avaliação de expressões, no contexto da linguagem OCaml.<p>
+
+
+<HR><h1>Linguagem OCaml</h1>
+
+<A HREF="http://caml.inria.fr/pub/docs/oreilly-book/"><img src="images/ocaml_book3.jpg"></A>
+<A HREF="http://books.google.com/books?id=-vQPDXciXUMC"><img src="images/ocaml_book.jpg"></A>
+<A HREF="http://www.amazon.fr/exec/obidos/ASIN/2729604928"><img src="images/ocaml_book2.jpg"></A>
+
+<br>
+<table>
+<tr>
+<td><A HREF="http://gallium.inria.fr/~xleroy/"><img src="images/XavierLeroy.jpg"></a><br><b>Xavier Leroy</b>
+<td><A HREF="http://pauillac.inria.fr/~remy/"><img src="images/DidierRemy.jpg"></a><br><b>Didier Rémy</b>
+<td><A HREF="http://gallium.inria.fr/~doligez/"><img src="images/DamienDoligez.gif"></a><br><b>Damien Doligez</b>
+<td><A HREF="http://www.pps.jussieu.fr/~vouillon/"><img src="images/JeromeVouillon.jpg"></a><br><b>Jérôme Vouillon</b>
+</table>
+
+<h1>Algumas características</h1>
+
+
+<ul>
+
+<li>O OCaml foi desenvolvido no INRIA, a partir de 1991, por Xavier Leroy e Damien Doligez, a que se juntaram Jérôme Vouillon, Didier Rémy e outros em 1996.
+
+<p><li>A linguagem OCaml é uma das muitas linguagens que derivam da linguagem ML.
+[O ML começou por ser a metalinguagem do demonstrador de teoremas LCF, desenvolvido no final dos anos 70 por Robin Milner e outros na University of Edinburgh. Mas o ML evoluiu para passar a ser usado como linguagem de programação"normal". Eis alguns dialetos da linguagem ML: Standard ML, Caml, OCaml, Alice, F#.]
+
+<p><li>O OCaml é uma linguagem onde se unificam os paradigmas funcional, imperativo e orientado pelos objetos. Na nossa cadeira estamos interessados em estudar apenas o fragmento funcional puro da linguagem.
+
+<p><li>Tem um sistema de tipos estático com suporte para polimorfismo e inferência de tipos.
+
+<p><li>As implementações de OCaml colocam um grande ênfase na velocidade de execução. A velocidade costuma ser superior à do C++ para programas orientados pelos objetos.
+
+<p><li>Tipos básicos: caracteres, inteiros, reais, booleanos.
+
+<p><li>Tipos derivados: funções, listas, tuplos, registos, tipos soma.
+
+<p><li>Tem gestão automática de memória (como o Java, mas não o C).
+
+<p><li>Suporte para modularidade e compilação separada.
+
+<p><li>Existe uma biblioteca padrão.
+
+<p><li>A linguagem não tem nenhum normalização oficial, mas a implementação do INRIA funciona como padrão <i>de facto</i>.
+
+<p><li>Usos na industria: <a href="https://ocaml.org/learn/companies.html" target="n">aqui</a>.
+
+</ul>
+
+<hr><h1>Porque vamos trabalhar com a linguagem OCaml?</h1>
+
+Na nossa cadeira, vamos trabalhar com a parte funcional da linguagem OCaml por diversas razões. Eis as principais:
+
+<ul>
+
+<p><li> Ganhar a experiência de usar um novo paradigma de programação (o <b>paradigma funcional</b>) e assim ampliar horizontes e a imaginação.
+
+<p><li> Tomar contacto com uma linguagem cujo sistema de tipos é completamente estático e que suporta inferência de tipos.
+
+<p><li> Ganhar a experiência de usar uma linguagem que disponibiliza um interpretador, além dum compilador.
+
+<p><li> Tomar contacto com o sistema de módulos do OCaml, que é sofisticado e exemplar.
+
+</ul>
+
+
+
+<HR><h1>Elementos essenciais da linguagem OCaml</h1>
+
+
+<ul>
+<li>O OCaml é uma linguagem multiparadigma, mas <b>nesta cadeira vamos usar apenas a sua componente funcional</b>, para aprender o estilo de programação funcional, sem distrações.
+<p><li>Um programa é uma sequência de funções. As funções podem ser recursivas.
+<p><li>São dois os principais mecanismos que podem ser usados na escrita do corpo das funções em OCaml:
+<p><ul>
+<li> <b>APLICAÇÃO</b> (aplicação duma função a argumentos). Ex: <tt class='notranslate'>sqrt 9</tt>
+<P><li> <b>IF-THEN-ELSE</b>. Ex: <tt class='notranslate'>if prime x then x else x/2</tt>
+</ul>
+</ul>
+
+Exemplo de função recursiva que usa os dois mecanismos:
+<ul><pre class='notranslate'>
+  let rec fact x =
+      if x = 0 then 1 else x * fact (x-1)
+  ;;
+</pre></ul>
+
+<p>Para já é tudo! Você já ficou a conhecer o núcleo da linguagem!
+
+<HR><h1>Avaliação de expressões em OCaml</h1>
+
+A ideia de <b>avaliação</b> está no centro do processo de execução de programas funcionais. Merece pois a nossa melhor atenção.
+
+<P>Em OCaml as expressões são avaliadas usando uma estratégia chamada <i>call-by-value</i>: uma funções só é aplicada aos seus argumentos depois de eles terem sido avaliados (ou, mais simplesmente, uma função só pode ser aplicada a valores). Esta é a estratégia usada na maioria das linguagens incluindo: Java, C, C++, Pascal, etc.
+
+<P>Exemplo de avaliação que termina e usa três reduções:
+
+<pre class='notranslate'>
+        (fun x -> x+1)(2+3)
+        = (fun x -> x+1)5
+        = 5+1
+        = 6
+</pre>
+
+<P>Exemplo de avaliação que não termina:
+
+<P>Considere a função <tt class='notranslate'>loop</tt>.
+
+<ul><pre class='notranslate'>
+let rec loop x = loop x ;;
+</pre></ul>
+
+Avaliação:
+
+<ul><pre class='notranslate'>
+(fun x -> 5)(loop 3)
+= (fun x -> 5)(loop 3)
+= (fun x -> 5)(loop 3)
+= (fun x -> 5)(loop 3)
+= ...  não termina
+</pre></ul>
+
+<P>Agora, mais uma avaliação que termina. Considere a função <tt class='notranslate'>fact</tt>, assim definida:
+
+<ul><pre class='notranslate'>
+  let rec fact x =
+      if x = 0 then 1 else x * fact (x-1)
+  ;;
+</pre></ul>
+
+Avaliação com 7 reduções:
+
+ </pre></ul><ul><pre class='notranslate'>
+  fact 3 =
+  = 3 * fact 2
+  = 3 * (2 * fact 1)
+  = 3 * (2 * (1 * fact 0))
+  = 3 * (2 * (1 * 1))
+  = 3 * (2 * 1)
+  = 3 * 2
+  = 6
+</pre></ul>
+
+
+
+<HR>
+
+<HR><h1>Tipos em OCaml</h1>
+Um <b>tipo</b> representa uma coleção de valores e tem associados um conjunto de <b>literais</b> e um conjunto de <b>operações</b>. Recordemos que um literal é uma expressão que não precisa de ser avaliada e denota um valor particular.
+
+<p>Para descrever um tipo precisamos pois de dizer quais são os valores, os literais e as operações.
+
+<h2>Tipos básicos do OCaml</h2>
+<ul><pre class='notranslate'>
+<b>TIPO            LITERAIS        OPERAÇÕES MAIS USADAS</b>
+
+int             5 -456          + - * / mod min_int max_int int_of_float
+float           3.14e-21        +. -. *. /. sqrt exp log sin ceil floor float_of_int
+string          "" "ola"        ^ String.length String.sub String.get
+bool            false true      not || &&
+char            'a' '$'         int_of_char char_of_int
+unit            ()              ignore
+</pre></ul>
+
+<h2>Tipos compostos do OCaml</h2>
+<ul><pre class='notranslate'>
+<b>TIPO           LITERAIS         OPERAÇÕES MAIS USADAS</b>
+
+'a->'b         (fun x -> x+1)   aplicação
+'a*'b          (5, 5.6)         fst snd <i>emparelhamento de padrões</i>
+'a list        [] [3;5;7]       <i>emparelhamento de padrões</i>
+tipos produto  <i>diversos</i>         . <i>emparelhamento de padrões</i>
+tipos soma     <i>diversos</i>         <i>emparelhamento de padrões</i>
+</pre></ul>
+
+<h2>Inferência de tipos</h2>
+O tipo dos argumentos e do resultado das funções não se declaram em OCaml. A implementação faz <b>inferência de tipos</b>: ela infere para cada função o tipo mais geral que é possível atribuir a essa função.
+
+
+<P>Qual o tipo das seguintes funções anónimas?
+
+<ul><pre class='notranslate'>
+fun x -> x+1                       : int -> int
+fun x -> x +. 1.0                  : float -> float
+fun x -> x ^ x                     : string -> string
+fun (x,y) -> x + y                 : (int * int) -> int
+fun (x,y) -> (y,x)                 : ('a*'b) -> ('b*'a)
+fun x y -> (x,y)                   : 'a -> 'b -> ('a*'b)
+fun x y z -> (x,y,z)               : 'a -> 'b -> 'c -> ('a*'b*'c)
+</pre></ul>
+
+As quatro primeiras funções dizem-se <b>monomórficas</b> porque só aceitam argumentos de tipos fixos.<br>
+A duas últimas funções dizem-se <b>polimórficas</b> pois aceitam argumentos de tipos diversos.<br>
+De todas estas funções, as duas últimas são as únicas que aceitam mais do que um argumento.<br>
+O tipo duma função com n argumentos tem sempre n setas no nível exterior. A explicação disto será estudada mais tarde.
+
+<p>No caso duma função pouco complicada, o programador de OCaml deverá saber olhar para ela e deduzir o seu tipo. O primeiro exercício da prática 2 é dedicado a este assunto.
+
+
+
+<h2>Não há sobreposição (overloading)</h2>
+A linguagem OCaml não suporta sobreposição (overloading) de nomes ou operadores. Sobreposição é incompatível com inferência de tipos.
+
+<P>Por exemplo, em OCaml o seguinte operador denota apenas a soma inteira
+
+<ul><pre class='notranslate'>
++
+</pre></ul>
+
+e o seguinte operador denota apenas a soma real
+
+<ul><pre class='notranslate'>
++.
+</pre></ul>
+
+<P>Para contraste, as linguagens C, C++ e Java suportam sobreposição. Por exemplo, em Java o operador "+" denota três operações distintas: soma de inteiros, soma de reais, concatenação de strings.
+
+<h2>Operadores</h2>
+
+Para alguns dos operadores mais usados em OCaml, eis uma tabela de correspondência entre o OCaml e o Java:
+<ul><pre class='notranslate'>
+<b>OCaml       Java</b>
+  &&         &&
+  ||         ||
+  not        !
+  mod        %
+  =          ==
+  &lt;>         !=
+  +          +
+  +.         +
+  ^          +
+  -          -
+  -.         -
+</pre></ul>
+
+
+<h2>Comentários</h2>
+<ul><pre class='notranslate'>
+(* Escrevem-se assim *)
+</pre></ul>
+
+
+
+<HR><HR><h1>Listas homogéneas em OCaml</h1>
+
+O tipo <b>lista</b>, é um tipo estruturado muito usado em OCaml. Na 2ª aula prática vamos começar já a resolver problemas com listas.
+
+<p>Apresentam-se aqui os três elementos essenciais das listas em OCaml:
+<ul>
+<li>como se escrevem listas literais;
+<li>como se constroem novas listas a partir de listas mais simples;
+<li>como se analisam listas e se extraem os seus elementos constituintes.
+</ul>
+
+<h2>Listas literais</h2>
+Exemplos de listas literais:
+<ul><pre class='notranslate'>
+[]                                : 'a list
+[2;4;8;5;0;9]                     : int list
+["ola"; "ole"]                     : string list
+[[1;2]; [4;5]]                    : int list list
+[(fun x -> x+1); (fun x -> x*x)]  : (int->int) list
+</pre></ul>
+
+<h2>Construtores de listas</h2>
+Estão disponíveis dois construtores de listas que, como o nome indica, servem para construir listas novas:
+<ul><pre class='notranslate'>
+[] : 'a list
+:: : 'a -> 'a list -> 'a list
+</pre></ul>
+<ul>
+<li>O construtor <tt class='notranslate'>[]</tt> chama-se "lista vazia" e representa a lista vazia.
+<li>O construtor <tt class='notranslate'>::</tt> chama-se "cons" e serve para construir listas não vazias.
+</ul>
+
+O operador :: é associativo à direita.
+
+<p> Exemplos de utilização de <tt class='notranslate'>cons</tt>:
+<ul><pre class='notranslate'>
+2::[3;4;5] = [2;3;4;5]
+1::2::3::[] = [1;2;3]
+[]::[] = [[]]
+[1;2]::[3;4] = <i>ERRO</i>
+4::5 = <i>ERRO</i>
+[1;2]::[[3;4;5]] = [[1;2];[3;4;5]]
+</pre></ul>
+
+<h2>Processamento de listas usando emparelhamento de padrões</h2>
+O processamento de listas efetuar-se por <i>análise de casos</i>, usando a construção <b>match</b> e <i>padrões</i>. Exemplo:
+<ul><pre class='notranslate'>
+(* len : 'a list -> int *)
+
+let rec <b>len l</b> =
+    match l with
+        [] -> 0
+      | x::xs -> 1 + <b>len xs</b>
+;;
+</pre></ul>
+
+<p>A função anterior trata dois casos, cada um dos quais tem um padrão diferente associado. Os vários casos são analisados sequencialmente, de cima para baixo.
+
+<p>Mais um exemplo. A seguinte função aplica-se a uma lista de pares ordenados e troca entre si as componentes de cada par:
+
+<ul><pre class='notranslate'>
+(* swapPairs : ('a * 'b) list -> ('b * 'a) list *)
+
+let rec <b>swapPairs l</b> =
+    match l with
+      [] -> []
+    | (x,y)::xs -> (y,x)::<b>swapPairs xs</b>
+;;
+</pre></ul>
+
+Na próxima aula estudaremos um método sistemático que nos ajudará a escrever funções recursivas sobre listas.
+
+<p>Em todo o caso, o princípio presencial é o seguinte:
+
+<ul>
+<li>A programação é feita, tentando deliberadamente fazer a redução do problema original a uma versão mais simples do mesmo problema, geralmente envolvendo a cauda da lista. Repare que isso foi feito nas duas funções anteriores.
+</ul>
+
+
+
+<HR><HR>
+#120

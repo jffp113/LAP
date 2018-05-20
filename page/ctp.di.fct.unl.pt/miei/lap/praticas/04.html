@@ -1,0 +1,252 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 4</H2>
+<p> Módulos. Input/output. Interação com o utilizador. Exercícios 28 e 29.
+<HR>
+
+
+<hr><li>28 - Desenvolva em OCaml um módulo chamado <tt class='notranslate'>BinTree</tt> onde sejam representadas e manipuladas <b>árvores binárias de inteiros</b>.
+
+<p>O nome do tipo exportado deve ser
+
+<pre class='notranslate'><ul>tree</ul></pre>
+
+<p>A representação interna deve ser a seguinte:
+<pre class='notranslate'><ul>type tree = Nil | Node of int * tree * tree ;;</ul></pre>
+O módulo deve ser fechado ou seja deve ocultar a representação interna das árvores e das funções auxiliares (se houver). Repare que internamente se poderia usar representações diferentes: por exemplo árvores n-árias em que se guardava em cada nó interno apenas duas sub-árvores.
+
+<p>Eis a lista de funções públicas pretendidas. Tente fazer as primeiras quatro durante a aula.
+
+<pre class='notranslate'><ul><li>make : int list -> tree           (* Cria uma árvore com os elementos da lista, alinhados para a direita  *)
+<li>max : tree -> int                 (* Determina o valor maior que ocorre numa árvore *função parcial) *)
+<li>load : string -> tree             (* Carrega uma árvore a partir dum ficheiro de texto *)
+<li>store : string -> tree -> unit    (* Escreve uma árvore num ficheiro de texto *)
+<li>show : tree -> unit               (* Mostra uma árvore na consola *)
+</ul></pre>
+
+<p>Exemplos:
+<pre class='notranslate'>
+    make [1;2;3] = Node (1, Nil, Node (2, Nil, Node (3, Nil, Nil)))
+    max (make [1;2;3]) = 3
+</pre>
+
+<h4>Representação das árvores em ficheiro e no ecrã</h4>
+
+Considere a seguinte árvore:
+
+<p><img src="images/tree.png">
+
+<p>A função <tt>store</tt> escreve no ficheiro, primeiro a raiz, depois a sub-árvore esquerda, depois a sub árvore direita. A árvore vazia é escrita como "-".
+
+<pre class='notranslate'><ul>2
+7
+2
+-
+-
+6
+5
+-
+-
+11
+-
+-
+5
+-
+9
+4
+-
+-
+-
+</ul></pre>
+
+A função <tt>show</tt> apresenta na consola a árvore da forma abaixo, usando indentação. A informação que resulta da indentação permite omitir a escrita dos dois "-", no caso das folhas.
+
+<pre class='notranslate'><ul>2
+  7
+    2
+    6
+      5
+      11
+  5
+    -
+    9
+      4
+      -
+</ul></pre>
+
+
+<h4>Como criar o módulo "BinTree" no Eclipse</h4>
+
+<ul>
+<li> <tt class='notranslate'>Project > Automatic Build</tt>  - Confirme que esta opção está ativa.
+<li> <tt class='notranslate'>File > New > OCaml Project (ocamlbuild)</tt>  - crie um projeto novo chamado "Aula4".
+<li> <tt class='notranslate'>File > New > Module  "BinTree"</tt>  - cria o ficheiro BinTree.ml.
+<li> <tt class='notranslate'>Project > Properties > Project</tt> ... escrever na primeira caixa "BinTree.byte", e fazer OK.
+<li> O módulo, mesmo que vazio, já ficou compilado e internamente foram gerados os ficheiros "BinTree.cmi" e "BinTree.cmo" (não se observam, mas estão lá).
+<li>Escreva o código do módulo BinTree.ml. Para já, trata-se dum modulo aberto.
+<li> Agora, para ocultar a representação da árvore num módulo fechado, use o botão da direita do rato sobre a janela BinTree.ml e escolha o comando <tt class='notranslate'>Generate interface</tt>. O ficheiro "BinTree.mli" é criado. Neste ficheiro, altere a definição do tipo tree para este ficar opaco e faça "Save" para o módulo ser recompilado.
+<li> Para carregar o módulo BinTree fechado no interpretador, use o botão da direita do rato sobre a janela BinTree.ml e escolha o comando <tt class='notranslate'>Load in Top Level</tt>.
+<li> Experimente as seguintes expressões no Ocaml Toplevel, por exemplo usando da forma habitual a tecla F6:
+<ul><pre class='notranslate'>
+open BinTree ;;
+make [1;2;3;4;5] ;;
+- : BinTree.tree = &lt;abstr>
+</pre></ul>
+</ul>
+
+<h4>Como criar o módulo "BinTree" usando a consola</h4>
+
+<ul>
+
+<li> Use um editor de texto para criar os ficheiros BinTree.ml e BinTree.mli.
+
+<li> Compile o módulo BinTree assim
+
+<pre class='notranslate'><ul>ocamlc -c BinTree.mli BinTree.ml
+</ul></pre>
+
+e são gerados os ficheiros BinTree.cmi e BinTree.cmo.
+
+<li> Experimente na consola:
+
+<ul><pre class='notranslate'>
+$ ocaml
+        Objective Caml version 3.12.1
+
+# #load "BinTree.cmo" ;;
+# open BinTree ;;
+# make [1;2;3;4;5] ;;
+- : BinTree.tree = &lt;abstr>
+</pre></ul>
+</ul>
+
+<hr><li>29 -   Desenvolva um programa interativo e <b>standalone</b> que afixe no ecrã dados obtidos a partir de ficheiros contendo árvores de inteiros. Use o módulo desenvolvido no exercício anterior. Chamamos <b>ficheiro com árvore</b> a um ficheiro de texto que contém uma árvore no formato descrito no exercício anterior.
+
+<p>Os comandos que o programa deve suportar são os seguintes:
+<ul>
+<li>mostra <i>fich</i> - mostra a árvore do ficheiro <i>fich</i> na consola (usando <tt class='notranslate'>load</tt> e <tt class='notranslate'>show</tt>);
+<li>maximo <i>fich</i> - mostra qual o maior valor que ocorre na árvore do ficheiro <i>fich</i>;
+<li>ajuda - apresenta a lista de comandos disponíveis;
+<li>sair - abandona o programa.
+</ul>
+
+<h4>O que é um programa standalone?</h4>
+
+É um programa OCaml concebido para ser compilado e para funcionar com independência do interpretador <tt class='notranslate'>ocaml</tt>. Depois de compilado, um programa standalone pode ser invocado diretamente a partir do prompt do Unix, tal como outro programa qualquer. Quem usar o programa não sabe se ele foi escrito em OCaml, Java, C, ou C++, etc.
+
+<p>Um programa standalone define-se como uma sequência de funções terminada pela chamada duma função que se designa por <i>função principal</i> (muitas vezes dá-se o nome de <tt class='notranslate'>main</tt> à função principal). Um programa standalone tem  a responsabilidade de gerir todo o seu input e output, pois não tem o interpretador <tt class='notranslate'>ocaml</tt> a ajudar.
+
+<h4>Como gerar o programa standalone "Main" no Eclipse</h4>
+
+Relativamente ao que já se fez antes, fazer adicionalmente:
+
+<ul>
+
+<li> <tt class='notranslate'>File > New > Module   "Main"</tt>  - cria o ficheiro Main.ml.
+<li> Escreva o conteúdo do ficheiro Main.ml.
+<li> <tt class='notranslate'>Project > Properties > Project</tt> ... apague o que está na primeira caixa, escrever "Main.byte", e fazer OK.
+<li> Para correr o programa, use o botão da direita do rato sobre Main.byte e escolher:
+<pre class='notranslate'><ul>Run As > Ocaml Executable
+</ul></pre>
+
+</ul>
+
+
+<h4>Como gerar o programa standalone "Main" na consola</h4>
+
+<ul>
+<li> Usar um editor de texto para criar os ficheiros BinTree.mli, BinTree.mlie Main.ml.
+<li> Para compilar e gerar o executável, use o comando (a ordem dos argumentos é importante):
+<pre class='notranslate'><ul>ocamlc -o Main BinTree.mli BinTree.ml Main.ml
+</ul></pre>
+<li> Para correr o programa:
+<pre class='notranslate'><ul>./Main
+</ul></pre>
+
+
+</ul>
+
+
+<h4>Ajuda</h4>
+
+A maior parte deste exercício já está feito. Estude-o, para aprender a organizar um programa interativo em ML, e complete-o. Falta só terminar a função <tt class='notranslate'>exec</tt>.
+
+<p>Note que a função <tt class='notranslate'>split</tt> é um exemplo de aplicação do método indutivo a strings. A chamada recursiva é sobre o argumento <tt class='notranslate'>xs</tt>, que representa a "cauda" da string.
+
+<ul><pre class='notranslate'>
+open BinTree ;;  (* Abre o modulo das árvores *)
+
+(* Método indutivo aplicado a strings. A função cut "separa a cabeça da cauda", numa string. *)
+let cut s =  (* pre: s <> "" *)
+    (String.get s 0, String.sub s 1 ((String.length s)-1))
+;;
+(* Método indutivo aplicado a strings. A função join adiciona um char à cabeça numa string. *)
+let join x xs =
+    (Char.escaped x)^xs
+;;
+let rec split s =                      (* parte a string s no primeiro ' ' e produz um par ordenado de strings *)
+    if s = "" then ("", "")            (* primeiro caso base *)
+    else
+      let (x,xs) = cut s in            (* separa cabeça da cauda *)
+         if x = ' ' then ("", xs)      (* segundo caso base *)
+         else let (a,b) = split xs in  (* caso geral - chamada recursiva para a cauda *)
+             (join x a, b)
+;;
+let help () =
+    print_string "Comandos válidos:\n" ;
+    print_string "    mostra fich\n" ;
+    print_string "    maximo fich\n" ;
+    print_string "    ajuda\n" ;
+    print_string "    sair\n"
+;;
+let byeBye () =
+    print_string "Até à vista!\n";
+    exit 0
+;;
+let exec comm filename = (* falta apenas completar esta funcao *)
+    match comm with
+        "mostra" -> ()
+      | "maximo" -> ()
+      | "ajuda" -> help ()
+      | "sair" -> byeBye ()
+      | _ -> help ()
+;;
+let error mesg =
+    output_string stderr mesg ;
+    output_string stderr "!\n" ;
+    flush stderr
+;;
+let rec main () = (* ciclo de interpretacao *)
+    (try
+        print_string "> " ;
+        let line = read_line () in
+            let (comm, fileName) = split line in
+               exec comm fileName
+    with
+       End_of_file -> byeBye ()
+     | Sys_error str -> error str
+     | _ -> error "Erro") ;
+    main ()
+;;
+
+main () ;; (* Esta linha faz o programa começar a correr aqui *)
+</pre></ul>
+
+<hr><li>30 -
+<p>
+a) Escreva uma função indutiva
+<pre class='notranslate'>
+    countEmpty: string -> int
+</pre>
+
+que, dado o nome dum ficheiro, conte o número de linhas vazias (linhas com zero caracteres) nesse ficheiro.
+<p>
+b) Escreva uma função indutiva
+<pre class='notranslate'>
+    clear: string -> string -> int
+</pre>
+que, dados os nomes dum ficheiro de entrada e dum ficheiro de saída, copie o primeiro ficheiro para o segundo, mas omitindo as linhas vazias (linhas com zero caracteres). A função deve ainda retornar o número de linhas vazias que forem omitidas durante a cópia.
+
+<p>
+<HR><HR>

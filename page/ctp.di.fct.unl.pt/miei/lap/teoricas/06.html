@@ -1,0 +1,338 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 6 (22/mar/2018)</H2>
+Efeitos laterais em OCaml. Motivação do tipo "unit" e do operador ";".
+<br>Input/Output em OCaml. Utilização do método indutivo na programação de funções sobre ficheiros.
+<br>Introdução aos módulos em OCaml.
+<p>
+<HR>
+
+
+<HR><h1>Efeitos laterais</h1>
+
+O OCaml usa um modelo de input/output imperativo, no qual as operações de input/output são tratadas como <i>efeitos laterais</i>.
+
+<p>O que é um <b>efeito lateral</b>?  Um <i>efeito lateral</i> é qualquer atividade que uma função desenvolva para além de calcular um resultado a partir dos argumentos. Por exemplo:
+
+<ul>
+<li> Escrever num ficheiro.
+<li> Escrever no ecrã do computador.
+<li> Ler dum ficheiro.
+</ul>
+
+Como sabemos, no paradigma funcional é suposto uma função limitar-se a calcular um resultado a partir dos seus argumentos. O facto é que a linguagem OCaml ultrapassa os limites estritos do paradigma funcional, já que admite efeitos laterais nas funções. 
+
+<h2>Operador de sequenciação</h2>
+<p>Para sequenciar os efeitos laterais, o OCaml dispõe dum <i>operador de sequenciação</i> que se escreve ";" (como em Pascal!). Assim, por exemplo, para escrever no ecrã a string "ola", e logo a seguir a string "ole" usamos a seguinte função:
+<pre class='notranslate'>
+    let hello () =
+        print_string "ola" ; print_string "ole"
+    ;;
+</pre>
+
+Tecnicamente, ";" é o nome duma função com o seguinte tipo:
+<pre class='notranslate'>
+    ";": unit -> 'b -> 'b
+</pre>
+e a seguinte definição usada internamente pelo OCaml:
+<pre class='notranslate'>
+    ";" x y = y ;;
+</pre>
+
+<h2>Tipo unit e valor ()</h2>
+
+Havendo efeitos laterias em OCaml, faria sentido definir funções sem argumentos ou sem resultados. Mas o OCaml não o permite, pois obriga todas as funções a ter argumentos e um resultado. O tipo <b>unit</b> foi inventado para ser usado nessas situações.
+
+<p>O tipo <b>unit</b> é um tipo básico com apenas um valor, que se escreve <b>()</b>. Para comparação, note que o tipo <b>bool</b> é um tipo com apenas dois valores, que se escrevem <b>true</b> e <b>false</b>. Por seu lado, o tipo <b>void</b> do C é um tipo sem valores e por isso não resolveria o nosso problema em OCaml.
+
+<p>Exemplos de utilização de unit e ().
+<pre class='notranslate'>
+<i>    print_string: string -> unit
+    read_int: unit -> int
+    print_newline: unit -> unit</i>
+
+    let x = read_int () in
+        print_int (x+1)
+</pre>
+
+Exemplo de função para escrever uma lista de inteiros no ecrã:
+
+<ul><pre class='notranslate'>
+let rec printList l =
+    match l with
+       [] -> ()
+     | x::xs -> print_int x ; print_newline () ; printList xs
+;;
+</pre></ul>
+
+
+
+<HR><h1>Input-Output em OCaml</h1>
+
+<h2>Canais</h2>
+
+<p>As operações sobre ficheiros são efetuadas através de <b>canais</b>. Os canais são valores dos tipos predefinidos <i>in_channel</i> e <i>out_channel</i>.
+
+<p>Os "canais" do OCaml correspondem às "streams" do Java.
+
+<p>Em OCaml existem três canais predefinidos que são automaticamente abertos quando o programa começa a correr:
+
+<ul>
+<li><tt class='notranslate'>stdin : in_channel</tt>
+<li><tt class='notranslate'>stdout : out_channel</tt>
+<li><tt class='notranslate'>stderr : out_channel</tt>
+</ul
+
+
+<h2>Primitivas de input/output</h2>
+
+<ul>
+<li><b>Primitivas para escrita em stdout</b>
+<ul><pre class='notranslate'>
+print_char: char -> unit
+print_string: string -> unit
+print_int: int -> unit
+print_float: float -> unit
+print_newline: unit -> unit
+</pre></ul>
+
+<li><b>Primitivas para leitura de stdin</b>
+<ul><pre class='notranslate'>
+read_line: unit -> string
+read_int: unit -> int
+read_float: unit -> float
+</pre></ul>
+
+<li><b>Primitivas para abertura e fecho de canais</b>
+<ul><pre class='notranslate'>
+open_in: string -> in_channel
+open_out: string -> out_channel
+close_in: in_channel -> unit
+close_out: out_channel -> unit
+</pre></ul>
+
+<li><b>Primitivas para escrita em canais</b>
+<ul><pre class='notranslate'>
+output_char: out_channel -> char -> unit
+output_string: out_channel -> string -> unit
+flush: out_channel -> unit
+</pre></ul>
+
+<li><b>Primitivas para leitura de canais</b>
+<ul><pre class='notranslate'>
+input_char: in_channel -> char
+input_line: in_channel -> string
+</pre></ul>
+</ul>
+
+
+Esta lista de primitivas não é exaustiva. Há mais primitivas listadas no manual de referência (ver <A HREF="http://caml.inria.fr/pub/docs/manual-ocaml-312/libref/Pervasives.html">Basic Operations</A>).
+
+
+<h2>Exemplo de função sobre ficheiros programada usando o método indutivo</h2>
+
+Cópia de ficheiros:
+
+<ul><pre class='notranslate'>
+(* copyChannel: copia o canal de input ci para o canal de output co *)
+
+let rec copyChannel ci co =
+    try
+        let s = input_line ci in
+            output_string co s ;
+            output_string co "\n" ;
+            copyChannel ci co
+    with End_of_file -> ()
+;;
+
+(* copyFile: abre os ficheiros ni e depois usa a função copyChannel *)
+
+let copyFile ni no =
+    let ci = open_in ni in
+        let co = open_out no in
+            copyChannel ci co ;
+            close_in ci ;
+            close_out co
+;;
+</pre></ul>
+
+Esquema geral de utilização do método indutivo no tratamento de ficheiros linha a linha:
+<ul><pre class='notranslate'>
+let rec f ci =
+    try
+        let s = input_line ci in
+            ... f ci ...
+    with End_of_file -> ...
+;;
+</pre></ul>
+
+
+<HR>
+<HR><h1>Introdução aos módulos em OCaml</h1>
+
+
+Nenhuma linguagem moderna dispensa um sistema de módulos. Um sistema de módulos permite:
+
+<ul>
+<li>Agrupar definições relacionadas: por exemplo permite agrupar um tipo de dados com as suas operações associadas.
+<li>Forçar uma forma coerente de nomear essas definições para evitar conflitos de nomes.
+<li>Ocultar a representação interna dos dados e ocultar as operações auxiliares.
+<li>Está na base duma conceção modular de software.
+</ul>
+
+O sistema de módulos do OCaml é muito rico. Para não dedicarmos excessivo tempo a este assunto, vamos ignorar quase todos os aspetos técnicos e vocabulário especializado associados ao sistema. Focamos a nossa atenção no estudo de alguns cenários de utilização que, afinal, cobrem a maioria das necessidades práticas.
+
+<h2>Utilização de módulos existentes</h2>
+
+Dentro do interpretador <tt class='notranslate'>ocaml</tt> estão sempre disponíveis todos os módulos de biblioteca do OCaml (<A HREF="http://caml.inria.fr/pub/docs/manual-ocaml-312/libref/index_modules.html">Index of modules</A>).
+
+<p>Mas para aceder a módulos criados pelo utilizador dentro do interpretador <tt class='notranslate'>ocaml</tt>, usa-se a diretiva <tt class='notranslate'>#load</tt> assim:
+
+<ul><pre class='notranslate'>
+# #load "MySet.cmo" ;;
+</pre></ul>
+
+Para referenciar elementos dum módulo, podem usar-se referências qualificadas, como se exemplifica:
+<ul><pre class='notranslate'>
+# <b>Sys.os_type ;;</b>
+- : string = "Unix"
+
+# <b>Sys.command "ls -l" ;;</b>
+total 24
+-rw-r--r-- 1 amd amd  259 2008-03-11 10:26 main.ml
+-rw-r--r-- 1 amd amd  440 2008-03-11 10:28 MySet.cmi
+-rw-r--r-- 1 amd amd  654 2008-03-11 10:28 MySet.cmo
+-rw-r--r-- 1 amd amd  394 2008-03-11 10:11 MySet.ml
+-rw-r--r-- 1 amd amd  164 2008-03-11 10:11 MySet.mli
+- : int = 0
+
+# <b>List.rev [1;2;3] ;;</b>
+- : int list = [3; 2; 1]
+
+# 
+</pre></ul>
+
+Mas é bastante mais prático abrir (importar) primeiro o módulo, para depois não ter de usar prefixos qualificadores:
+<ul><pre class='notranslate'>
+# <b>open Sys ;;</b>
+
+#<b> os_type ;;</b>
+- : string = "Unix"
+
+# <b>command "ls -l" ;;</b>
+total 24
+-rw-r--r-- 1 amd amd  259 2008-03-11 10:26 main.ml
+-rw-r--r-- 1 amd amd  440 2008-03-11 10:28 MySet.cmi
+-rw-r--r-- 1 amd amd  654 2008-03-11 10:28 MySet.cmo
+-rw-r--r-- 1 amd amd  394 2008-03-11 10:11 MySet.ml
+-rw-r--r-- 1 amd amd  164 2008-03-11 10:11 MySet.mli
+- : int = 0
+#
+</pre></ul>
+
+<h2>Criação dum módulo aberto</h2>
+
+Para criar um módulo aberto, no qual todas as definições são públicas, basta criar um ficheiro com o nome pretendido e extensão "ml", digamos "MySet.ml". Depois é necessário compilar o módulo usando o comando
+<ul><pre class='notranslate'>
+ocamlc -c MySet.ml
+</pre></ul>
+sendo gerados os ficheiros "MySet.cmi" e "MySet.cmo".
+
+<p>Exemplo de utilização do módulo aberto MySet:
+
+<ul><pre class='notranslate'>
+$ ocaml
+        Objective Caml version 3.09.2
+
+# #load "MySet.cmo" ;;
+# open MySet ;;
+# empty ;;
+- : 'a list = []
+# make [1;2;3] ;;
+- : int list = [1; 2; 3]
+#
+</pre></ul>
+
+Eis o conteúdo do ficheiro "MySet.ml":
+
+<ul><table border="1"><tr><td>
+<pre class='notranslate'>
+(* Module body MySet *)
+
+type 'a set = 'a list ;;
+
+let empty = [] ;;
+
+let rec belongs v l =
+    match l with
+      [] -> false
+    | x::xs -> x = v || belongs v xs
+;;
+
+let rec union l1 l2 =
+    match l1 with
+      [] -> l2
+    | x::xs -> (if belongs x l2 then [] else [x])@union xs l2
+;;
+
+let rec clear l =
+    match l with
+      [] -> []
+    | x::xs -> let cl = clear xs in
+                (if belongs x cl then [] else [x])@cl
+;;
+
+let make l =
+    clear l
+;;
+</pre>
+</table></ul>
+
+<h2>Criação dum módulo fechado</h2>
+
+Para ocultar a representação interna dos dados e as operações auxiliares é necessário criar adicionalmente um <b>ficheiro interface</b> "MySet.mli" onde se declaram todas as entidades públicas da forma que se pretende que sejam vistas do exterior. Depois compila-se o módulo assim
+<ul><pre class='notranslate'>
+ocamlc -c MySet.mli MySet.ml
+</pre></ul>
+sendo gerados os ficheiros "MySet.cmi" e "MySet.cmo".
+
+
+<p>Exemplo de utilização do módulo fechado MySet:
+
+<ul><pre class='notranslate'>
+$ ocaml
+        Objective Caml version 3.09.2
+
+# #load "MySet.cmo" ;;
+# open MySet ;;
+# empty ;;
+- : 'a MySet.set = &lt;abstr>
+# make [1;2;3] ;;
+- : int MySet.set = &lt;abstr>
+# clear [1;2;3] ;;
+Unbound value clear
+#   
+</pre></ul>
+
+
+Eis o conteúdo do ficheiro "MySet.mli":
+
+<ul><table border="1"><tr><td>
+<pre class='notranslate'>
+(* Module interface MySet *)
+
+type 'a set                (* abstract *)
+val empty : 'a set
+val belongs : 'a -> 'a set -> bool
+val union : 'a set -> 'a set -> 'a set
+val make : 'a list -> 'a set
+</pre>
+</table></ul>
+
+<p>Repare que neste ficheiro interface omitimos a representação interna do tipo <tt class='notranslate'>'a set</tt> assim como a declaração da função auxiliar <tt class='notranslate'>clear</tt>. Repare ainda na subtileza do tipo da função <tt class='notranslate'>make</tt> (recebe uma lista mas retorna um set).
+
+<p>Quando se esconde a representação interna dum tipo de dados, diz-se que esse tipo é <b>abstracto</b> ou <b>opaco</b>.
+
+<HR><HR>
+#120

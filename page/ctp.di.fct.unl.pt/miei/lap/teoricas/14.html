@@ -1,0 +1,412 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 14 (24/abr/2018)</H2>
+Pré-processador.<br />
+Polimorfismo implementado usando mecanismos de baixo nível.<br />
+Módulos genéricos (polimórficos) em C.<br />
+<p>
+<HR>
+<HR><h1>Pré-processador</h1>
+
+Programa que corre sempre antes do compilador de C e que faz substituição de macros, inclusão de ficheiros, e possibilita compilação condicional.
+
+<p>Em Linux, o pré-processador chama-se <tt class='notranslate'>cpp</tt> e pode ser invocado diretamente pelo utilizador. Mas é mais prático deixar que seja o compilador de C a invocar o pré-processador automaticamente. Em todo o caso, vejamos o que diz o início do manual do comando <tt class='notranslate'>cpp</tt>:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+$ man cpp
+
+CPP(1)                                         GNU                                         CPP(1)
+
+NAME
+       cpp - The C Preprocessor
+
+SYNOPSIS
+       cpp [-Dmacro[=defn]...] [-Umacro]
+           [-Idir...] [-iquotedir...]
+           [-Wwarn...]
+           [-M|-MM] [-MG] [-MF filename]
+           [-MP] [-MQ target...]
+           [-MT target...]
+           [-P] [-fno-working-directory]
+           [-x language] [-std=standard]
+           infile outfile
+
+       Only the most useful options are listed here; see below for the remainder.
+
+DESCRIPTION
+       The C preprocessor, often known as cpp, is a macro processor that is used automatically by
+       the C compiler to transform your program before compilation.  It is called a macro proces-
+       sor because it allows you to define macros, which are brief abbreviations for longer con-
+       structs.
+
+       The C preprocessor is intended to be used only with C, C++, and Objective-C source code.
+</pre></table></ul>
+
+
+<p>Exemplos de macros:
+
+<ul><pre class='notranslate'>
+#define max(a,b)     ((a) > (b) ? (a) : (b))
+#define new(type)    ((type *)malloc(sizeof(type)))
+#define not          !
+#define MAX_STACK    1000
+
+#undef max
+#undef new
+</pre></ul>
+
+<p>Exemplos de inclusão de ficheiros
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;stdbool.h>
+#include &lt;math.h>
+#include "MyQueue.h"
+</pre></ul>
+
+<p>Exemplos de compilação condicional
+
+<ul><pre class='notranslate'>
+#define DEBUGLEVEL   1
+
+#ifdef DEBUG
+    ...
+#  if DEBUGLEVEL > 2
+    ...
+#  else
+    ...
+#  endif
+    ...
+#else
+    ...
+#endif
+
+
+#ifndef DEBUG
+    ...
+#else
+    ...
+#endif
+</pre></ul>
+
+No caso das macros com argumentos, note que existe a necessidade de proteger todas as utilizações dos argumentos com parêntesis, para compensar o facto da expansão das macros ser textual. Por exemplo, considere a seguinte chamada <tt class='notranslate'>mult(1+1,5)</tt> no caso da macro abaixo não seguir esta regra...
+
+<ul><pre class='notranslate'>
+#define mult(a,b)     ((a) * (b))
+</pre></ul>
+
+
+<HR><h1>Polimorfismo implementado usando mecanismos de baixo nível</h1>
+
+<h2>Função monomórfica</h2>
+
+A seguinte função permite trocar os valores de duas variáveis inteiras. É uma função monomórfica pois os seus argumentos são de tipo fixo.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+void swap(int *a, int *b)
+{
+    int aux = *a ;
+    *a = *b ;
+    *b = aux ;
+}
+</pre></table></ul>
+
+Esta função pode ser testada assim:
+
+<ul><pre class='notranslate'>
+int main(void) {
+    int x = 5, y = 6 ;
+    printf("%d %d\n", x, y) ;
+    <b>swap(&x, &y) ;</b>
+    printf("%d %d\n", x, y) ;
+    return 0 ;
+}
+</pre></ul>
+
+A função <tt class='notranslate'>swap</tt> é segura pois o compilador valida todas as suas utilizações.
+
+
+
+
+<h2>Polimorfismo implementado usando manipulação direta de memória</h2>
+
+A seguinte função permite trocar os valores de duas variáveis de qualquer tipo. É uma função polimórfica pois os seus argumentos podem ser aplicados a argumentos de tipos diversos.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;string.h>
+
+void swap(void *a, void *b, int n)
+{
+    char aux[n] ;     /* array criado com tamanho variável - novidade do C99 */
+    memcpy(aux, a, n) ;
+    memcpy(a, b, n) ;
+    memcpy(b, aux, n) ;
+}
+</pre></table></ul>
+
+Esta função ser testada assim:
+
+<ul><pre class='notranslate'>
+int main(void) {
+    int x = 5, y = 6 ;
+    printf("%d %d\n", x, y) ;
+    <b>swap(&x, &y, sizeof(int)) ;</b>
+    printf("%d %d\n", x, y) ;
+    return 0 ;
+}
+</pre></ul>
+
+A função <tt class='notranslate'>swap</tt> não é segura pois o compilador não tem a possibilidade de validar as chamadas.
+
+
+
+<h2>Polimorfismo implementado usando macros</h2>
+
+A seguinte macro também permite trocar os valores de duas variáveis de qualquer tipo.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#define swap(a,b,T)        \
+    do {                   \
+        T __aux = (a)  ;   \
+        (a) = (b) ;        \
+        (b) = __aux ;      \
+    } while( 0 )
+</pre></table></ul>
+
+Esta macro ser testada assim:
+
+<ul><pre class='notranslate'>
+int main(void) {
+    int x = 5, y = 6 ;
+    printf("%d %d\n", x, y) ;
+    <b>swap(x, y, int) ;</b>
+    printf("%d %d\n", x, y) ;
+    return 0 ;
+}
+</pre></ul>
+
+A macro <tt class='notranslate'>swap</tt> é segura pois o compilador consegue detetar qualquer erro de tipo na sua utilização. Repare que o tipo dos valores a trocar é passado como parâmetro.
+
+<p>Repare nos cuidados que é preciso ter para escrever uma macro que não dê problemas. Os argumentos devem ser envolvidos em parêntesis, e qualquer nova variável que seja introduzido deve ter um nome que não entre em conflito com possíveis nomes existentes. Porque todos estes cuidados? E porque razão a macro foi definida usando um <tt class='notranslate'>do-while</tt>? (Elimine o <tt class='notranslate'>do-while</tt>, teste, e logo descobrirá o problema.)
+
+
+<h2>Polimorfismo implementado usando manipulação direta de memória e macros</h2>
+
+A seguinte implementação da operação <tt class='notranslate'>swap</tt> é a mais agradável de usar do ponto de vista sintático. Até parece que está em causa uma operação primitiva da linguagem. Contido este implementação não é segura, pelo que o utilizador tem de ter algumas cautelas.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;string.h>
+
+void __swap(void *a, void *b, int n)
+{
+    char aux[n] ;
+    memcpy(aux, a, n) ;
+    memcpy(a, b, n) ;
+    memcpy(b, aux, n) ;
+}
+
+#define swap(a,b)    __swap(&(a), &(b), sizeof(a))
+</pre></table></ul>
+
+Esta função ser testada assim:
+
+<ul><pre class='notranslate'>
+int main(void) {
+    int x = 5, y = 6 ;
+    printf("%d %d\n", x, y) ;
+    <b>swap(x, y) ;</b>
+    printf("%d %d\n", x, y) ;
+    return 0 ;
+}
+</pre></ul>
+
+
+A macro <tt class='notranslate'>swap</tt> não é segura pois o compilador não tem a possibilidade de validar as chamadas.
+
+
+<h2>Em GCC</h2>
+
+O pré-processador do GCC possui uma construção <tt class='notranslate'>typeof</tt> que permite escrever macros ainda mais sofisticadas do que as anteriores e seguras. Por exemplo, a expressão <tt class='notranslate'>typeof(a)</tt> representa o tipo da variável <tt class='notranslate'>a</tt> e pode ser usada como um tipo normal, inclusivamente para definir outras variáveis com o mesmo tipo de <tt class='notranslate'>a</tt>.
+
+<p>É pena o C padrão não suportar a construção <tt class='notranslate'>typeof</tt>.
+
+
+
+<h2>Exemplo de polimorfismo na biblioteca padrão do C - função <b>qsort</b></h2>
+
+A função <b>qsort</b> permite ordenar vetores de qualquer tipo.
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+$ man qsort
+
+QSORT(3)                                  Linux Programmer's Manual                                  QSORT(3)
+
+NAME
+       qsort - sorts an array
+
+SYNOPSIS
+       #include &lt;stdlib.h>
+
+       void qsort(void *base, size_t nmemb, size_t size,
+                  int(*compar)(const void *, const void *));
+
+DESCRIPTION
+       The qsort() function sorts an array with nmemb elements of size size.  The base argument points to the
+       start of the array.
+
+       The contents of the array are sorted in ascending order according to a comparison function pointed  to
+       by compar, which is called with two arguments that point to the objects being compared.
+
+       The  comparison function must return an integer less than, equal to, or greater than zero if the first
+       argument is considered to be respectively less than, equal to, or greater than  the  second.   If  two
+       members compare as equal, their order in the sorted array is undefined.
+
+RETURN VALUE
+       The qsort() function returns no value.
+
+CONFORMING TO
+       SVr4, 4.3BSD, C89, C99.
+</pre></table></ul>
+
+<p>Exercício: Como faria para ordenar um vetor com componentes do seguinte tipo:
+
+<ul><pre class='notranslate'>
+typedef struct
+{
+    int day, month, year ;
+} Date;
+</pre></ul>
+
+
+
+
+<HR><HR><h1>Módulos genéricos (polimórficos) em C</h1>
+
+É possível escrever módulos genéricos em C usando macros com várias linhas e a operação de concatenação de tokens que se escreve ##.
+
+<p>Os módulos genéricos são muito difíceis de escrever e de ler, mas são fáceis de usar.
+
+<p>No seguinte módulo, o tipo <tt class='notranslate'>Data</tt> passa a ser argumento de duas macros.
+
+
+<h2>Ficheiro Generic_LinkedList.h</h2>
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdbool.h>
+
+#define Generic_LinkedListHeader(Data)                          \
+                                                                \
+typedef struct Data##Node {                                     \
+    Data data ;                                                 \
+    struct Data##Node *next;                                    \
+} Data##Node, *Data##List ;                                     \
+                                                                \
+int Data##ListSize(Data##List l) ;                              \
+bool Data##ListGetByIndex(Data##List l, int idx, Data *res) ;   \
+Data##List Data##ListPutAtHead(Data##List l, Data val) ;        \
+Data##List Data##ListPutAtEnd(Data##List l, Data val) ;         \
+void Data##ListPrint(Datasexto##List l) ;
+</pre></table></ul>
+
+
+
+
+
+<h2>Ficheiro Generic_LinkedList.c</h2>
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;stdbool.h>
+
+#include "Generic_LinkedList.h"
+
+#define Generic_LinkedListImplementation(Data, Print)           \
+                                                                \
+Generic_LinkedListHeader(Data)                                  \
+                                                                \
+static Data##List Data##NewNode(Data val, Data##List next) {    \
+    Data##List n = malloc(sizeof(Data##Node)) ;                 \
+    if( n == NULL )                                             \
+        return NULL ;                                           \
+    n->data = val ;                                             \
+    n->next = next ;                                            \
+    return n ;                                                  \
+}                                                               \
+                                                                \
+int Data##ListSize(Data##List l) {                              \
+    int count ;                                                 \
+    for( count = 0 ; l != NULL ; l = l->next, count++ ) ;       \
+    return count ;                                              \
+}                                                               \
+                                                                \
+bool Data##ListGetByIndex(Data##List l, int idx, Data *res) {   \
+    int i ;                                                     \
+    for( i = 0 ; i &lt; idx && l != NULL ; i++, l = l->next ) ;    \
+    if( l == NULL )                                             \
+        return false ;                                          \
+    else {                                                      \
+        *res = l->data ;                                        \
+        return true ;                                           \
+    }                                                           \
+}                                                               \
+                                                                \
+Data##List Data##ListPutAtHead(Data##List l, Data val) {        \
+    return Data##NewNode(val, l) ;                              \
+}                                                               \
+                                                                \
+Data##List Data##ListPutAtEnd(Data##List l, Data val) {         \
+    Data##List n = Data##NewNode(val, NULL) ;                   \
+    if( n == NULL )                                             \
+        return NULL ;                                           \
+    if( l == NULL )                                             \
+        return n ;                                              \
+    else {                                                      \
+        Data##List p ;                                          \
+        for( p = l ; p->next != NULL ; p = p->next ) ;          \
+        p->next = n ;                                           \
+        return l ;                                              \
+    }                                                           \
+}                                                               \
+                                                                \
+void Data##ListPrint(Data##List l) {                            \
+    for(  ; l != NULL ; l = l->next )                           \
+        Print(l->data) ;                                        \
+}</pre></table></ul>
+
+
+<h2>Exemplo de instanciação do módulo genérico</h2>
+
+<h4>Ficheiro LinkedList_double.h</h4>
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include "Generic_LinkedList.h"
+
+Generic_LinkedListHeader(double)
+</pre></table></ul>
+
+
+
+
+<h4>Ficheiro LinkedList_double.c</h4>
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include "Generic_LinkedList.c"
+
+static doublePrint(double d) {
+    printf("%lf\n", d) ;  
+}
+
+Generic_LinkedListImplementation(double, doublePrint)
+</pre></table></ul>
+
+
+
+
+<HR><HR>
+#100

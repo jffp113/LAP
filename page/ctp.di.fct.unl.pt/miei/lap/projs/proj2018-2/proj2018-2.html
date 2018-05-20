@@ -1,0 +1,294 @@
+<html>
+<title>Enunciado do 2º Trabalho Prático (C)</title>
+<head><meta http-equiv="refresh" content="60" charset="UTF-8"></head>
+<body text="#000000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<h1>Linguagens e Ambientes de Programação (2017/2018) [Eng.Inf. - DI/FCT/UNL]</h1>
+<h2>Enunciado do 2º Projeto Prático (C)</h2>
+
+<hr><h2>Datas</h2>
+<ul>
+<li>03/maio (20:00) - Divulgação deste enunciado
+<li>12/maio (20:00) - Data limite de entrega sem penalização.
+<li>14/Maio (20:00) - Data e hora limite de entrega com atraso. Um valor de penalização por cada dia de atraso. 
+</ul>
+
+<HR><h2>Changelog</h2>
+<ul>
+<li>03/maio - Possíveis correções ou melhorias deste enunciado serão assinaladas aqui.
+</ul>
+
+<HR><h1><A HREF="submiss2018-2.html">Regras de submissão</A>
+
+
+<HR><h1>Compactador de palavras (WCompact)</h1>
+
+<p>Pretende-se o desenvolvimento em Ansi-C dum módulo com operações de compactação e descompactação de ficheiros de texto. A compactação é orientada para as palavras e baseada na identificação das palavras que ocorrem mais frequentemente. As palavras mais frequentes serão codificadas usando códigos mais curtos.
+
+<p>Para desenvolver o programa, basta considerar ficheiros de texto ASCII. De qualquer forma, o programa também irá funcionar corretamente para ficheiros de texto LATIN-1 e UTF-8, porque estes dois formatos são compatíveis com a codificação ASCII.
+
+<p>A interface do módulo já foi completamente escrita e você não a pode alterar: <a href="files/WCompact.h">WCompact.h<a>. Use o seguinte ficheiro como ponto de partida para o seu programa: <a href="files/WCompact.c">WCompact.c<a>.
+
+<HR><h1>Palavras e códigos</h1>
+
+<p>Para simplificar, definimos <b>palavra</b> como uma sequência de letras sem acentos (há 52 letras nestas condições, contando as maiúsculas e minúsculas). Por isso o nosso compactador será especialmente apropriado para compactar textos escritos em inglês e noutras línguas sem acentos. Também para simplificar, todas as palavras serão consideradas na codificação, inclusivamente palavras constituídas por apenas uma letra, e inclusivamente palavras que ocorram no ficheiro apenas uma vez.
+
+<p>O compactador copia o ficheiro de entrada para o ficheiro de saída, trocando cada palavra por um código que se espera que seja mais curto do que a palavra original (mas poderá não ser, em alguns casos raros). Todo o restante texto, para lá das palavras, é copiado sem processamento.
+
+<p>Um <b>código</b> é uma sequência de letras sem acentos, exatamente como uma palavra. Olhando para o conteúdo dum ficheiro compactado, será fácil identificar os códigos: tratam-se das sequências de letras sem acentos que lá aparecem.
+
+<p>Para descompactar um ficheiro, precisamos de saber qual é a palavra que cada código representa. Para esse efeito, está previsto um mecanismo muito simples. Quando um código ocorre pela primeira vez num ficheiro compactado, regista-se imediatamente a seguir ao código o símbolo '=' e a palavra original. Desta forma, o descodificador ganha acesso ao significado de todos os códigos.
+
+<HR><h1>Compactador</h1>
+
+<p>O compactador precisa de percorrer o ficheiro de entrada duas vezes.
+
+<p>O primeiro percurso serve para construir uma tabela de palavras, e ao mesmo tempo determinar o número de ocorrências de cada palavra. No final do primeiro percurso, atribui-se um código a cada palavra.
+
+<p>O segundo percurso traduz o ficheiro, trocando de cada palavra pelo respetivo código, sem esquecer que a primeira ocorrência de cada código vai acompanhada da palavra original, como já se explicou.
+
+<HR><h1>Descompactador</h1>
+
+<p>O descompactador percorre o ficheiro compactado apenas uma vez, traduzindo códigos em palavras. Naturalmente, ao longo do processo vai tomando nota da palavra associada a cada código, pois de outra forma a tradução não seria possível.
+
+<HR><h1>Ordenações</h1>
+
+<p>Precisamos duma regra de ordenação de códigos que nos ajude a escolher os códigos mais curtos para as palavras mas frequentes. A nossa regra de <b>ordenação dos códigos</b> é semelhante à regra de ordenação de números naturais - a única diferença é que usamos letras em vez de algarismos. Usam-se dois critérios:
+
+<ul>
+<li> O primeiro critério é o comprimento do código: se dois códigos tiverem comprimentos diferentes, o mais curto ganha e fica em primeiro lugar.
+<li> Em caso de empate no critério do comprimento, usa-se a ordem alfabética para desempatar.
+</ul>
+
+<p>Qual a ordenação que se considera para letras individuais? Ordenamos as letras de acordo com o seu código ascii, ou seja pela seguinte ordem: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z.
+
+<p>Usando estas definições, conclui-se que o primeiro código na ordenação é "A". A seguir vêm os códigos "B", "C", "D", etc. O último código de comprimento 1 é "z" e a seguir vem o primeiro código de comprimento 2, que é "AA". A seguir vem "AB", "AC", etc. Depois de "Az" vem "BA", "BB", "BC", etc. O último código de comprimento 2 é "zz" e segue-se o primeiro código de comprimento 3, que é "AAA". Mais um exemplo: a seguir ao código "EDEzzy" vem o código "EDEzzz" e depois "EDFAAA", "EDFAAB" e "EDFAAC". Use todos estes exempos para conferir que percebeu bem a regra de ordenação de códigos.
+
+<p>Também precisamos duma regra de <b>ordenação de palavras</b> que nos permita identificar as palavras mais frequentes. Usam-se dois critérios:
+
+<ul>
+<li> O primeiro critério é o número de ocorrências: se duas palavra tiverem um número de ocorrências diferente, a palavra mais frequente ganha e fica em primeiro lugar.
+<li> Em caso de empate no critério da frequência, usa-se a ordem alfabética para desempatar.
+</ul>
+
+<p>Exemplo: No seguinte texto <b>"one two two two the one one four z z z z"</b>, fica em primeiro lugar a palavra que ocorre mais vezes: <b>"z"</b> ocorre 4 vezes. Em segundo lugar vem a palavra <b>"one"</b> que ocorre 3 vezes. Em terceiro lugar vem a palavra <b>"two"</b> que também ocorre 3 vezes mas perde para a palavra anterior na ordem alfabética. A seguir vem a palavra <b>"four"</b> com 1 ocorrência, e finalmente vem a palavra <b>"the"</b> também com 1 ocorrência e que perde para a palavra anterior na ordem alfabética.
+
+<p>Repare que a função do C <tt>strcmp</tt> já implementa a ordem alfabética: <b><tt>strcmp(x,y) &lt; 0</tt></b> significa que <b><tt>x</tt></b> ganha ao <b><tt>y</tt></b>, ou seja que <b><tt>x</tt></b> aparece antes de <b><tt>y</tt></b> no desempate.
+
+<HR><h1>Exemplo</h1>
+
+O seguinte ficheiro tem duas linhas de texto:
+
+<ul><pre>
+one two two two the one one four z z z z
+qq=qq
+</pre></ul>
+
+Eis a tabela das palavras correspondente, com indicação do número de ocorrências e os códigos atribuídos:
+
+<ul><pre>
+PALAVRA OCORRÊNCIAS CÓDIGO
+   z        4         A
+   one      3         B
+   two      3         C
+   qq       2         D
+   four     1         E
+   the      1         F
+</pre></ul>
+
+Eis o ficheiro compactado:
+
+<ul><pre>
+B=one C=two C C F=the B B E=four A=z A A A
+D=qq=D
+</pre></ul>
+
+<p>O ficheiro compactado ficou maior porque as palavras do exemplo são muito curtas e têm poucas ocorrências. Mas consegue-se imaginar que, para textos mais realistas, por exemplo obras literárias, a presença de palavras mais compridas e repetidas tornam a compactação muito eficaz.
+
+<HR><h1>Tabela das palavras</h1>
+
+Para permitir testar diversos aspetos do programa a partir do Mooshak, os tipos de dados mais importantes do programa precisam de ser públicos. As seguintes declarações, copiadas do ficheiro WCompact.h, mostram como a tabela <b><tt>words</tt></b> está definida:
+
+<ul><pre>
+#define MAX_WORDS    10000
+
+typedef struct {
+    String word;
+    String code;
+    int count;
+} WordInfo;
+
+extern WordInfo words[MAX_WORDS];
+extern int wordsN;
+</pre></ul>
+
+<h4>Acessos básicos</h4>
+
+
+<p>É possível lidar com esta tabela de forma elementar, usando pesquisa sequencial e adicionando as novas palavras no final da tabela. No entanto o programa ficará um pouco lento, especialmente se existirem milhares de palavras distintas. Esta abordagem é a recomendada pare escrever a primeira versão do programa. 
+
+<p>Já agora, depois da tabela ficar preenchida, ela deve ser ordenada e deve ser atribuído um código a cada palavra presente na tabela.
+
+<h4>Acessos rápidos</h4>
+
+<p>Para os acessos às palavras ficarem rápidos pedimos-lhe para usar uma estrutura de dados adicional, uma <b>árvore lexical</b>. Há apenas quatro valores da nota do projeto reservados para a implementação da árvore lexical, pelo que se não fizer esta parte do projeto não será dramático. As seguintes declarações, copiadas do ficheiro WCompact.h, mostram como a árvore lexical <b><tt>tree</tt></b> está definida:
+
+<ul><pre>
+#define NCHARS    52
+
+typedef struct Node {
+    WordInfo *wi;
+    struct Node *children[NCHARS];
+} Node, *Tree;
+
+extern Tree tree;
+extern int sorted[MAX_WORDS];
+</pre></ul>
+
+<p>Uma árvore lexical é uma árvore 52-ária. Cada nó tem 52 subárvores, guardadas no vetor <tt>children</tt>, correspondentes às 52 letras não acentuadas existentes. Muitas dessas subárvores serão naturalmente vazias, sendo representadas por <tt>NULL</tt>.
+
+<p>Em cada nó da árvore, o campo <tt>wi</tt> é inicializado com o valor <tt>NULL</tt>. Um caminho descendente da árvore define uma palavra. No caso de se tratar duma palavra que ocorre no ficheiro, o nó da árvore em que o percurso descendente termina deve ter o apontador <tt>wi</tt> a apontar para a entrada na tabela de palavras correspondente à palavra.
+
+<p>Exemplificando, a seguinte árvore lexical, representa o seguinte conjunto de oito palavras que ocorrem no ficheiro: "aba", "abano", "fa", "falso", "fato", "fogo", "foto", "uva". Os casos em que o  apontador <tt>wi</tt> não é <tt>NULL</tt> estão representados por tracinhos cinzentos: há oito palavras, logo há oito tracinhos cinzentos. Repare que cada percurso descendente pode passar por várias palavras presentes no ficheiro: acontece quando umas palavras são prefixo de outras. No desenho, omitem-se todas as subárvores vazias.
+
+<center><img src="lextree.jpg"></center>
+
+<p>Esta árvore permite acelerar enormemente três partes do programa:
+
+<ul>
+<li>Na primeira passagem do ficheiro de entrada, inserção das palavras na tabela com deteção e contagem das repetições.
+<li>Na segunda passagem do ficheiro de entrada, consulta da tabela para traduzir palavras para códigos.
+<li>Na descompactação, inserção dos códigos e palavras na tabela e tradução de códigos para palavras. Neste caso, a árvore lexical deve conter códigos e não palavras, porque o que se pretende é que dado um código descobrir rapidamente a palavra correspondente.
+</ul>
+
+
+<HR><h1>Limites</h1>
+
+<p>Assume-se que o comprimento máximo das linhas dos ficheiros é 254.
+
+<p>O comprimento máximo das palavras e dos códigos é 254.
+
+<p>Não há limite para o número de linhas do ficheiro.
+
+<p>A constante <tt>MAX_WORDS</tt> limita a 10000 o número máximo de palavras distintas que podem ocorrer no ficheiro de entrada. Contudo o valor desta constante deverá poder ser aumentado sem com isso se prejudicar o funcionamento do programa.
+
+<p>O seu programa será testado usando apenas ficheiros que respeitam estes limites.
+
+
+
+<HR><h1>Funções públicas do módulo WCompact</h1>
+
+<p>Em rigor, este módulo precisaria de exportar apenas duas funções: uma para compactar e outra para descompactar. Mas podem existir erros no seu programa ou o seu programa pode estar incompleto. Importa descobrir e valorizar positivamente as partes certas e por isso se pede para ficarem públicas algumas das funções usadas internamente.
+
+<p>Evidentemente que, para além das funções públicas, você precisará de definir diversas funções privadas e tem toda a liberdade de definir as funções que precisar.
+
+
+<p>Há nove funções públicas para implementar. As funções precisam de manipular as variáveis públicas <b><tt>words</tt></b>, <b><tt>wordsN</tt></b> e <b><tt>tree</tt></b> porque o Mooshak examinará estas três variáveis para confirmar os resultados.
+
+
+
+<pre><b>void codeNext(String code)</b></pre>
+<ul>Dado um código, por exemplo "zz", produz o código seguinte, neste caso "AAA". Altera diretamente o argumento.</ul>
+
+<pre><b>void processWord(String word)</b></pre>
+<ul>Processa uma palavra. Se for uma palavra nova, adiciona-se a palavra à tabela com o contador a valer 1; caso contrário, simplesmente incrementa-se o contador da palavra. Na implementação mais sofisticada, a procura da palavra na tabela é acelerada através da árvore lexical.</ul>
+
+<pre><b>void processLine(String line)</b></pre>
+<ul>Processa uma linha de texto. As palavras encontradas são alvo da aplicação da função <tt>processWord</tt>.</ul>
+
+
+<pre><b>void processTable(void)</b></pre>
+<ul>No final da primeira passagem do ficheiro, é preciso ordenar a tabela e atribuir códigos às diversas palavras, seguindo as regras do enunciado. Se a implementação usar a árvore lexical, a ordenação terá de ser feita usando um vetor auxiliar de indireção (pense porquê?)</ul>
+
+<pre><b>char *translateWord(String word)</b></pre>
+<ul>Usada na segunda passagem do ficheiro para ir codificando as palavras a medida que se passa por elas. Na implementação mais sofisticada, a procura da palavra na tabela é acelerada através da árvore lexical.</ul>
+
+<pre><b>void compress(String inFilename, String outFilename)</b></pre>
+<ul>A função principal de compressão.</ul>
+
+
+
+<pre><b>void insertCode(String code, String word)</b></pre>
+<ul>Durante a descompressão dum ficheiro, permite inserir na tabela um código com a palavra correspondente. Na implementação mais sofisticada, o código também deverá ser inserido na árvore lexical.</ul>
+
+<pre><b>char *translateCode(String code)</b></pre>
+<ul>Usada para ir descodificando os códigos à medida que se passa por eles. Na implementação mais sofisticada, a procura do código na tabela é acelerada através da árvore lexical.</ul>
+
+<pre><b>void decompress(String inFilename, String outFilename)</b></pre>
+<ul>A função principal de descompressão.</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr><h1>Regras principais</h1>
+<ul>
+<li>Submete-se no Mooshak um único ficheiro chamado <tt>WCompact.c</tt>. As primeiras linhas deste ficheiro tem de  ter um comentário inicial com <b>o nome e número dos dois alunos que realizaram o projeto</b>.
+<li>O ficheiro <tt>WCompact.c</tt> tem ainda de incluir um outro comentário inicial, com o máximo de meia página, referindo se os objetivos do projeto foram atingidos ou não (neste último caso quais não foram atingidos?) e ainda possivelmente alertando para alguns aspetos da implementação que possam ser menos óbvios para o avaliador.
+<li>O projeto é para ser realizado por grupos de dois alunos pertencentes ao mesmo turno prático. Não há inscrição prévia dos grupos e basta que cada trabalho tenha 2 autores identificados. Um projeto entregue por três ou mais alunos vale zero valores. Poderão ser permitidos grupos de 1 aluno, mas tem de se explicar a razão e pedir autorização a AMD. O caso de grupos de dois alunos pertencentes a turnos diferentes, não se proíbe, mas esse grupo poderá perder o direito a participar na aula prática dedicada ao trabalho (o máximo de alunos numa aula prática é 28, e numa aula concorrida poderá não haver espaço para alunos de outros turnos ou então para um aluno estar sozinho a ocupar um computador). 
+<li>Mesmo que desenvolva o programa em Windows ou no MacOS, a versão final do seu programa deverá correr na versão do sistema Linux instalado nos laboratórios.
+<li>O programa deve ser bem indentado, por forma a ficar bem legível. Além disso, a largura do programa não deve exceder as 80 colunas para poderem ser impressos. Podem haver algumas exceções, muito pontuais.
+<li>O não cumprimento das regras anteriores implica penalizações automáticas na nota.
+</ul>
+
+
+
+<hr><h1>Regras de entrega</h1>
+<ul>
+<li>Será ativado um concurso do Mooshak, que servirá para submeter os trabalhos. Os detalhes da forma de fazer a submissão serão divulgados nessa altura. Até lá preocupe-se apenas em escrever um bom programa.
+</ul>
+
+
+<hr><h1>Outras regras</h1>
+<ul>
+<li>Apesar de o projeto ser de grupo, cada aluno, a título individual, tem a responsabilidade de responder por todo o projeto. Assim, é indispensável que os dois membros de cada grupo programem efetivamente. O ideal seria que cada grupo dividisse o projeto em duas partes, e que o desenvolvimento de cada uma das duas partes fosse "comandada" por um aluno distinto, sempre em diálogo com o outro.
+<li>Não se proíbe que alunos de turnos práticos diferentes façam grupo. Isso é apenas desaconselhado.
+<li>Não terá lugar qualquer pré-inscrição dos grupos. Basta que nos trabalhos submetidos figurem nomes de alunos inscritos na cadeira.
+<li>A nota máxima do projeto é 20 valores.
+</ul>
+
+
+<hr><h1>Avaliação</h1>
+
+O docente responsável pela gestão e pela avaliação deste trabalho é o Professor Miguel Monteiro.
+
+<p>A nota do projeto será em grande parte determinada por meios automáticos, através do Mooshak. Portanto é essencial respeitar a especificação contida neste enunciado, em todos os seus detalhes.
+
+<p>Mas, relativamente a programas que funcionem de acordo com a especificação, também haverá uma apreciação mais subjetiva da qualidade por parte dos docentes, tendo em conta aspetos, tais como:
+<ul>
+<li>organização;
+<li>clareza e simplicidade das ideias programadas;
+<li>bom uso da linguagem, usando o paradigma imperativo, neste caso;
+<li>legibilidade do código;
+<li>eficiência.
+</ul>
+
+<hr><h1>Observações</h1>
+<ul>
+<li>Os grupos são incentivados a discutir entre si os detalhes da realização do projeto (inclusivamente no fórum). <b>Mas sempre que chega o momento de escrever código concreto, esse tem de ser um esforço interno a cada grupo. A escrita de código exige esforço intelectual, mas só com esforço se consegue evoluir.</b>
+<li>O objetivo deste projeto é levar os alunos a praticar. Um aluno que pratique de forma genuína ganha experiência e provavelmente não terá dificuldade em conseguir aprovação no exame final.
+<li>Cuidado com as fraudes. Por exemplo, se alguém dum grupo oferecer o projeto resolvido a um elemento de outro grupo, trata-se duma fraude envolvendo dois grupos (já tem acontecido). Também se um grupo deixa distraidamente a área aberta e se alguém de outro grupo "rouba" o projeto, então também se considera fraude dos dois grupos (já tem acontecido). Ainda um terceiro caso: se dois grupos se juntam para fazer o projeto conjuntamente e depois o entregam em duplicado, então também se considera fraude (já tem acontecido). Além destes três exemplos, existem muitas outras situações de fraude. Em suma, <b>cada grupo é responsável pelo seu projeto, tem de produzir código original</b>, e não o pode mostrar ou oferecer, direta ou indiretamente, o seu código a outro grupo. Note que é muito melhor ter zero num dos quatro projetos do que ser logo excluído da cadeira por motivo de fraude.
+</ul>
+
+
+<hr><h1>Final</h1>
+
+<p>Bom trabalho! Esperamos que goste.
+
+<hr><hr>
+</BODY>
+</HTML>
+ 

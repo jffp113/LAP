@@ -1,0 +1,84 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 11</H2>
+<p>Programação orientada pelos objetos em JavaScript usando classes. Exercícios 51 e 52.
+<HR><HR>
+<p>Nota: Os exercícios da aula de hoje destinam-se a ser executados na consola. Nos laboratórios está instalado o JavaScript Rhino, que se invoca usando o comando "rhino".
+
+<HR><h2>Guião para usar a linguagem JavaScript na consola</h2>
+
+<ol>
+<li> Usar um editor de texto qualquer para escrever um ficheiro "test.js". Gravar.
+<li> Agora, para correr o programa, dar na consola o comando: "rhino test.js".
+</ol>
+
+<HR><h2>Guião para usar a linguagem JavaScript dentro do Eclipse</h2>
+
+<ol>
+<li> Ativar Eclipse, escrevendo "eclipse" numa consola.
+<li> Window > Open Perspective...  mudar perspetiva para JavaScript.
+<li> File > New > JavaScript Project. Escrever "Test" e fazer "Finish". O projeto foi criado.
+<li> File > New > JavaScriptSource File. Dar o nome "Test" e será automaticamente criado o ficheiro "Test.js".
+<li> Escrever o programa no ficheiro "Test.js" e fazer Ctrl-S (save) para gravar.
+<li> A lado do "inseto" escolher "Debug Configurations" e lá dentro escolher "Rhino Javascript".
+<li> Carregar no botão "New" e logo a seguir no botão "Debug". O programa vai correr pela primeira vez.
+<li> Agora basta carregar no inseto para correr o programa novamente.
+</ol>
+
+<p> <b>Instalação:</b> Já está instalado nos laboratórios. Para instalar no seu computador pessoal, use o comando do Eclipse "Help>Install New Software...". Na caixa "Work with:" insira "http://download.eclipse.org/releases/luna" e depois escolha apenas "Programing Languages/JavaScript Development Tools".
+
+
+<hr>
+
+<HR><li>51 - Este é um problema de organização duma hierarquia de classes. É para ser programado em JavaScript, mas imitando as classes do Java, como se explicou na teórica 20.
+
+<p>Resolva o problema usando como orientação os dois exemplos finais da aula teórica 20.
+
+<p> Considere o problema da representação de sucessões numéricas em JavaScript. Vamos restringir-nos a três tipos de sucessões: aritméticas, geométricas e constantes.
+<ul>
+<li><b>Sucessão aritmética</b>: Caracteriza-se por um primeiro elemento a<sub>0</sub> e por um incremento fixo <i>inc</i>. Os elementos da sucessão são gerados usando a equação a<sub>i</sub> = a<sub>i-1</sub>+inc.
+<p><li><b>Sucessão geométrica</b>: Caracteriza-se por um primeiro elemento a<sub>0</sub> e por uma base fixa <i>base</i>. Os elementos da sucessão são gerados usando a equação a<sub>i</sub>=a<sub>i-1</sub>*base.
+<p><li><b>Sucessão constante:</b>  Caracteriza-se pelo primeiro elemento a<sub>0</sub>, apenas. Os elementos da sucessão constante são todos iguais ao primeiro, i.e. a<sub>i</sub>=a<sub>0</sub>.
+</ul>
+
+O objetivo é que cada objeto <tt class='notranslate'>succ</tt> que represente uma sucessão consiga gerar os valores dessa sucessão através da invocação repetida de <tt class='notranslate'>succ.next()</tt>. Na nossa representação, as sucessões devem portanto funcionar como iteradores que se lembram da posição corrente em que vão. Atenção: não guarde os valores gerados internamente num array - isso seria desperdiçar memória inutilmente.
+
+<p>Cada tipo de sucessão deverá ser representado por uma classe distinta. Os objetos criados a partir dessas classes (usando a operação <tt class='notranslate'>new</tt>), representarão sucessões concretas. As três classes devem ter a seguinte funcionalidade comum:
+<ul>
+<li>first() --	Faz reset da sucessão (isto é, coloca-a no início) e retorna o primeiro elemento a<sub>0</sub>.
+<li>curr() -- Retorna o elemento corrente sem fazer avançar a sucessão.
+<li>next() -- Faz avançar a sucessão e retorna o novo elemento corrente.
+<li>at(int i) -- Retorna o i-ésimo elemento da sucessão, isto é a<sub>i</sub>. Entretanto o elemento corrente passa a ser o i-ésimo elemento da sucessão.
+<li>print(int n) -- Escreve os n primeiros elementos da sucessão. Entretanto o elemento corrente passa a ser o n-ésimo elemento da sucessão.
+</ul>
+
+<p>Resolva este problema tendo em mente os seguintes objetivos:
+<ul>
+<li>Minimização do código.
+<li>Extensibilidade do sistema.
+</ul>
+Não se preocupe com a eficiência.
+
+<p>Antes de programar, desenhe num papel um esquema que ilustre a relação entre as classes que vai definir, e ainda quais são as variáveis e os métodos de instância de cada uma delas.
+
+<p><i>[Sugestões: 1. Defina uma classe abstrata e fatorize nela o máximo de código. 2. Note que os métodos "at" e "print" podem ser habilidosamente definidos à custa dos métodos "first" e "next".]</i>
+
+
+<HR><li>52 - Para provar que o sistema criado no problema anterior é realmente extensível, pedimos-lhe que o amplie com duas novas classes, representando dois novos tipos de sucessão:
+<ul>
+<li><b>Sucessão aritmética otimizada:</b>  Sucessão aritmética em que a operação "at" é muito eficiente. [Por vezes define-se uma classe, só para se tornarem mais eficientes determinadas operações. É o caso.]
+<p><li><b>Sucessão composta soma:</b>  Caracteriza-se por duas sucessões a e b. A sucessão soma define-se pela equação c<sub>i</sub>=a<sub>i</sub>+b<sub>i</sub>.
+</ul>
+
+
+<HR><li>53 - Adicione ainda mais três tipos de sucessão ao sistema:
+
+<ul>
+<li><b>Sucessão composta alternante:</b>  Caracteriza-se por duas sucessões a e b. Os elementos da sucessão alternante são gerados pela seguinte ordem:  a<sub>1</sub>, b<sub>1</sub>, a<sub>2</sub>, b<sub>2</sub>, ..., a<sub>i</sub>, b<sub>i</sub>, ...
+<p><li><b>Sucessão filtro:</b>  Caracteriza-se por uma sucessão a e por um número inteiro <i>filtro</i>. Os elementos da sucessão filtro são, pela mesma ordem, os elementos da sucessão que são múltiplos de <i>filtro</i>.
+<p><li><b>Sucessão de fibonnaci</b>: Caracteriza-se pelos dois primeiros elementos a<sub>0</sub> e a<sub>1</sub>. Os elementos da sucessão são gerados usando a equação a<sub>i</sub>=a<sub>i-1</sub>+a<sub>i-2</sub>.
+</ul>
+
+
+<HR><HR>

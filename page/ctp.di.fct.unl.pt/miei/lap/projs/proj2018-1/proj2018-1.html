@@ -1,0 +1,420 @@
+<title>Enunciado do 1º Trabalho Prático (OCaml)</title>
+<head><meta http-equiv="refresh" content="60" charset="UTF-8"></head>
+<body text="#000000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<H1>Linguagens e Ambientes de Programação (2017/2018) [Eng.Inf. - DI/FCT/UNL]</H1>
+<H2>Enunciado do 1º Projeto Prático (OCaml)</H2>
+<H4>Artur Miguel Dias</H4>
+
+<HR><h2>Datas</h2>
+<li>30/mar (22:00) - Divulgação da versão inicial do enunciado
+<li>14/abr (22:00) - Data e hora limite de entrega do 1º projeto.
+<li>16/abr (22:00) - Data e hora limite de entrega com atraso. Um valor de penalização por cada dia de atraso.
+<p>
+<HR><h2>Changelog</h2>
+<ul>
+<li>12/abr - Foi adicionado o exemplo <b>matchAtStart "aaaz" (ZeroOrOne (Str "a")) = (true, "a", "aaz")</b>, para vez se se esclarece definitivamente uma dúvida que tem aparecido repetidamente. Faz-se o match mais longo e está tudo dito (sem complicações fantasiosas de que o enunciado não fala).
+<li>10/abr - O último teste do primeiro concurso não era o pretendido. Agora já ficou certo, a usar a função "matchAtStartGreedy". As submissões efetuadas até ao momento foram reavaliadas.
+<li>09/abr - Em dois pontos do enunciado aparecia a palavra "fail" quando o que se pretendia era a palavra "false". Foi corrigido.
+<li>05/abr - Na descrição de <i>Repeat(m,n,p)</i>, o <i>m</i> e <i>n</i> apareciam trocados. Foi corrigido.
+<li>30/mar - Possíveis correções a este enunciado serão assinaladas aqui.
+</ul>
+
+<HR><h1><A HREF="submiss2018-1.html">Submission rules</a>
+
+<HR><h1><font size=+4>The Power of Regular Expressions</font></h1>
+
+<p> 
+
+<a href="https://xkcd.com/208/"><img align=right src="https://imgs.xkcd.com/comics/regular_expressions.png"></a>
+
+A <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a> (or <b>regExp</b>) is a text string abbreviation to describe a search pattern. It can be used to find text that matches a pattern in a larger text, to replace the matching text, or to split the matching text into groups. The power of regular expressions resides in the ability express complex text patterns using one single expression.
+
+<p>Regular expressions are used in search engines, in search dialogs of text editors, in specialized text processing utilities such as <a href="https://en.wikipedia.org/wiki/Grep">grep</a>, <a href="https://en.wikipedia.org/wiki/Sed">sed</a> and <a href="https://en.wikipedia.org/wiki/AWK">AWK</a>, and in lexical analysis (the first phase of any compiler that converts the text of the program into a sequence of tokens). Many programming languages provide regular expression, in the language itself or via libraries.
+
+<p>Nowadays the most common syntax for regular expressions is the one of the <a href="https://perldoc.perl.org/perlre.html">Perl regular expressions</a>. The same syntax, with little changes, is used in the languages Php, Javascript, Python, Ruby, <a href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">Java</a>, .Net.
+
+
+<hr><h1>Module "RegExp"</h1>
+
+<p>The aim of this project is to write a closed module named "RegExp" containing a data representation for regExps and containing the implementation of some functions over regExps. In the functions, the regExps must to be interpreted directly, instead of being compiled to finite automata, as studied in theoretical computer science.
+
+<p>The module interface has already been fully written and you are not allowed to change it: <a href="files/RegExp.mli">RegExp.mli</a>. As you can see, the representation of the regular expressions is public and there is also a small number of public functions declared. All the other entities you define in the module body will be private.
+
+<p>Use this file as starting point to write your module body: <a href="files/RegExp.ml">RegExp.ml</a>.
+
+
+<hr><h1>Evaluation and grades</h1>
+
+You will submit the file "RegExp.ml" via Mooshak.
+
+<p>Around 80% of the grade of your group is automatically assigned by Mooshak. The remaining 20% is assigned manually by the teacher, who analyzes the quality of your code.
+
+<p>A special case: In case of code of extremely bad quality, or code that uses the forbidden imperative mechanisms of OCaml, or code that constantly simulates imperative mechanisms and concepts, a special rule will be used so that the grade will be always below 50%, even if the program works well.
+
+<p>To compile your module, Mooshak will use the following command
+
+<ul><pre>
+ocamlc -c RegExp.mli RegExp.ml
+</pre></ul>
+
+After the compilation, Mooshak tests the module in the interpreter like this: 
+
+<ul><pre>
+$ ocaml
+    Objective Caml version 4.02.3
+# #load "RegExp.cmo";;
+# open RegExp;;
+...
+...
+</pre></ul>
+
+<p>It is not mandatory to develop this project in Linux. However, you should test the final version of your module in the laboratories because the official environmental for this project is the Linux version installed in the laboratories.
+
+<p>It is also recommended you develop the project in Eclipse but, of course, this is also not mandatory. The best way to use Eclipse in this project is to develop the module using only the OCaml's interpreter. Please, make a backup of the file "RegExp.ml" once a while, because the file can disappear as result of human error or as result of a software/hardware malfunction.
+
+<hr><h1>Data representation</h1>
+
+<p> For the representation of regular expressions, we introduce an OCaml sum type that provide some of the forms supported by Perl, albeit using a different syntax:
+
+<ul><pre>
+type regExp =
+      Str of string
+    | Class of string
+    | NClass of string
+    | Any
+    | Seq of regExp * regExp
+    | Or of regExp * regExp
+    | Not of regExp
+    | Zero of regExp
+    | ZeroOrOne of regExp
+    | ZeroOrMore of regExp
+    | OneOrMore of regExp
+    | Repeat of int * int * regExp
+;;
+</pre></ul>
+
+Here is a small description of each form of regular expression:
+<ul><pre>
+Str(str)        - matches the string <i>str</i>
+Class(chars)    - matches a single char, any char contained in the string <i>chars</i>
+NClass(chars)   - matches a single char, any char not contained in the string <i>chars</i>
+Any             - matches a single char, any char whatsoever
+Seq(p,q)        - regexp <i>p</i> followed by regexp <i>q</i>
+Or(p,q)         - either the regexp <i>p</i> or the regexp <i>q</i>
+Not(p)          - matches the empty string if and only if the regexp <i>p</i> does not match anything
+Zero(p)         - always matches the empty string, no matter the regexp <i>p</i>
+ZeroOrOne(p)    - zero or one times the regexp <i>p</i>
+ZeroOrMore(p)   - zero or more times the regexp <i>p</i>
+OneOrMore(p)    - one or more times the regexp <i>p</i>
+Repeat(m,n,p)   - the regexp <i>p</i>, at least <i>m</i> but not more than <i>n</i> times
+</pre></ul>
+
+<p> To exemplify, here are some non-trivial regular expressions, and their meaning:
+
+<ul>
+<tt>OneOrMore (Class "aeiou")</tt><br><br>
+<ul>Matches any non-empty sequence of vowels.</ul>
+</ul>
+
+
+<ul>
+<tt>Seq(Str "aa", Not (Str "bb"))</tt><br><br>
+<ul>Matches any two consecutive 'a' not followed by two consecutive 'b'.</ul>
+</ul>
+
+
+<ul>
+<tt>Seq(Str "\"", Seq(ZeroOrMore (NClass "\""), Str "\""))</tt><br><br>
+<ul>Matches any double quoted sequence of chars, with no double quotes inside. This is approximately the syntax of the string literals in OCaml.</ul>
+</ul>
+
+
+<ul>
+<tt>Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))</tt><br><br>
+<ul>Matches any non-empty sequence of digits, optionally preceded by the minus sign. This is the syntax of the integer numbers in OCaml.</ul>
+</ul>
+
+
+<ul>
+<tt>let digit = Class "0123456789";;<br>
+let integer_part = Seq(ZeroOrMore (Str "-"), OneOrMore digit);;<br>
+let fractional_part = Seq(Str ".", ZeroOrMore digit);;<br>
+let exponent_part = Seq(Class "eE", Seq(Class "+-", OneOrMore digit));;<br>
+let number_decimal_literal = Seq(integer_part, Seq(ZeroOrOne fractional_part, ZeroOrOne exponent_part));;</tt><br><br>
+<ul>This is the syntax for decimal number literals in OCaml. Note that it includes both the integer decimal literals and the floating-point decimal literals.</ul>
+</ul>
+
+
+
+<hr><h1>Variants of the matching process</h1>
+
+<h2>Greedy matching and possessive matching</h2>
+
+We assume that we want to match the longest possible string, meaning we want to consume as much of possible from the input text. However, the most perfect way to achieve this, called <b>greedy matching</b>, is difficult to implement because requires a non-deterministic algorithm.
+
+<p>To exemplify, consider the input string:
+
+<ul><pre>
+|abcdefghijk|
+</pre></ul>
+
+and the regExp
+
+<ul><pre>
+Seq(Str "|", Seq(OneOrMore Any, Str "|"))
+</pre></ul>
+
+Using greedy matching, this regExp matches the entire string, but note that it required the matching of the middle sub-regExp to stop before the last char so that the global match could succeed with maximum length. Greedy matching is clever, indeed.
+
+<p>A simpler approach to matching is called <b>possessive matching</b> and is a deterministic process: each sub-regExp tries to match as much as possible and is not concerned with the global goals of the good global properties of the matching process. Applying possessive matching to the previous example, the matching fails because the middle sub-regExp grabs everything until the end, leaving nothing to the last sub-regExp.
+
+<p>Possessive matching is still useful, but we need to write our regExps more carefully. For example, the regExp of the example needs to be written like this:
+
+<ul><pre>
+Seq(Str "|", Seq(ZeroOrMore (NClass "|"), Str "|"))
+</pre></ul>
+
+Except where otherwise indicated, the functions of this project must implement possessive matching.
+
+<p>Note that in the case of the form <tt>Or(p,q)</tt>, we must try to match both sub-regExps. If both match, we are interested in the longer match.
+
+<h2>Matching without overlap and with overlap</h2>
+
+When trying to find all possible matches of a RegExp inside a piece of text, we always  parse the text from left to right looking for matches. But two possibilities arise: matching without overlap and matching with overlap.
+
+<p><b>Matching without overlap</b>, means that we need to make sure that the matching strings are disjoint. <b>Matching with overlap</b> means that we allow shared characters between the matching strings.
+
+<p>For example, consider the input string:
+
+<ul><pre>
+abcde
+</pre></ul>
+
+and the simple regExp
+
+<ul><pre>
+Seq(Any, Any)
+</pre></ul>
+
+Using matching without overlap there are only two matches: "ab" and "cd". Using matching with overlap there are five matches: "ab", "bc", "cd", "de".
+
+<p>Except where otherwise indicated, the multiple matching functions of this project must implement matching without overlap.
+
+
+
+
+<hr><h1>The public functions of the module</h1>
+
+There are 7 public functions to implement. Please, write the functions using the inductive method. You can also take advantage of the predefined functions of the <a href="http://caml.inria.fr/pub/docs/manual-ocaml-312/libref/List.html">module List</a>. Furthermore, in case you use other modules from the OCaml library, please make sure you never employ functions with side effects.
+
+
+<pre><b>matchAtStart : string -> regExp -> bool * string * string
+<i>let matchAtStart line re = ...</i>
+</b></pre>
+<ul>
+Tries to match a regExp with the begin of a string. The result is a triple. In case of success, the result consists in: the value <tt>true</tt>, the matched text, the rest of the text. In case of failure, the results consists in: the value <tt>false</tt>, the empty string, the empty string again. The variant of matching to implement is possessive matching.
+
+<p>It is easier to deal with lists of characters than with strings. Therefore, <tt>matchAtStart</tt> was already programmed as a simple adapter to another function, called <tt>matchAtStartRE</tt>, which receives and returns lists of characters. It is the function <tt>matchAtStartRE</tt> that you will need to program.
+
+<p>Recommendation: This function has several cases, some of them harder that the others. The hardest cases require some thinking, perhaps one or two days thinking about them. You should not hurry. You can leave the hardest cases for later and continue programming the other functions.
+
+<pre>
+# let z = matchAtStart "aabbcc" (Str "aa");;
+val z : bool * string * string = (true, "aa", "bbcc")
+# let z = matchAtStart "aabbcc" (Str "ab");;
+val z : bool * string * string = (false, "", "")
+# let z = matchAtStart "aaarest" (ZeroOrMore (Str "a"));;
+val z : bool * string * string = (true, "aaa", "rest")
+# let z = matchAtStart "aaaz" (ZeroOrOne (Str "a"));;
+val z : bool * string * string = (true, "a", "aaz")
+</pre></ul>
+
+
+<pre><b>firstMatch : string -> regExp -> bool * string * string * string
+<i>let firstMatch line re = ...</i>
+</b></pre>
+<ul>
+Searches a string, from left to right, looking for the first match of a given regExp. The result is a quadruple. In case of success, the result consists in: the value <tt>true</tt>, the preceding text, the matched text, the rest of the text. In case of failure, the results consists in: the value <tt>false</tt>, the empty string, the empty string, the empty string again. The variant of matching to implement is possessive matching.
+
+<p>It is easier to deal with lists of characters than with strings. Therefore, <tt>firstMatch</tt> was already programmed as a simple adapter to another function, called <tt>firstMatchRE</tt>, which receives and returns lists of characters. It is the function <tt>firstMatchRE</tt> that you will need to program.
+
+<pre>
+# let z = firstMatch "aabbcc" (Str "bb");;
+val z : bool * string * string * string = (true, "aa", "bb", "cc")
+# let z = firstMatch "aabbcc" (Str "d");;
+val z : bool * string * string * string = (false, "", "", "")
+# let z = firstMatch "preaaarest" (OneOrMore (Str "a"));;
+val z : bool * string * string * string = (true, "pre", "aaa", "rest")
+</pre></ul>
+
+
+
+
+<pre><b>allMatches : string -> regExp -> (string * string * string) list
+<i>let rec allMatches line re = ...</i>
+</b></pre>
+<ul>
+Searches a string, from left to right, looking for all the matches of a given regExp. The result is a list of triples. For each match there is a triple containing: the preceding text, the matched text, the rest of the text. The variant of matching to implement is possessive matching without overlap.
+
+<p>It is easier to deal with lists of characters than with strings. Therefore, <tt>allMatches</tt> was already programmed as a simple adapter to another function, called <tt>allMatchesRE</tt>, which receives and returns lists of characters. It is the function <tt>allMatchesRE</tt> that you will need to program.
+
+<pre>
+# let z = allMatches "aabbabb" (Str "a");;
+val z : (string * string * string) list =
+  [("", "a", "abbabb"); ("a", "a", "bbabb"); ("aabb", "a", "bb")]
+# let z = allMatches "aabbabb" (Str "z");;
+val z : (string * string * string) list = []
+# let z = allMatches "aabbccbb" (OneOrMore (Str "b") );;
+val z : (string * string * string) list =
+  [("aa", "bb", "ccbb"); ("aabbcc", "bb", "")]
+# let z = allMatches "aabbacac" (Seq (Str "a",Not (Str "b")));;
+val z : (string * string * string) list =
+  [("", "a", "abbacac"); ("aabb", "a", "cac"); ("aabbac", "a", "c")]
+</pre></ul>
+
+
+
+
+<pre><b>replaceAllMatches : string -> string -> regExp -> string
+<i>let replaceAllMatches line rpl re = ...</i>
+</b></pre>
+<ul>
+Searches a string, from left to right, looking for all the matches of a given regExp, and replacing each of them by a given string. The result is a simple string. The variant of matching to implement is possessive matching without overlap.
+
+<p>It is easier to deal with lists of characters than with strings. Therefore, <tt>replaceAllMatches</tt> was already programmed as a simple adapter to another function, called <tt>replaceAllMatchesRE</tt>, which receives and returns lists of characters. It is the function <tt>replaceAllMatchesRE</tt> that you will need to program.
+
+<pre>
+# let z = replaceAllMatches "aabbabb" "Q" (Str "ab");;
+val z : string = "aQbQb"
+</pre></ul>
+
+
+
+<pre><b>allMatchesFile : string -> regExp -> (string * string * string) list list
+<i>let allMatchesFile ni re = ...</i>
+</b></pre>
+<ul>
+Transverses a text file, line by line, and find for each line all the matches of a given regExp. The matches corresponding to each line are of type <tt>(string * string * string) list</tt> like in the function <tt>allMatches</tt>, so the result is a list of those lists. The variant of matching to implement is possessive matching without overlap.
+
+<pre>
+# let z = allMatchesFile "file.txt" (Str "bb");;
+val z : (string * string * string) list list =
+  [[("aa", "bb", "ccbb zz"); ("aabbcc", "bb", " zz")]; []; [("", "bb", "b")];
+   []; []; []; [("a", "bb", "a")]]
+
+This is the contents of file "file.txt" (as linhas "---" são só delimitadores que não
+fazem parte do ficheiro e servem para se perceber onde o ficheiro começa e
+onde acaba):
+---
+aabbccbb zz
+aa
+bbb
+
+
+ccc
+abba
+---
+</pre></ul>
+
+
+
+<pre><b>allMatchesOverlap : string -> regExp -> (string * string * string) list
+<i>let rec allMatchesOverlapRE line re = ...</i>
+</b></pre>
+<ul>
+Similar to the function <tt>allMatches</tt> except that the variant of matching to implement is possessive matching <b>with</b> overlap.
+
+<pre>
+# let z = allMatchesOverlap "oaabbbccbb zz" (Str "bb");;
+val z : (string * string * string) list =
+  [("oaa", "bb", "bccbb zz"); ("oaab", "bb", "ccbb zz");
+   ("oaabbbcc", "bb", " zz")]
+</pre></ul>
+
+
+
+
+<pre><b>matchAtStartGreedy : string -> regExp -> bool * string * string
+<i>let matchAtStartGreedy line re = ...</i>
+</b></pre>
+<ul>
+Similar to the function <tt>matchAtStart</tt> except that the variant of matching to implement is <b>greedy</b> matching.
+
+<pre>
+# let z = matchAtStartGreedy "|aaa|" (Seq (Str "|", Seq(OneOrMore(Any), Str "|")));;
+val z : bool * string * string = (true, "|aaa|", "")
+</pre></ul>
+
+
+
+
+
+
+
+
+
+
+<hr><h1>Regras principais</h1>
+<ul>
+<li>Produza um ficheiro chamado <tt>RegExp.ml</tt>. Nas regras de submissão, a publicar mais tarde, será explicada a forma de submeter no Mooshak.
+
+<li>O ficheiro "RegExp.ml" tem de incluir logo nas primeiras linhas, um comentário inicial contendo: <b>o nome e número dos dois alunos que realizaram o projeto</b>; indicação de quais as partes do trabalho que foram feitas e das que não foram feitas (para facilitar uma correção sem enganos); ainda possivelmente alertando para alguns aspetos da implementação que possam ser menos óbvios para o avaliador.
+
+<li>O projeto é para ser realizado por grupos de dois alunos. Um projeto entregue por três ou mais alunos vale zero valores. Poderão ser permitidos grupos de um aluno em circunstâncias especiais que terão de ser previamente autorizadas por AMD. 
+
+<li>Na realização deste projeto é proibido usar os mecanismos imperativos que a linguagem OCaml suporta mas não foram estudados nas aulas.
+<li>Mesmo que desenvolva o programa em Windows ou no MacOS, a versão final do seu programa deverá correr no sistema Linux instalado nos laboratórios.
+<li>Programe as funções recursivas usando o método indutivo. Também pode usar livremente funções de biblioteca, especialmente as disponíveis no módulo List.
+<li>O programa deve ser bem indentado, por forma a ficar bem legível. Além disso, a largura do programa não deve exceder as 80 colunas para poderem ser impressos. Podem haver algumas exceções, muito pontuais. Considera-se que um TAB ocupa quatro posições.
+<li>O não cumprimento das regras anteriores implica penalizações automáticas na nota.
+</ul>
+
+<hr><h1>Regras de entrega</h1> 
+<ul> 
+<li>Será ativado um concurso do Mooshak, que servirá para submeter os trabalhos. Os detalhes da forma de fazer a submissão serão divulgados nessa altura. Até lá preocupe-se apenas em escrever um bom programa.
+<li>Depois do prazo limite ainda se aceitam trabalhos atrasados, mas com penalizações na nota. Mais detalhes nas primeiras linhas deste enunciado.
+</ul> 
+ 
+<hr><h1>Outras regras</h1> 
+<ul> 
+<li>Apesar de o projeto ser de grupo, cada aluno, a título individual, tem a responsabilidade de responder por todo o projeto. Assim é indispensável que os dois membros de cada grupo programem efetivamente.
+<li>Não se proíbe que alunos de turnos práticos diferentes façam grupo. Isso é apenas desaconselhado.
+<li>Não há inscrição prévia dos grupos e basta que cada trabalho tenha 2 autores identificados.
+<li>A nota máxima do projeto é 20 valores.
+</ul> 
+ 
+<hr><h1>Avaliação</h1>
+
+O docente responsável pela gestão e pela avaliação deste trabalho é o Professor Artur Miguel Dias.
+
+<p>A nota do projeto será em grande parte determinada por meios automáticos, através do Mooshak. Portanto é essencial respeitar a especificação contida neste enunciado, em todos os seus detalhes.
+
+<p>Mas, relativamente a programas que funcionem minimamente, também haverá uma apreciação mais subjetiva da qualidade, tendo em conta aspetos, tais como:
+<ul>
+<li>organização,
+<li>clareza e simplicidade das ideias programadas,
+<li>bom uso da linguagem,
+<li>legibilidade do código,
+<li>em alguma medida, eficiência.
+</ul>
+
+Obviamente não é obrigatório fazer o trabalho todo para obter nota positiva. Mas, claro, vale a pena trabalhar para produzir uma solução bastante completa e com a melhor qualidade possível.
+<p>
+
+<hr><h1>Observações</h1>
+<ul>
+<li>Os grupos são incentivados a discutir entre si os aspetos gerais do projeto, inclusivamente no fórum. Mas sempre que chega o momento de escrever código concreto, esse tem de ser um esforço interno a cada grupo (trabalhando de forma independente de todos os outros grupos). A escrita de código exige esforço intelectual, mas só com esforço se consegue evoluir.
+<p><li>O objetivo deste projeto é levar os alunos a praticar. Um aluno que pratique de forma genuína ganha experiência e provavelmente não terá dificuldade em conseguir aprovação nos testes e exames.
+<p><li>Cuidado com as fraudes. Por exemplo, se alguém dum grupo oferecer o projeto resolvido a um elemento de outro grupo, trata-se duma fraude envolvendo dois grupos. Também se um grupo deixa distraidamente a área aberta e se alguém de outro grupo "rouba" o projeto, então também se considera fraude dos dois grupos. Ainda um terceiro caso: se dois grupos se juntam para fazer o projeto conjuntamente e depois o entregam em duplicado, então também se considera fraude. Em suma, cada grupo é responsável pelo seu projeto e não o pode mostrar ou oferecer, direta ou indiretamente, de propósito ou sem querer, o seu código a outro grupo. Note que é muito melhor ter zero num dos três projetos do que ser logo excluído da cadeira por motivo de fraude.
+</ul>
+
+
+
+
+
+<hr><h1>Final</h1>
+
+<p>Bom trabalho! Esperamos que goste.
+
+<hr><hr>

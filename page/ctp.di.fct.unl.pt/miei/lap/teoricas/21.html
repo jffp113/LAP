@@ -1,0 +1,130 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 21 (22/mai/2018)</H2>
+<p>A extensibilidade como ideia orientadora da escrita de programas orientados pelos objetos.
+<p>O uso de testes explícitos de tipo compromete a extensibilidade dos programas. A falta de modularidade compromete a extensibilidade dos programas.
+<p>Fatorização sim, mas na medida certa.
+<HR>
+
+
+
+<HR><h1>Extensibilidade e abstração</h1>
+
+Um <b>sistema extensível</b> é um sistema que se pode fazer crescer, sem que se tenha de se alterar o que já foi escrito.
+
+<p>A extensibilidade obtém-se pela via da <b>abstração</b>:
+
+<ul>
+<li>Código que seja escrito com base em conceitos abstratos consegue lidar com as entidades iniciais descritas no enunciado do problema, mas também (e aqui é que surge a extensibilidade) com entidades a criar no futuro. Claro que isto só funciona se as entidades futuras se enquadrarem nas abstrações inicialmente consideradas.
+</ul>
+
+<p>Apesar de não ser obrigatório, muitas vezes queremos escrever software extensível. As principais razões são as seguintes:
+
+<ul>
+<li>Os programas ficam organizados em torno de ideias gerais e claras.
+<li>Os programas ficam mais fáceis de atualizar.
+<li>O tempo de vida útil dos programas aumenta.
+<li>Os programas ficam mais fiáveis.
+<li>Poupa-se tempo e dinheiro.
+<li>Os programas ficam mais elegantes e tornam-se fonte de prazer estético (pelo menos para quem os escreve).
+</ul>
+
+<HR><h1>Extensibilidade através da fatorização</h1>
+
+A fatorização das classes é um <b>requisito</b> para obter extensibilidade. A fatorização faz parte do processo de desenho que ajuda a identificar as abstrações naturais dos programas.
+
+<p> Por vezes, basta fatorizar um sistema em torno de abstrações naturais, para ele ficar automaticamente extensível. Isso acontece quando não há iteração entre objetos, ou seja quando todas as operações disponíveis numa classe se aplicam ao objeto <b>this</b>, sem envolver outros objetos. Esta é a situação que apareceu nos exemplos finais da aula teórica 19 (em JavaScript). Também vai aparecer nos exercícios da aula prática 11.
+
+<p>Mas quando as operações envolvem o objeto <b>this</b> e outros objetos então a fatorização, só por si, <b>não é suficiente</b> para obter extensibilidade.
+
+
+<HR><h1>A evitar: Testes explícitos de tipo</h1>
+
+Existe uma questão que, de forma dramática, dá origem a <b>código não extensível</b>. Trata-se do uso de <b>testes para determinar o tipo dum objeto</b>. Esse teste costuma ser feito de forma direta, usando <tt class='notranslate'>instanceof</tt> ou <tt class='notranslate'>isPrototypeOf</tt>, mas por vezes também é feito de forma indireta, testando algum atributo do objeto, por exemplo o nome ou a cor.
+
+<P>Tal código nunca pode ser extensível, pois a sua lógica está comprometida com os tipos concretos existentes: ou seja, esse código não conseguirá lidar com novos tipos a criar no futuro. Nessa situação, para estender a lógica a novos tipos, seria necessário reescrever o código para tratar mais casos concretos, o que significa que o código não seria extensível.
+
+
+<h1>A evitar: Quebra de modularidade</h1>
+
+Uma classe deve tratar dos seus objetos e não se preocupar com as tarefas de outros objetos. A tarefas dos outros objetos são para implementar nas respetivas classes.
+
+<p>Por outras palavras: cada objeto tratar de si e não se preocupar em fazer as tarefas dos outros objetos.
+
+
+
+<hr><h1>Técnicas para evitar os testes explícitos de tipo</h1>
+
+Geralmente, nas funções que, para além do <b>this</b>, recebem outro objeto como argumento, surge a tentação de testar diretamente o tipo do argumento. Isso tem de ser evitado a todo o custo, se tivermos como objetivo a escrita de código extensível.
+
+<P>Vejamos algumas técnicas que permitem evitar os testes explícitos de tipo.
+
+<h2>Técnica do envio de mensagem</h2>
+
+Em vez de testar diretamente o tipo dum objeto, podemos enviar-lhe uma mensagem a perguntar alguma coisa. Tal código já é extensível pois funciona com quaisquer objetos que suportem uma dada função. Repare, funciona mesmo com objetos de tipos a criar futuramente.
+
+<p>Por exemplo, num jogo baseado numa matriz bidimensional, em que vários monstros perseguem um herói, o que é que um monstro deverá fazer quando se cruza com outra personagem? Imagine que se trata duma função <tt class='notranslate'>meets(vizinho)</tt> da classe Monstro.
+<ul>
+<li><b>Versão errada</b> (visão dum mundo fechado) -- O monstro determina, usando a expressão <tt class='notranslate'>Hero.isPrototypeOf(vizinho)</tt>, se o vizinho é um herói. Se for um herói, então o monstro almoça-o. Se não for um herói, então não faz nada. Este código não é nada extensível pois a sua lógica está dependente das classes concretas iniciais.
+<P><li><b>Versão correta</b> (visão dum mundo aberto) -- O monstro envia ao vizinho a mensagem <tt class='notranslate'>vizinho.comestível()</tt> e depois atua em conformidade com a resposta. Este código já é extensível, pois funciona com qualquer personagem, mesmo com uma personagem a criar futuramente, que saiba responder à pergunta <tt class='notranslate'>comestível()</tt>.
+</ul>
+
+<p>Em conclusão, conseguimos escrever código extensível <b>introduzindo o conceito abstrato</b> de <i>comestível</i>.
+
+<p>Relativamente a detalhes de implementação, tipicamente define-se o método <tt class='notranslate'>comestível</tt> na raiz da hierarquia de classes retornando o valor <tt class='notranslate'>false</tt>. Desta forma, por omissão, os personagens não são comestíveis. Os personagens que forem comestíveis redefinem o método para retornar <tt class='notranslate'>true</tt>.
+
+
+<h2>Técnica dos níveis</h2>
+
+Suponha que no jogo existem muitas classes diferentes de personagens, e que entre essas classes de personagens se estabelecem complexas regras de alimentação, de tipo <i>cadeia alimentar</i>. Neste caso, uma simples função booleana <i>comestível</i> não chega para capturar tal riqueza de relações.
+
+<P>Neste caso, convém associar um <i>nível alimentar</i> a cada tipo de personagem e estabelecer a seguinte regra: uma personagem pode comer outra só no caso do nível alimentar da primeira ser superior ao da segunda. Concretamente, um objeto pode comer o seu vizinho se:
+<ul><pre class='notranslate'>this.nivelAlimentar() > vizinho.nivelAlimentar()</pre></ul>
+
+
+<h2>Métodos binários</h2>
+
+Chama-se método binário a um método com um argumento, em que se espera que o valor do argumento tenha exatamente o mesmo tipo concreto de <tt class='notranslate'>this</tt>. [<a href="http://lucacardelli.name/Papers/Binary.pdf" target="n">Paper sobre métodos binários</a>].
+
+<p>Por exemplo, para efeitos de reprodução, um objeto pode precisar de saber se um outro objeto, seu vizinho, é do mesmo tipo. Como fazer isso de forma geral, sem ter de referir o tipo concreto?
+
+<P>Faz-se assim em JavaScript:
+
+<ul><pre class='notranslate'>
+this.constructor == vizinho.constructor
+</pre></ul>
+
+Em Java:
+
+<ul><pre class='notranslate'>
+getClass() == vizinho.getClass()
+</pre></ul>
+
+Em C++:
+
+<ul><pre class='notranslate'>
+#include &lt;typeinfo>
+
+typeid(*this) == typeid(*vizinho)
+</pre></ul>
+
+<h2>Exercício sobre métodos binários</h2>
+
+Observe o método <tt class='notranslate'>equals</tt> das classes <tt class='notranslate'>Point1</tt>, <tt class='notranslate'>Point2</tt>, <tt class='notranslate'>Point3</tt>  da aula teórica 20. Esse método não é binário pois permite comparar pontos de diferentes tipos: compara os campos em comum de <tt class='notranslate'>this</tt> e <tt class='notranslate'>that</tt> e ignora os campos que não sejam comuns.
+
+<p>Agora imagine que você pretende tornar binário o método  <tt class='notranslate'>equals</tt>, ou seja fazer com que ele só dê <tt class='notranslate'>true</tt> no caso de <tt class='notranslate'>this</tt> e <tt class='notranslate'>that</tt> serem do mesmo tipo concreto e dos campos correspondentes serem iguais. Como fazer?
+
+<p>Tente resolver o problema modificando apenas o método <tt class='notranslate'>equals</tt> na classe <tt class='notranslate'>Point1</tt>.
+
+<HR><h1>Fatorização sim, mas na medida certa</h1>
+
+Quando se fatoriza o código, é preciso cuidado para não exagerar a ponto de começar a trocar herança por generalidade. Ao trocar herança por generalidade perdemos extensibilidade, além de que o código começa a ficar complicado e confuso.
+
+<p>Repare que, no limite, a essência que qualquer hierarquia de classes pode ser capturada numa classe única, sem nunca se chegar a usar herança. Essa classe fica muito geral e muito complexa, cheia de variáveis que servem para representar as diferentes propriedades de diversos tipos de entidades ao mesmo tempo. As funções também ficam muito complexas e cheias de ifs porque têm de lidar com muitos casos. No limite, até é possível criar uma única classe, muito geral, complexa e confuso, para representar ao mesmo tempo o Herói e os Monstros, sem nunca se chegar a usar herança.
+
+<p> Esse código não é extensível. Para incorporar um novo tipo de entidade, seria preciso alterar o código para passar a tratar mais um caso, o que prova que não é extensível.
+
+
+<HR><HR>
+#

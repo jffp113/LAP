@@ -1,0 +1,635 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 18 (10/mai/2018)</H2>
+Introdução à linguagem JavaScript.<br />
+Porque vamos trabalhar com a linguagem JavaScript? <br />
+JavaScript embebido numa consola.<br />
+JavaScript embebido num WEB browser.<br />
+DOM - Document Object Model.
+<p>
+<HR>
+
+
+<HR><h1>Introdução à linguagem <A HREF="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</A></h1>
+
+<A HREF="http://safari.oreilly.com/0596101996/jscript5-CHP-1"><img src="images/javascript.jpg"></A>
+
+<A HREF="http://en.wikipedia.org/wiki/Brendan_Eich"><img src="images/BrendanEich.jpg"></A>
+<b>Brendan Eich</b>
+
+
+<h1>Algumas características</h1>
+
+<ul>
+
+<li>O principal responsável pelo desenho e implementação foi Brendan Eich. Esse trabalho começou a ser realizado no final de 1995 na empresa Netscape Communications. Inicialmente ele foi contratado para tornar a linguagem Java, já integrada no browser Netscape, mais fácil de usar por não-programadores. Mas rapidamente ele decidiu que que era necessário criar uma linguagem de scripting nova para facilitar a gestão dos elementos das páginas WEB. Acima de tudo era importante tornar a linguagem acessível a WEB designers com poucos conhecimentos de programação.
+
+<p><li>O grande objetivo inicial do Java e depois do JavaScript foi adicionar interatividade a páginas WEB. O JavaScript foi concebido para a execução de tarefas simples, para as quais o Java era demasiado pesado. Contudo, por várias razões, o JavaScript é usado atualmente em projetos grandes e de formas que ultrapassam as intenções originais. As características da linguagem que a tornam fácil de usar acabam por se revelar problemáticas nessas situações. (Votaremos a este assunto numa próxima aula).
+
+<p><li>Hoje em dia, a linguagem JavaScript está integrada em diversos tipos de aplicações, não só em browsers. Só alguns exemplos: a aplicação Acrobat usa-a para manipular ficheiros PDF; os controlos remotos programáveis topo-da-gama da Philips usam-na; potencialmente, qualquer aplicação escrita em Java 6.0, ou versão mais recente, pode integrar JavaScript usando o package <tt class='notranslate'>javax.script</tt>.
+
+<p><li>É uma linguagem que foi padronizada pela organização ECMA em 1997 e esse padrão tem evoluído: a versão atual é designada por 5.1. Há diferentes dialetos desse standard ECMA que, para além do núcleo padronizado, suportam diversas extensões. Para além do JavaScript, existe o JScript, o ActionScript, etc.
+
+<p><li>A especificação ECMA diz que a linguagem deve poder ser interpretada, por forma a que seja possível correr scripts gerados dinamicamente.
+
+<p><li>O corpo das funções tem uma sintaxe semelhante à do Java e outros aspetos superficiais imitam o Java (e.g. classe Math). Contudo, todo o resto da linguagem é diferente do Java: trata-se duma linguagem com tipificação dinâmica, que suporta programação funcional, e ao nível dos objetos baseia-se nas ideias invulgares da linguagem Self. A escolha do nome JavaScript foi apenas uma decisão de marketing tomada em 1995.
+
+<p><li>A maioria das implementações assume que os programas correm dentro dum ambiente, e.g. um browser, que disponibiliza os objetos e os métodos com os quais a linguagem vai interagir. Só por si, a linguagem nem sequer possui operações de entrada (input) ou de saida (output).
+
+<p><li>Suporta o uso de expressões regulares na manipulação de texto (inspirado no Awk e Perl).
+
+<p><li>Tem gestão automática de memória, tal como o Java, mas opcionalmente pode ser usada uma primitiva <tt class='notranslate'>delete</tt> para apagar explicitamente objetos, tal como em C++.
+
+<p><li>O JavaScript é uma linguagem híbrida que suporta os paradigmas imperativo (procedimental), funcional e orientado pelos objetos.
+
+</ul>
+
+
+
+
+<h1>Versões do JavaScript</h1>
+
+A implementação original feita por Brendan Eich evoluiu com o tempo, e deu origem a duas implementações que atualmente são <i>open source</i> e são mantidas pela Mozilla Foundation:
+
+<ul>
+<li><A HREF="http://en.wikipedia.org/wiki/SpiderMonkey">SpiderMonkey</A> - Escrito em C.
+<li><A HREF="http://en.wikipedia.org/wiki/Rhino_%28JavaScript_engine%29">Rhino</A> - Escrito em Java para permitir usar scripting dentro de programas Java. Serviu de base ao novo package <tt class='notranslate'>javax.script</tt>, introduzido no Java 6.0.
+</ul>
+
+Outra implementação mais que importa referir é a seguinte:
+
+<ul>
+<li><A HREF="http://en.wikipedia.org/wiki/Node.js">node.js</A> - Escrito pela Google e usado no Google Chrome. Muito rápido.
+ </ul>
+
+
+O JavaScript foi padronizado em 1997. O padrão chama-se ECMA-262, sendo ECMAScript o nome oficial da linguagem. No entanto, a linguagem continua a ser conhecida informalmente como JavaScript.
+
+<ul>
+<li>JavaScript 1.0 - 1995  
+<li><A HREF="http://developer.mozilla.org/en/docs/New_in_JavaScript_1.1">JavaScript 1.1</A> - 1996
+<li> ECMAScript 1 - 1997
+<li> ECMAScript 2 - 1998
+<li> ECMAScript 3 - 1999 - Introduz expressões regulares e exceções
+<li> ECMAScript 5 - 2009 - Introduz JSON, geradores, iteradores, <i>compreensões</i> usando arrays, expressões <tt class='notranslate'>let</tt>, etc.
+<li> ECMAScript 5.1 - 2010
+<li> ECMAScript 6 - 2015 - Introduz classes e modulos. As classes seguem o modelo do Java.
+<li> ECMAScript 7 - 2016 - Introduz Array.prototype.includes.
+<li> ECMAScript 8 - 2017 - Introduz await/async.
+</ul>
+
+
+<h1>Bibliotecas e frameworks</h1>
+
+Existem bibliotecas e frameworks que ajudam a escrever programas JavaScript sofisticados, com interfaces ambiciosas. Eis alguns das mais usados:
+
+<ul>
+<li><A HREF="http://en.wikipedia.org/wiki/JQuery">JQuery</A>
+<li><A HREF="http://en.wikipedia.org/wiki/Prototype_JavaScript_Framework">Prototype Framework</A>
+<li><A HREF="http://en.wikipedia.org/wiki/Script.aculo.us">script.aculo.us</A>
+</ul>
+
+<HR><h1>Porque vamos trabalhar com a linguagem JavaScript?</h1>
+Na nossa cadeira, vamos estudar e trabalhar com a linguagem JavaScript por diversas razões. Eis as principais:
+
+<ul>
+<li>Para tomarmos contacto com uma linguagem de scripting, para percebermos as características destas linguagens, e para sabermos quais as situações em que é vantajoso usá-las.
+<li>Para estudarmos uma linguagem com um sistema de tipos dinâmico.
+<li>Para estudarmos uma linguagem em que o sistema de objetos é baseado em protótipos e não em classes.
+<li>Para revisitarmos o paradigma orientado pelos objetos.
+<li>Para fazermos uma pequena introdução à programação Web do lado do cliente e do lado do servidor.
+</ul>
+
+
+<HR><h1>JavaScript embebido numa consola</h1>
+
+O JavaScript só pode ser usado na prática, integrado num ambiente de execução que forneça objetos e métodos para interação com o exterior.
+
+<p>A versão de consola do Node.js corre num ambiente que fornece um <A HREF="https://nodejs.org/api/repl.html">interpretador interativo</A> e uma <A HREF="https://nodejs.org/api/console.html">consola</A>, que disponibiliza uma operação de escrita <tt class='notranslate'>log</tt>.
+
+
+<p>Examine bem esta pequena sessão de trabalho com a versão de consola do interpretador Node.js. Constitui um bom primeiro contacto com a linguagem.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+<b>// Correr nodejs</b>
+$nodejs
+
+<b>//Matemática simples</b>
+> 1 + 1
+2
+
+> d = Math.PI * 2 * 2
+12.566370614359172
+
+> Math.random()
+0.25688508804887533
+
+> typeof(1)
+number
+
+> typeof(1.0)
+'number'
+
+<b>// Strings</b>
+> "hello, world"[0]
+'h'
+
+> "hello, world".replace("hello", "goodbye")
+'goodbye, world'
+
+> x = 12.4 + "144"
+'12.4144'
+
+> typeof(x)
+'string'
+
+> typeof(parseInt("123", 10))
+'number'
+
+> parseInt("aaa", 10)    // conversão base 10
+NaN
+
+> parseInt("aaa", 16)    // conversão base 16
+2730
+
+<b>// Ciclos</b>
+> for (i = 0; i &lt; 5; i++)
+        console.log(i)
+0
+1
+2
+3
+4
+
+<b>// Arrays</b>
+> a = ["dog", "cat", "hen"]
+[ 'dog', 'cat', 'hen' ]
+
+> a.length
+3
+
+> a[0] = 123.45
+123.45
+
+> a
+[ 123.45, 'cat', 'hen' ]
+
+> typeof(a[0])
+'number'
+
+> typeof(a)
+'object'
+
+
+<b>// Funções</b>
+> function f(x) { return x + 1; }
+
+> typeof(f)
+'function'
+
+> f(7)
+8
+
+> function curriedAdd(x)
+     { return function(y) { return x + y; } }
+
+> var g = curriedAdd(5)
+
+> g(1)
+6
+
+<b>// Fim</b>
+> .exit    // ou CTRL-D
+
+$
+</pre></table></ul>
+
+Com apenas duas exceções, as expressões anteriores também funcionam no "JavaScript Shell" (disponível na coluna da esquerda da página da cadeira) e também na consola do "Firebug", uma extensão do Firefox que pode ser instalada a partir do site http://getfirebug.com.
+
+<p></p>
+
+<HR><h1>JavaScript embebido num WEB browser</h1>
+
+Virtualmente todos os browsers atuais têm um interpretador de JavaScript embebido. Cada browser proporciona ao JavaScript um ambiente de execução com objetos e métodos que permitem usar essa linguagem para criar páginas WEB interativas.
+
+<p>Chama-se <A HREF="http://en.wikipedia.org/wiki/Document_Object_Model">DOM - Document Object Model</A> ao ambiente que qualquer browser é obrigado a disponibilizar ao JavaScript, caso queira suportar a linguagem. O DOM implementa a visão que o JavaScript tem das páginas escritas em HTML e do estado interno do browser. Usando o DOM, o JavaScript consegue examinar e modificar dinamicamente qualquer página WEB e ainda examinar e modificar o estado do browser.
+
+<p>DOM é um padrão controlado pela organização W3C - World Wide Web Consortium, a mesma organização que controla o padrão HTML, XML e muitos outros padrões da WEB.
+
+<p>Para usar JavaScript integrado numa página WEB é necessário saber um pouco de HTML. Nas nossas aulas vamos restinguir-nos à programação de <A HREF="http://en.wikipedia.org/wiki/Html_form" target="n">formulários HTML </A> (HTML forms).
+
+<p>Convém saber que há incompatibilidades entre diferentes browsers em diferentes plataformas. Conseguir fazer um programa em JavaScript que funcione em todos os browser existentes é uma tarefa complicada.
+
+
+
+
+<h2>Exemplo 1</h2>
+
+O seguinte exemplo é um formulário simples que permite somar números. O formulário é constituída por três caixas de texto, a terceira das quais é <i>read-only</i>, e por um botão.
+Por favor, brinque um pouco com o formulário para perceber o seu comportamento.
+
+<SCRIPT TYPE="text/javascript">
+function compute(n1, n2) {
+    return n1 + n2;
+}
+function runForm1(form) {
+    form.text3.value = compute(parseFloat(form.text1.value), parseFloat(form.text2.value));
+}
+</SCRIPT>
+
+<ul><table border="1"><tr><td>
+<H1>Adder</H1>
+<FORM NAME="form1">
+     <INPUT TYPE="text" NAME="text1" VALUE="1.2" SIZE=10 style="text-align: right">
+   + <INPUT TYPE="text" NAME="text2" VALUE="3.4" SIZE=10 style="text-align: right">
+   = <INPUT TYPE="text" NAME="text3" VALUE="4.6" SIZE=25 READONLY style="text-align: right; font-weight : bold">
+ <p> <INPUT TYPE="button" NAME="button1" VALUE="Add" ONCLICK="runForm1(form)">
+</FORM>
+</table></ul>
+
+
+Agora examine o código HTML e JavaScript que implementa o formulário anterior. Repare que no botão "Add" o atributo ONCLICK tem associado código que será executado sempre que o botão gerar um <b>evento de click</b>.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+<b>&lt;HTML></b>
+
+<b>&lt;HEAD></b>
+&lt;TITLE>MyDocument&lt;/TITLE>
+
+&lt;SCRIPT TYPE="text/javascript">
+function compute(n1, n2) {
+    return n1 + n2;
+}
+function runForm1(form) {
+    form.text3.value = compute(parseFloat(form.text1.value), parseFloat(form.text2.value));
+}
+&lt;/SCRIPT>
+<b>&lt;/HEAD></b>
+
+<b>&lt;BODY></b>
+&lt;H1>Adder&lt;/H1>
+&lt;FORM NAME="form1">
+     &lt;INPUT TYPE="text" NAME="text1" VALUE="1.2" SIZE=10 style="text-align: right">
+   + &lt;INPUT TYPE="text" NAME="text2" VALUE="3.4" SIZE=10 style="text-align: right">
+   = &lt;INPUT TYPE="text" NAME="text3" VALUE="4.6" SIZE=25 READONLY style="text-align: right; font-weight: bold">
+ &lt;p> &lt;INPUT TYPE="button" NAME="button1" VALUE="Add" ONCLICK="runForm1(form)">
+&lt;/FORM>
+<b>&lt;/BODY></b>
+
+<b>&lt;/HTML></b>
+</pre></table></ul>
+
+
+
+<h2>Exemplo 2</h2>
+
+O seguinte exemplo é uma <i>form</i> contendo botões de rádio e uma área de texto. Por favor, teste o formulário.
+
+<SCRIPT>
+function runForm2(form) {
+    var msg = "Sent by: ";
+    msg += form.firstname.value + " " + form.lastname.value;
+    msg += " (" + form.email.value + ") ";
+    if( form.sex1.checked ) {
+        msg += " [male]";
+    }
+    else if( form.sex2.checked ) {
+        msg += " [female]";
+    }
+    else {
+        msg += " []";
+    }
+    msg += "\nMesg: " + form.textarea1.value;
+    alert(msg);
+}
+</SCRIPT>
+
+<ul><table border="1"><tr><td>
+<H1>Send Messages</H1>
+<FORM NAME="form2">
+    First name: <INPUT TYPE="text" NAME="firstname"><BR>
+    Last name: <INPUT TYPE="text" NAME="lastname"><BR>
+    email: <INPUT TYPE="text" NAME="email"><BR>
+    <INPUT TYPE="radio" NAME="sex1" VALUE="Male" ONCLICK="sex2.checked=false"> Male
+    <INPUT TYPE="radio" NAME="sex2" VALUE="Female" ONCLICK="sex1.checked=false"> Female<BR>
+    <P><B>Your Message</B><BR>
+    <TEXTAREA NAME="textarea1" ROWS="5" COLS="50">Supercalifragilisticexpialidocious.</TEXTAREA>
+    <P><INPUT TYPE="button" NAME="button1" VALUE="Send" ONCLICK="runForm2(form)">
+    <INPUT type="reset">
+</FORM>
+</table></ul>
+
+Eis o código HTML e JavaScript correspondentes:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+<b>&lt;HTML></b>
+
+<b>&lt;HEAD></b>
+&lt;TITLE>MyDocument&lt;/TITLE>
+
+&lt;SCRIPT>
+function runForm2(form) {
+    var msg = "Sent by: ";
+    msg += form.firstname.value + " " + form.lastname.value;
+    msg += " (" + form.email.value + ") ";
+    if( form.sex1.checked ) {
+        msg += " [male]";
+    }
+    else if( form.sex2.checked ) {
+        msg += " [female]";
+    }
+    else {
+        msg += " []";
+    }
+    msg += "\nMesg: " + form.textarea1.value;
+    alert(msg);
+}
+&lt;/SCRIPT>
+<b>&lt;/HEAD></b>
+
+<b>&lt;BODY></b>
+&lt;H1>Send Messages&lt;/H1>
+&lt;FORM NAME="form2">
+    First name: &lt;INPUT TYPE="text" NAME="firstname">&lt;BR>
+    Last name: &lt;INPUT TYPE="text" NAME="lastname">&lt;BR>
+    email: &lt;INPUT TYPE="text" NAME="email">&lt;BR>
+    &lt;INPUT TYPE="radio" NAME="sex1" VALUE="Male" ONCLICK="sex2.checked=false"> Male
+    &lt;INPUT TYPE="radio" NAME="sex2" VALUE="Female" ONCLICK="sex1.checked=false"> Female&lt;BR>
+    &lt;P>&lt;B>Your Message&lt;/B>&lt;BR>
+    &lt;TEXTAREA NAME="textarea1" ROWS="5" COLS="50">Supercalifragilisticexpialidocious.&lt;/TEXTAREA>
+    &lt;P>&lt;INPUT TYPE="button" NAME="button1" VALUE="Send" ONCLICK="runForm2(form)">
+    &lt;INPUT type="reset">
+&lt;/FORM>
+<b>&lt;/BODY></b>
+
+<b>&lt;/HTML></b>
+</pre></table></ul>
+
+
+<h2>Exemplo 3</h2>
+
+O seguinte exemplo mostra como se pode carregar um novo URL, mudando assim completamente o conteúdo do documento corrente. Também ilustra a criação duma caixa de alerta.
+
+<SCRIPT TYPE="text/javascript">
+function runForm3(form) {
+    var url = form.url.value;
+    if( url == "" ) {
+        alert("Error: Empty URL");
+    }
+    else {
+        document.location = url;   // Change the current document
+    }
+}
+</SCRIPT>
+
+<ul><table border="1"><tr><td>
+<H1>Goto WEB page</H1>
+<FORM NAME="form3">
+    Enter URL: <INPUT TYPE="text" NAME="url" SIZE=40>
+    <P><INPUT TYPE="button" NAME="button1" VALUE="Goto" ONCLICK="runForm3(form)">
+    <INPUT type="reset">
+</FORM>
+</table></ul>
+
+Eis o código HTML e JavaScript correspondentes:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+<b>&lt;HTML></b>
+
+<b>&lt;HEAD></b>
+&lt;TITLE>MyDocument&lt;/TITLE>
+
+&lt;SCRIPT>
+function runForm3(form) {
+    var url = form.url.value;
+    if( url == "" ) {
+        alert("Error: Empty URL");
+    }
+    else {
+        document.location = form.url.value;   // Change URL
+    }
+}
+&lt;/SCRIPT>
+<b>&lt;/HEAD></b>
+
+<b>&lt;BODY></b>
+&lt;H1>Goto WEB page&lt;/H1>
+&lt;FORM NAME="form3">
+    Enter URL: &lt;INPUT TYPE="text" NAME="url" SIZE=40>
+    &lt;P>&lt;INPUT TYPE="button" NAME="button1" VALUE="Goto" ONCLICK="runForm3(form)">
+    &lt;INPUT type="reset">
+&lt;/FORM>
+<b>&lt;/BODY></b>
+
+<b>&lt;/HTML></b>
+</pre></table></ul>
+
+
+<h2>Exemplo 4</h2>
+
+O seguinte exemplo serve para ilustrar a operação <A HREF="http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Functions:eval">eval</A> do JavaScript. Como já foi dito antes, todas as implementações de JavaScript devem ser capazes de interpretar código gerado dinamicamente. Isso pressupõe a existência duma função <tt class='notranslate'>eval</tt> para correr código JavaScript arbitrário.
+
+<ul><table border="1"><tr><td>
+<H1>Calculator</H1>
+<FORM NAME="form4">
+    <TABLE BORDER=10>
+    <TR><TD>
+        <INPUT TYPE="text" NAME="display" Size="14">
+    </TD></TR>
+    <TR><TD>
+        <INPUT TYPE="button" NAME="1" VALUE="1" ONCLICK="form.display.value += '1'">
+        <INPUT TYPE="button" NAME="2" VALUE="2" ONCLICK="form.display.value += '2'">
+        <INPUT TYPE="button" NAME="3" VALUE="3" ONCLICK="form.display.value += '3'">
+        <INPUT TYPE="button" NAME="+" VALUE="+" ONCLICK="form.display.value += '+'">
+    <br>
+        <INPUT TYPE="button" NAME="4" VALUE="4" ONCLICK="form.display.value += '4'">
+        <INPUT TYPE="button" NAME="5" VALUE="5" ONCLICK="form.display.value += '5'">
+        <INPUT TYPE="button" NAME="6" VALUE="6" ONCLICK="form.display.value += '6'">
+        <INPUT TYPE="button" NAME="-" VALUE="-" ONCLICK="form.display.value += '-'">
+    <br>
+        <INPUT TYPE="button" NAME="7" VALUE="7" ONCLICK="form.display.value += '7'">
+        <INPUT TYPE="button" NAME="8" VALUE="8" ONCLICK="form.display.value += '8'">
+        <INPUT TYPE="button" NAME="9" VALUE="9" ONCLICK="form.display.value += '9'">
+        <INPUT TYPE="button" NAME="*" VALUE="*" ONCLICK="form.display.value += '*'">
+    <br>
+        <INPUT TYPE="button" NAME="C" VALUE="C" ONCLICK="form.display.value = ''">
+        <INPUT TYPE="button" NAME="0" VALUE="0" ONCLICK="form.display.value += '0'">
+        <INPUT TYPE="button" NAME="=" VALUE="=" ONCLICK="form.display.value = eval(form.display.value)">
+        <INPUT TYPE="button" NAME="/" VALUE="/" ONCLICK="form.display.value += '/'">
+    </TD></TR>
+    </TABLE>
+</FORM>
+</table></ul>
+
+Eis o código HTML e JavaScript que implementa a calculadora. A implementação é verdadeiramente simples. Constrói no mostrador da calculadora, a pouco e pouco, a expressão introduzida pelo utilizador sob a forma de string. No final, quando o utilizador carrega na tecla '=', invoca a função <tt class='notranslate'>eval</tt> para avaliar a o conteúdo da string. Este truque funciona bem porque as expressões aritméticas do JavaScript têm a sintaxe habitual da matemática.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+<b>&lt;HTML></b>
+
+<b>&lt;HEAD></b>
+&lt;TITLE>MyDocument&lt;/TITLE>
+<b>&lt;/HEAD></b>
+
+<b>&lt;BODY></b>
+&lt;H1>Calculator&lt;/H1>
+&lt;FORM NAME="form4">
+    &lt;TABLE BORDER=10>
+    &lt;TR>&lt;TD>
+        &lt;INPUT TYPE="text" NAME="display" Size="14">
+    &lt;/TD>&lt;/TR>
+    &lt;TR>&lt;TD>
+        &lt;INPUT TYPE="button" NAME="1" VALUE="1" ONCLICK="form.display.value += '1'">
+        &lt;INPUT TYPE="button" NAME="2" VALUE="2" ONCLICK="form.display.value += '2'">
+        &lt;INPUT TYPE="button" NAME="3" VALUE="3" ONCLICK="form.display.value += '3'">
+        &lt;INPUT TYPE="button" NAME="+" VALUE="+" ONCLICK="form.display.value += '+'">
+    &lt;br>
+        &lt;INPUT TYPE="button" NAME="4" VALUE="4" ONCLICK="form.display.value += '4'">
+        &lt;INPUT TYPE="button" NAME="5" VALUE="5" ONCLICK="form.display.value += '5'">
+        &lt;INPUT TYPE="button" NAME="6" VALUE="6" ONCLICK="form.display.value += '6'">
+        &lt;INPUT TYPE="button" NAME="-" VALUE="-" ONCLICK="form.display.value += '-'">
+    &lt;br>
+        &lt;INPUT TYPE="button" NAME="7" VALUE="7" ONCLICK="form.display.value += '7'">
+        &lt;INPUT TYPE="button" NAME="8" VALUE="8" ONCLICK="form.display.value += '8'">
+        &lt;INPUT TYPE="button" NAME="9" VALUE="9" ONCLICK="form.display.value += '9'">
+        &lt;INPUT TYPE="button" NAME="*" VALUE="*" ONCLICK="form.display.value += '*'">
+    &lt;br>
+        &lt;INPUT TYPE="button" NAME="C" VALUE="C" ONCLICK="form.display.value = ''">
+        &lt;INPUT TYPE="button" NAME="0" VALUE="0" ONCLICK="form.display.value += '0'">
+        &lt;INPUT TYPE="button" NAME="=" VALUE="=" ONCLICK="form.display.value = eval(form.display.value)">
+        &lt;INPUT TYPE="button" NAME="/" VALUE="/" ONCLICK="form.display.value += '/'">
+    &lt;br>
+    &lt;/TD>&lt;/TR>
+    &lt;/TABLE>
+&lt;/FORM>
+<b>&lt;/BODY></b>
+
+<b>&lt;/HTML></b>
+</pre></table></ul>
+
+<h2>Exemplo 5</h2>
+
+O seguinte exemplo ilustra o uso dum <A HREF="http://pt.wikipedia.org/wiki/Canvas_%28HTML5%29"><b>canvas</b></A> em JavaScript. Um canvas é simplesmente um retângulo onde se podem desenhar gráficos.
+
+<ul><table border="1"><tr><td>
+<H1>Example of Canvas</H1>
+<CANVAS id="canvas1" width="200" height="100" style="border:1px solid #000000"></CANVAS>
+<SCRIPT>
+    var c=document.getElementById("canvas1");
+    var ctx=c.getContext("2d");
+
+    ctx.fillStyle="#FF0000";
+    ctx.fillRect(0,0,150,75);
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(200,100);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(95,50,40,0,2*Math.PI);
+    ctx.stroke();
+
+    ctx.fillStyle="#00FF00";
+    ctx.font="30px Arial";
+    ctx.fillText("Hello World",10,50);
+</SCRIPT>
+</table></ul>
+</table></ul>
+
+
+
+Examine o código HTML e JavaScript que implementa o retângulo anterior.
+
+<p>O preenchimento do canvas só pode ser feito depois do canvas ter sido criado. Uma forma de fazer isso é colocar o código JavaScript nas linhas imediatamente a seguir à definição do canvas. Mas é considerado pouco elegante misturar código JavaScript com código HTML no body da página. É preferível colocar o código JavaScript dentro do header da página, como temos feito sempre, e invocar esse código depois da página ter sido carregada. Existe um <b>evento de onload</b> que é ativado quando a página é carregada. Esse evento é capturado usando o atributo ONLOAD no elemento BODY.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+<b>&lt;HTML></b>
+
+<b>&lt;HEAD></b>
+&lt;TITLE>Canvas&lt;/TITLE>
+
+&lt;SCRIPT>
+function fillCanvas() {
+    var c=document.getElementById("canvas1");
+    var ctx=c.getContext("2d");
+
+    ctx.fillStyle="#FF0000";
+    ctx.fillRect(0,0,150,75);
+
+    ctx.moveTo(0,0);
+    ctx.lineTo(200,100);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(95,50,40,0,2*Math.PI);
+    ctx.stroke();
+
+    ctx.fillStyle="#00FF00";
+    ctx.font="30px Arial";
+    ctx.fillText("Hello World",10,50);
+}
+&lt;/SCRIPT>
+<b>&lt;/HEAD></b>
+
+&lt;<b>BODY</b> ONLOAD="fillCanvas()">
+&lt;H1>Example of Canvas&lt;/H1>
+&lt;CANVAS id="canvas1" width="200" height="100" style="border:1px solid #000000">
+    This text is displayed if your browser does not support HTML5 Canvas
+&lt;/CANVAS>
+&lt;<b>/BODY</b>>
+&lt;<b>/HTML</b>>
+</pre></table></ul>
+
+
+<h2>Exemplo 6</h2>
+
+Este exemplo mostra como se pode mudar um pedaço de texto arbitrário dentro duma página Web.
+
+<p>
+Exemplo: blá blá
+<INPUT TYPE="button"
+ VALUE="Click Me"
+ ONCLICK="var el = document.getElementById('txt0'); el.innerHTML = parseInt(el.innerHTML,10) + 1"
+>
+<span id='txt0'>0</span>
+blá blá.
+
+<p>Requer um pouco de planeamento, porque precisamos primeiro de associar um ID ao texto a alterar.
+
+<p>Se o texto já estiver marcado de alguma forma, por exemplo com a marca de bold assim <tt class='notranslate'><b>&lt;b>o meu texto&lt;/b></b></tt>, então basta adicionar o ID desta forma, <tt class='notranslate'><b>&lt;b id='o meu id'>o meu texto&lt;/b></b></tt>.
+
+<p>Se o texto não estiver marcado, então temos de o marcar com a marca <b>span</b> e adicionar o ID desta forma, <tt class='notranslate'><b>&lt;span id='o meu id'>o meu texto&lt;/span></b></tt>.
+
+<p>Agora que o texto já está marcado e tem um ID, para lhe aceder em JavaScript basta usar a expressão <tt class='notranslate'><b>document.getElementById('o meu id').innerHTML</b></tt>.
+
+<p>Veja o código do exemplo:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+Exemplo: blá blá
+&lt;<b>INPUT</b> <b>TYPE</b>="button"
+ <b>VALUE</b>="Click Me"
+ <b>ONCLICK</b>="var el = document.getElementById('txt0'); el.innerHTML = parseInt(el.innerHTML,10) + 1"
+>
+&lt;<b>SPAN</b> id='txt0'>0&lt;/<b>SPAN</b>>
+blá blá.
+</pre></table></ul>
+
+
+
+<HR><HR>
+#100
+
+
+<!-- http://michalbe.blogspot.pt/2011/01/javascript-from-command-line-standard.html -->
+
+<!--
+var readln = function() {
+     importPackage(java.io);
+     importPackage(java.lang);
+     var stdin = new BufferedReader(new InputStreamReader(System['in']));
+
+     return function() {
+         return String(stdin.readLine());  // Read line, 
+     };                                    // force to JavaScript String
+ }();
+-->

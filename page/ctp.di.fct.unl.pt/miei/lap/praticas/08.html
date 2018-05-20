@@ -1,0 +1,158 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 8</H2>
+<p>Ligações. Escopo estático e escopo dinâmico. Modelo de execução. Exercícios de 40 a 45.
+<HR>
+
+
+<hr><li>40 - Considere o seguinte programa em C:
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+int a;      // variável a-global
+int b;      // variável b-global
+
+void p(void) { a = b; }
+
+void f(int b) {   // parâmetro b-local
+    int a = b;    // variável a-local
+    p();   /* aqui */
+}
+
+int main(void) {
+    a = 5; b = 6; f(7);
+    printf("%d %d\n", a, b);
+    return 0;
+}
+</pre></ul>
+
+<ul>
+<li> a) Qual o output deste programa, escrito em C.
+<p><li> b) Qual seria o output deste programa se o C utilizasse escopo dinâmico nas chamadas de funções.
+</ul>
+
+<hr><li>41 - No programa da pergunta 40, diga qual é <b>ambiente</b> no ponto indicado pelo comentário: "aqui".<p>
+
+
+<hr><li>42 - No programa da pergunta 40, diga qual é o <b>âmbito</b> da variável global "b".<p>
+
+
+<hr><li>43 - Considere o seguinte programa em C:
+
+<ul><pre class='notranslate'>
+int x, y, z ;
+
+void f1(void) {
+    int a, y, z ;
+    ...
+}
+
+void f2(void) {
+    int a, b, z ;
+    ...
+}
+
+void f3(void) {
+    int a, b, w ;
+    ...
+}
+
+int main() {
+    ...
+    return 0 ;
+}
+</pre></ul>
+
+
+Neste programa ocorrem 12 variáveis diferentes, mas apenas 6 nomes de variáveis distintos (a, b, w, x, y, z).
+Assumindo o uso de escopo dinâmico, diga para cada uma das sequências de chamada que a seguir se indica quais são as variáveis visíveis durante a execução da última função. A alínea a) já está resolvida. [Nota: Este é um exercício académico pois o C usa escopo estático.] Resolva o problema, identificando primeiro as variáveis locais, depois as variáveis não ocultas da função que fez a última chamada, depois as variáveis não ocultas da função que fez a penúltima chamada, etc.
+<ul>
+<li> a) main -> f1 -> f2 -> f3   <i>[Solução: a-f3, b-f3, w-f3, z-f2, y-f1, x-global]</i>
+<p><li> b) main -> f1 -> f3
+<p><li> c) main -> f2 -> f3 -> f1 <i>fica para trabalho de casa</i>
+<p><li> d) main -> f3 -> f1    <i>fica para trabalho de casa</i>
+<p><li> e) main -> f1 -> f3 -> f2    <i>fica para trabalho de casa</i>
+<p><li> f) main -> f3 -> f2 -> f1    <i>fica para trabalho de casa</i>
+</ul>
+
+
+
+
+<hr><li>44 - Mostre o estado da pilha à entrada da função h, durante a execução do seguinte programa GCC. Trata-se do segundo exercício do final da aula teórica 15. É parecido com o primeiro exercício do final da aula teórica 15 (já resolvido), sendo a única diferença a passagem da função h como parâmetro para a função g, o que obriga a usar uma closure.
+
+<p>(Extra: Já agora, veja ainda o que acontece se ainda for execução da instrução dentro da função h.)
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+
+int i = 1, j = 1, k = 1, l = 1 ;
+
+void f(void) {
+    int i = 2, j = 2 ;
+    void h(void) {        // função aninhada
+        int i = 3 ;
+        l = i + j + k ;
+    }
+    void g(void p(void)) {     // outra função aninhada com parâmetro funcional
+        int i = 7, j = 7, k = 7, l = 7 ;
+        p() ;
+    }
+    g(h) ;
+}
+
+int main(void)
+{
+    f() ;
+    printf("%d\n", l) ;
+    return 0 ;
+}
+
+</pre></ul>
+
+
+
+<hr><li>45 - Mostre o estado da pilha de execução do seguinte programa GCC, no exato momento em que a pilha atinge a sua altura máxima.
+
+<p>(Extra: Já agora, depois continue a execução do programa até ao final.)
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+
+int fact(int x) {
+    if( x == 0 )
+        return 1 ;
+    else
+        return x * fact (x - 1) ;
+}
+
+int main() {
+    int a = 3 ;
+    int f = fact(a) ;
+    printf("%d\n", f) ;
+    return 0 ;
+}
+</pre></ul>
+
+
+
+<hr><li>46 - Resolva o exercício que aparece no final da aula teórica 17. Confirme que a ferramenta Valgrind descobre todos os erros de execução desse programa e os assinala claramente. Não use o Eclipse, porque a compilação e a execução terão de ser feitas na linha de comando (na compilação, usar as opções <tt class='notranslate'>-g -O0</tt>).
+<p>
+
+
+<hr><li>47 - A biblioteca "crypt", referida na teórica 17, permite adicionar aos programas suporte para passwords codificadas. Nos exercícios seguintes, use o código da página: <a href="http://www.gnu.org/software/libc/manual/html_node/crypt.html">http://www.gnu.org/software/libc/manual/html_node/crypt.html</a>
+
+<ul><li>a) Copie, compile na linha de comando (com a opção -lcrypt), e corra o primeiro programa. Ao correr o programa, introduza uma password P do seu agrado e guarde a string S escrita pelo programa. Trata-se duma string S que representa P, mas a partir da qual é virtualmente impossível descobrir qual é esse P. A string S pode até ser tornada pública sem comprometer a segurança de P.
+
+
+<p><li>b) Copie o segundo programa, trocando o valor de inicialização da variável <tt class='notranslate'>pass</tt> pela string S gerada pelo programa anterior. Agora compile (com a opção -lcrypt) e corra o segundo programa. Verificará que o programa consegue detetar quando é introduzida a password correta P. Mas a password P continua secreta e só o dono a conhece.
+</ul>
+<p>
+
+
+
+
+
+
+
+<HR><HR>

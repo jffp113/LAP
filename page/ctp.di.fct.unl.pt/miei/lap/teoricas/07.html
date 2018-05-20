@@ -1,0 +1,569 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 07 (27/mar/2018)</H2>
+Computação, Algoritmos, Programas, Linguagens e Paradigmas.
+<br>Funções com múltiplos parâmetros. Formas curried e não-curried. Aplicação parcial de funções curried. Formas equivalentes de escrita de funções.
+<br>Funções como valores de primeira classe.
+<br>Algumas funções de ordem superior sobre listas.
+<p>
+<HR>
+
+<HR><h1>Computação</h1>
+
+<h2>Computação</h2>
+<ul>
+<li>Computação significa: processamento automático de informação.
+<li>É a atividade realizada pelos computadores.
+<li>O objetivo da informática é estudar a computação e formas úteis de tirar partido dela para resolver problemas importantes.
+</ul>
+
+<h2>Facetas da computação</h2>
+<ul>
+<li><b>Faceta interna:</b> a informação é codificada usando símbolos (e.g. bytes), sendo a computação uma atividade de manipulação e transformação automática de símbolos.
+<li><b>Faceta externa:</b> ... mas, geralmente, as computações também estabelecem um diálogo interativo com o ambiente exterior (constituído por humanos e por outras máquinas).
+</ul>
+ 
+<h2>Automatismos e sua especificação</h2>
+<ul>
+<li>Qualquer computação é realizada de acordo com regras estabelecidas antes desse processamento se iniciar. É isso que significa o processamento ser automático.
+<li>Daí a necessidade que especificar as computações de forma rigorosa e exaustiva, prevendo todas as eventualidades.
+</ul>
+
+<HR><h1>Algoritmos, Programas e Linguagens de Programação</h1>
+
+<table align=right>
+<tr><td><A HREF="http://en.wikipedia.org/wiki/Muhammad_ibn_M%C5%ABs%C4%81_al-Khw%C4%81rizm%C4%AB"><img src="images/khawarizmi.jpg"></A>
+<tr><td><b>Muhammad ibn Musa al-Khwarizmi</b>
+</table>
+
+<h2>Algoritmo</h2>
+<ul>
+<li>Um algoritmo é um conjunto de regras abstratas que determinam, passo a passo, como uma computação vai decorrer.
+<li>Em geral um problema pode ser resolvido usando diversos algoritmos.
+<li>Um algoritmo é independente de qualquer linguagem de programação particular. Podemos imaginá-lo como se fosse para ser executado num computador ideal com memória infinita.
+</ul>
+
+A palavra "algoritmo" deriva da palavra <b>Algoritmi</b> que por sua vez corresponde à Latinização do nome do matemático Persa Muhammad ibn Musa al-Khwarizmi, nascido por volta de 780DC. Este cientista, que trabalhou quase toda a sua vida em Bagdad, deu importantes contribuições para a Álgebra, Trigonometria e Aritmética.
+
+<h2>Programa</h2>
+<ul>
+<li>Um programa é a expressão concreta dum algoritmo.
+<li>Um programa implementa um algoritmo numa linguagem de programação concreta.
+</ul>
+
+<h2>Linguagem de programação</h2>
+<ul>
+<li>É uma notação para escrever programas.
+</ul>
+ 
+<h2>Exemplo de algoritmo</h2>
+Algoritmo de Euclides - mdc(m,n)
+<ul>
+<li>Usar dois contadores x e y e inicializar x com m e y com n.
+<li>Se x > y então x recebe x - y
+<li>Se x &lt; y então y recebe y - x
+<li>Repetir os dois passos anteriores até que os valores de x e y fiquem iguais. Quando isso acontecer, esse é o resultado final.
+</ul
+
+
+<h2>Implementação em C do algoritmo anterior</h2>
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+
+int main() /* Implementação do algoritmo de Euclides */
+{
+    int m, n, x, y ;
+    printf(">> ") ;
+    scanf("%d %d", &m, &n) ;
+    x = m ;
+    y = n ;
+    do {
+        if( x > y ) x = x - y ;
+        else if( x &lt; y ) y = y - x ;
+    } while( x != y ) ;
+    printf("mdc(%d,%d) = %d\n", m, n, x) ;
+    return 0 ;
+}
+</pre></ul>
+
+
+<h2>Antiguidade dos Algoritmos</h2>
+<ul>
+<li>Os algoritmos mais antigos que se conhecem devem-se aos Babilónios (3000AC-1500AC). Os seus livros de Matemática eram acima de tudo receitas sobre como efetuar os cálculos para resolver determinados problemas. Esses algoritmos eram para executar "à mão". 
+<p><li>A principal motivação para se usarem máquinas para executar algoritmos é a grande velocidade de execução que elas permitem.
+</ul>
+
+
+
+
+<h2>Duas questões importantes sobre computação e linguagens</h2>
+<ul>
+<li>Existem limites para a computação?
+<ul>
+<li>Sim, realmente existem problemas com solução para os quais não se consegue inventar qualquer algoritmo que descubra essa solução.
+</ul>
+<p><li>Existe alguma linguagem de programação que permita implementar todos os algoritmos que se possam imaginar?
+<ul>
+<li>Sim, qualquer linguagem "normal" permite isso. Do ponto de vista do poder computacional, todas as linguagens normais são equivalentes.
+</ul></ul>
+
+
+<HR><h1><a href="http://en.wikipedia.org/wiki/Programming_paradigm">Paradigmas de Programação</a></h1>
+
+Já sabemos que computação significa processamento automático de informação, mas esta noção é demasiado vaga. Podemos interrogar-nos sobre  quais os mecanismos concretos através dos quais esse processamento se efetua.
+<p>Na verdade, uma linguagem não pode deixar de se comprometer com algum conjunto de mecanismos  primitivos para processar informação. Ao efetuar essa escolha, a linguagem adere a um paradigma de programação particular.
+<p>É surpreendente a grande variedade de paradigma de programação que têm sido inventados: <a href="http://www.info.ucl.ac.be/~pvr/paradigmsDIAGRAMeng108.pdf" target="n">PARADIGMAS</a>.
+
+
+<h2>Exemplos de paradigmas de programação e respetivos conceitos de base</h2>
+
+<ul>
+<li><b>Paradigma imperativo</b>
+<ul>
+<li>Conceitos: estado, atribuição, sequenciação
+<li>Linguagens: Basic, Pascal, C, Assembler.
+</ul>
+<p><li><b>Paradigma funcional</b>
+<ul>
+<li>Conceitos: função, aplicação, avaliação
+<li>Linguagens: Lisp, ML, OCaml, Haskell.
+</ul>
+<p><li><b>Paradigma lógico</b>
+<ul>
+<li>Conceitos: relação, dedução
+<li>Linguagens: Prolog.
+</ul>
+<p><li><b>Paradigma orientado pelos objetos</b>
+<ul>
+<li>Conceitos: objetos, mensagem
+<li>Linguagens: C++, Java, Eiffel.
+</ul>
+<p><li><b>Paradigma concorrente</b>
+<ul>
+<li>Conceitos: processo, comunicação (síncrona ou assíncrona)
+<li>Linguagens: Occam, Ada, Java.
+</ul>
+</ul>
+
+<h2>Aspetos práticos</h2>
+
+<ul>
+<li>Cada paradigma de programação determina uma forma particular de abordar os problemas e de formular as respetivas soluções. De facto, diferentes paradigmas de programação representam muitas vezes visões irreconciliáveis do processo de resolução de problemas.
+<p><li>O grau de sucesso dum programador depende em parte da coleção de paradigmas que domina e da sua arte em escolher o modelo conceptual (paradigma) mais indicado para analisar e resolver cada problema.
+</ul>
+
+
+<h2>Uma linguagem de programação pode combinar mais do que um paradigma</h2>
+<ul>
+<li> C++ --- Paradigma imperativo + paradigma orientado pelos objetos.
+<li> Java --- Paradigma imperativo + paradigma orientado pelos objetos +  paradigma concorrente.
+<li> OCaml --- Paradigma funcional + Paradigma imperativo + paradigma orientado pelos objetos.
+<li> Ada --- Paradigma imperativo + paradigma concorrente.
+</ul>
+
+
+<HR><h1>Paradigma imperativo <i>versus</i> paradigma funcional</h1>
+
+<h2><a href="http://en.wikipedia.org/wiki/Imperative_programming">Paradigma imperativo</a></h2>
+<ul>
+<li>A computação baseia-se na existência de um "estado" (conjunto de variáveis mutáveis) que vai evoluindo ao longo do tempo.
+<li>O estado é modificado usando um "comando de atribuição" e existe um "operador de sequenciação".
+<li> Linguagens: Basic, Pascal, C, etc., mas o Java também tem uma base imperativa, visto suportar variáveis mutáveis. 
+</ul>
+
+<h2><a href="http://en.wikipedia.org/wiki/Functional_programming">Paradigma funcional</a></h2>
+<ul>
+<li>A computação consiste na avaliação de "expressões" nas quais podem ocorrer chamadas de funções.
+<li>O objetivo da avaliação duma expressão é a produção dum "resultado" ou "resposta".
+<li>Não há "atribuição" nem variáveis cujo valor possa ser alterado.
+<li>Também não faz falta uma noção de sequenciação.
+<li>Cada função limita-se a produzir um resultado a partir dos seus argumentos.
+<li>Linguagens: Lisp, OCaml, Haskell, Scheme.
+</ul>
+
+<h2>Vantagens do paradigma funcional</h2>
+<ul>
+<li> Convida a resolver cada problema com base nas propriedades da solução pretendida e ajuda a encontrar essa solução.
+
+<p><li> Suporta <a href="http://en.wikipedia.org/wiki/Declarative_programming">programação declarativa</a>, i.e. permite exprimir a lógica das soluções sem ter de se entrar na descrição detalhada dos fluxos de execução. 
+
+<p><li> O resultado de cada função é exclusivamente determinado pelos valores dos seus argumentos, o que introduz clareza e ausência de complicações. Facilita os testes e os programas ficam mais confiáveis.
+
+<p><li>Suporta <a href="https://en.wikipedia.org/wiki/Referential_transparency">transparência referencial</a>, uma propriedade que permite trocar uma expressão (e.g. <tt><b>f()+f()</b></tt>) por outra com o mesmo resultado teórico (e.g. <tt><b>2*f()</b></tt>) sem alterar o comportamento do programa. Tudo o que acontece durante a execução dum programa resulta literalmente do texto do programa, não existindo nenhuma entidade oculta a influenciar a execução. 
+
+<p><li> As linguagens funcionais modernas rejeitam a noção de <tt><b>null</b></tt>. <a href="https://www.lucidchart.com/techblog/2015/08/31/the-worst-mistake-of-computer-science/">Suportar null é um problema</a> porque as variáveis dum programa já validado podem afinal conter null, pondo em causa a validação efetuada. O null indica a inexistência de valor e a forma correta e segura de obter esse efeito em OCaml é usando o tipo <tt><b>'a option</b></tt> nos pontos em que interessa representar a inexistência de valor - note que para processar um valor de tipo <tt><b>'a option</b></tt> é obrigatório tratar os dois casos - <tt><b>None</b></tt> e <tt><b>Some(v)</b></tt> - o que garante segurança.
+
+<p><li> As funções de ordem superior permitem capturar padrões genéricos de código (e.g. funções map, filter, etc.). o que ajuda a programar de forma concisa e sem repetição constante dos mesmos esquemas.
+
+<p><li> Sem estado e sem sequencialidade, os programas ficam fáceis de paralelizar.
+
+</ul>
+
+<h2>Desvantagens do paradigma funcional</h2>
+
+<p><li> É mais difícil controlar detalhes relacionados com a eficiência dos programas.
+
+<p><li> Há problemas que envolvem estado de forma essencial, como por exemplo programar uma calculadora com registos de memória. Além disso o mundo exterior é imperativo (tem estado). Numa linguagem funcional pura, o estado precisa de ser simulado usando argumentos suplementares nas funções, o que obscurece o código. Contudo, a generalidade das linguagens funcionais não são puras, ou seja oferecem construções imperativas para lidar com certas situações. Deve é tentar-se minimizar e localizar o uso dessas construções.  
+<p>
+
+<h2>Minorar os problemas do estado</h2>
+
+Quando se programa com uma linguagem imperativa, há uma forma de minorar as desvantagens do estado. O uso de <b>estado local privado</b> é seguro de forma geral. Por exemplo, em Java, recomenda-se o uso de variáveis locais nos métodos, de variáveis de instância privadas nos objetos, e convém evitar todas as outras formas.
+<p>
+
+<HR>
+<HR><h1>Funções com múltiplos argumentos em OCaml</h1>
+
+Em OCaml há duas formas de escrever funções com mais do que um argumento: a <b>forma não-curried</b> e a <b>forma curried</b>. A segunda forma é elaborada mas tem vantagens técnicas.
+
+<h2>Forma não-curried</h2>
+
+Os vários argumento agrupam-se num único tuplo ordenado. Exemplos:
+
+<ul><pre class='notranslate'>
+let nAdd (x,y) = x+y ;;
+nAdd: (int * int) -> int
+
+let nAdd3 (x,y,z) = x+y+z ;;
+nAdd3: (int * int * int) -> int
+
+nAdd (3,4) = 7
+nAdd3 (2,8,1) = 11
+</pre></ul>
+Tecnicamente, a função <tt class='notranslate'>nAdd</tt> tem apenas um parâmetro, de tipo <tt class='notranslate'>int*int</tt>. Mas claro, através desse único parâmetro conseguimos passar duas unidades de informação.
+
+<h2><a href="http://en.wikipedia.org/wiki/Currying">Forma curried</a></h2>
+
+Os argumentos ficam separados. Exemplos:
+<ul><pre class='notranslate'>
+let cAdd x y = x+y ;;
+cAdd: int -> int -> int
+
+let cAdd x y z = x+y+z ;;
+cAdd: int -> int -> int -> int
+
+cAdd 3 4 = 7
+cAdd 2 8 1 = 11
+</pre></ul>
+
+Escrever <i>funções curried</i> não tem nada que saber: basta separar os parâmetros por espaços em branco, na cabeça de cada função. Contudo o tipo destas funções afigura-se surpreendente para quem o observa pela primeira vez. Isso é resultado da representação interna das funções em OCaml. Segue-se a explicação...
+
+<h2>Representação interna das funções em OCaml</h2>
+
+Por uma questão de simplicidade e regularidade de implementação, o OCaml só usa internamente funções anónimas com um único argumento. Uma função com múltiplos argumentos é convertida para um formato interno especial - chamado <b>forma interna</b> - que envolve apenas funções anónimas com um único argumento.
+
+<P>Por exemplo, a função
+
+<ul><pre class='notranslate'>
+let cAdd x y = x+y ;;
+</pre></ul>
+
+é internamente convertida em:
+
+<ul><pre class='notranslate'>
+let cAdd = fun x -> (fun y -> x+y) ;;
+</pre></ul>
+ 
+Repare na engenhosa a ideia que está por detrás do esquema de tradução.
+
+<P>Vejamos mais alguns exemplos de tradução, lado a lado:
+
+<ul><pre class='notranslate'>
+let cAdd x y z = x+y+z ;;     let cAdd = fun x -> (fun y -> (fun z -> x+y+z)) ;;
+
+let f x = x+1 ;;              let f = fun x -> x+1 ;;
+
+let nAdd (x,y) = x+y ;;       let nAdd = fun (x,y) -> x+y ;;
+</pre></ul>
+
+
+
+<h2>Avaliação de expressões envolvendo funções com múltiplos argumentos</h2>
+
+Compare a avaliação das duas seguintes expressões:
+
+<ul><pre class='notranslate'>
+nAdd (2,3)
+= (fun (x,y) -> x+y) (2,3)
+= 2 + 3
+= 5
+
+cAdd 2 3
+= (fun x -> (fun y -> x+y)) 2 3
+= (fun y -> 2+y) 3
+= 2 + 3
+= 5
+</pre></ul>
+
+<HR><h1>Aplicação parcial</h1>
+As funções curried têm a vantagem de poderem ser <b>aplicadas parcialmente</b> ou seja, poderem ser invocadas omitindo alguns dos argumentos do final. Eis um exemplo de aplicação parcial:
+
+<ul><pre class='notranslate'>
+let succ = cAdd 1 ;;
+succ: int -> int
+</pre></ul>
+
+<h2>Associatividades</h2>
+<ul>
+<li>O <b>operador de aplicação</b> é associativo à esquerda. (Note que este operador é <i>invisível</i>, pois nunca se escreve).
+<p><ul>
+<li>Portanto, a expressão <tt class='notranslate'>f a b</tt> deve ser interpretada como <tt class='notranslate'>(f a) b</tt>.
+</ul>
+<p><li>O <b>construtor de tipos funcionais</b> <b>-></b> é associativo à direita.
+<p><ul>
+<li>Portanto, o tipo <tt class='notranslate'>int -> int -> int</tt> deve ser interpretado como <tt class='notranslate'>int -> (int -> int)</tt>.
+</ul>
+</ul>
+
+<h2>Formas equivalentes de escrever a mesma função</h2>
+
+As seguintes quatro declarações são equivalentes, no sentido em que declaram exatamente a <b>mesma</b> função <tt class='notranslate'>f:int->int->int</tt>.
+<ul><pre class='notranslate'>
+let f x y = x + y ;;	             <i>(* formato externo preferido *)</i>
+let f x = (fun y -> x+y) ;;	     <i>(* formato externo *)</i>
+let f = (fun x y -> x+y) ;;	     <i>(* formato externo *)</i>
+let f = (fun x -> (fun y -> x+y)) ;; <i>(* <b>formato interno</b> *)</i>
+</pre></ul>
+
+Todas são convertidas para a mesma forma interna.
+
+
+<HR>
+<HR><h1>Funções como valores de primeira classe</h1>
+
+Nas linguagens funcionais as funções têm o estatuto de <b>valores de primeira classe</b>. Isso significa que as funções têm um estatuto tão importante como o dos inteiros, reais, e outros tipos predefinidos.
+
+<p>Concretamente, numa linguagem funcional as funções podem ...
+<ul>
+<li>Ser passadas como argumento para outras funções;
+<li>Podem ser retornadas por outras funções;
+<li>Podem ser usadas como elementos constituintes de estruturas de dados;
+<li>Têm uma representação literal própria. Exemplo: <tt class='notranslate'>(fun x->x+1)</tt>
+</ul>
+
+<h2>Exemplos</h2>
+
+<b>Exemplo 1.</b> Composição de funções.
+
+<ul><pre class='notranslate'>
+let compose f g = fun x -> f (g x) ;;
+<i>compose : ('a -> 'b) -> ('c -> 'a) -> 'c -> 'b</i>
+</pre></ul>
+
+Também se pode escrever:
+<ul><pre class='notranslate'>
+let compose f g x = f (g x) ;;
+</pre></ul>
+
+<b>Exemplo 2.</b> Função para converter do formato não-curried para o formato curried.
+
+<ul><pre class='notranslate'>
+let curry f = fun x -> fun y -> f (x,y) ;;
+<i>curry : ('a * 'b -> 'c) -> 'a -> 'b -> 'c</i>
+</pre></ul>
+Também se pode escrever:
+<ul><pre class='notranslate'>
+let curry f x y = f (x,y) ;;
+</pre></ul>
+
+Exercício: Escrever a função inversa <tt class='notranslate'>uncurry</tt>.
+
+<!--
+<ul><pre class='notranslate'>
+let uncurry f (x,y) = f x y ;;
+</pre></ul>
+-->
+
+<p>Exercício: Que funções são as seguintes e quais os seus tipos:
+<ul>
+<li><tt class='notranslate'>uncurry compose</tt>
+<li><tt class='notranslate'>compose curry uncurry</tt>
+<li><tt class='notranslate'>compose curry uncurry</tt>
+</ul>
+
+<b>Exemplo 3.</b> Como representar conjuntos usando apenas funções?
+
+<p>Um conjunto é uma entidade cuja principal característica é a possibilidade de se poder saber se um valor lhe pertence ou não lhe pertence.
+Assim vamos representar cada conjunto por uma função booleana. Essa função, quando aplicada a um valor produz <tt class='notranslate'>true</tt> se esse valor pertence ao conjunto e <tt class='notranslate'>false</tt> se não pertence. Trata-se da chamada <b>função característica</b> do conjunto.
+
+<ul>
+<li>Conjunto vazio:<br><ul><tt class='notranslate'>let set0 = fun x -> false ;;</tt></ul>
+<p><li>Conjunto universal: <br><ul><tt class='notranslate'>let setu = fun x -> true ;;</tt></ul>
+<p><li>Criação de conjunto singular: <br><ul><tt class='notranslate'>let set1 x = fun y -> y = x ;;</tt></ul>
+<p><li>Teste de pertença: <br><ul><tt class='notranslate'>let belongs v s = s v ;;</tt></ul>
+<p><li>União de conjuntos: <br><ul><tt class='notranslate'>let union s1 s2 = fun x -> s1 x || s2 x ;;</tt></ul>
+<p><li>Interseção de conjuntos: <br><ul><tt class='notranslate'>let inter s1 s2 = fun x -> s1 x && s2 x ;;</tt></ul>
+</ul>
+
+<p><b>Exemplo 4.</b> Estrutura de dados com funções: lista de funções.
+
+<ul><pre class='notranslate'>
+let mylist = [(fun x -> x+1); (fun x -> x*x)] ;;
+</pre></ul>
+
+<h2>Uma limitação das funções</h2>
+
+No caso geral, saber se duas funções dadas são iguais (i.e. saber se produzem sempre os mesmos resultados para os mesmos argumentos) é um problema que não pode ser resolvido por computador. Numa tal situação, costuma dizer-se que o problema é <a href="http://en.wikipedia.org/wiki/Undecidable_problem">indecidível</a>.
+
+<ul><pre class='notranslate'>
+# (fun x -> x+1) = (fun x -> x+1) ;;
+Exception: Invalid_argument "equal: functional value".
+</pre></ul>
+
+
+<!--
+
+<HR><HR>
+
+<h1>Algumas funções de ordem superior sobre listas</h1>
+
+Programar bem numa linguagem funcional envolve duas coisas:
+
+<ul>
+<li> Saber usar bem o método indutivo;
+<p><li> Sabem reconhecer oportunidades de utilização das funções de biblioteca mais importantes.
+</ul>
+
+ Algumas das funções de biblioteca de ordem superior sobre listas já incorporam os esquemas mais usados no método indutivo. Quando possível, é melhor usar essas funções do que programar o método indutivo diretamente. O código resulta mais legível e compacto.
+
+<h2>Função <tt class='notranslate'>map</tt></h2>
+
+Aplica uma função <tt class='notranslate'>f: 'a -> 'b</tt> a todos os elementos duma lista, para produzir a lista das imagens.
+
+<p> A função <tt class='notranslate'>f</tt> define uma relação de um-para-um, pelo que a lista dos resultados tem o mesmo comprimento da lista de entrada.
+
+<ul><pre class='notranslate'>
+(* map : ('a -> 'b) -> 'a list -> 'b list *)
+let rec map f l =
+    match l with
+        [] -> []
+      | x::xs -> (f x) :: map f xs
+;;
+</pre></ul>
+
+<p> Esta função está disponível na biblioteca do OCaml como <b><tt class='notranslate'>List.map</tt></b>.
+
+<p> Exemplo de chamada:
+<ul><pre class='notranslate'>
+map (fun x -> x + 1) [1;2;3]
+</pre></ul>
+
+
+
+
+<h2>Função <tt class='notranslate'>flatMap</tt></h2>
+
+Aplica uma função <tt class='notranslate'>f: 'a -> 'b list</tt> a todos os elementos duma lista, para produzir a lista das imagens.
+
+<p> A função <tt class='notranslate'>f</tt> define uma relação de um-para-n, pelo que a lista dos resultados tem um comprimento sem qualquer relação com comprimento da lista de entrada.
+
+<ul><pre class='notranslate'>
+(* flatMap : ('a -> 'b list) -> 'a list -> 'b list *)
+let rec flatMap f l =
+    match l with
+        [] -> []
+      | x::xs -> (f x) @ flatMap f xs
+;;
+</pre></ul>
+
+<p> Exemplo de chamada:
+<ul><pre class='notranslate'>
+flatMap (fun x -> [x + 1; x + 2]) [1;2;3]
+</pre></ul>
+
+
+<p> Esta função não está diretamente disponível na biblioteca do OCaml, pode ser obtida como a combinação de <b><tt class='notranslate'>List.flatten</tt></b> com <b><tt class='notranslate'>List.map</tt></b>. Concretamente, a seguinte definição também é válida.
+
+<ul><pre class='notranslate'>
+(* flatMap : ('a -> 'b list) -> 'a list -> 'b list *)
+let flatMap f l =
+    List.flatten (List.map f l)
+;;
+</pre></ul>
+
+
+
+<h2>Função <tt class='notranslate'>for_all</tt></h2>
+
+Testa se todos os elementos duma lista satisfazem um dado predicado <tt class='notranslate'>p: 'a -> bool</tt>.
+
+
+<ul><pre class='notranslate'>
+(* for_all : ('a -> bool) -> 'a list -> bool *)
+let rec for_all f l =
+    match l with
+        [] -> true
+      | x::xs -> (f x) && for_all f xs
+;;
+</pre></ul>
+
+<p> Esta função está disponível na biblioteca do OCaml como <b><tt class='notranslate'>List.for_all</tt></b>.
+
+
+<h2>Função <tt class='notranslate'>count_all</tt></h2>
+
+Conta todos os elementos duma lista satisfazem um dado predicado <tt class='notranslate'>p: 'a -> bool</tt>.
+
+
+<ul><pre class='notranslate'>
+(* count_all : ('a -> bool) -> 'a list -> int *)
+let rec count_all f l =
+    match l with
+        [] -> 0
+      | x::xs -> (if f x then 1 else 0) + count_all f xs
+;;
+</pre></ul>
+
+<p> Esta função não está disponível na biblioteca do OCaml.
+
+
+<h2>Mais funções de ordem superior sobre listas</h2>
+<ul>
+<p><b><tt class='notranslate'>List.exists</b> : ('a -> bool) -> 'a list -> bool   </tt>  (* Testa se pelo menos um dos valores duma lista satisfaz um dado predicado. *)
+<p><b><tt class='notranslate'>List.filter</b> : ('a -> bool) -> 'a list -> 'a list   </tt> (* Seleciona os elementos duma lista que satisfazem um dado predicado. *)
+<p><b><tt class='notranslate'>List.iter</b> : ('a -> unit) -> 'a list -> unit   </tt> (* Aplica uma função com efeitos laterais a todos os elementos duma lista. *)
+</ul>
+</ul>
+
+<h2>Função de teste de pertença a uma lista ("membership")</h2>
+<ul>
+<b><tt class='notranslate'>List.mem</b> : 'a -> 'a list -> bool   </tt> (* Testa se um valor pertence a uma lista. *)
+</ul>
+<p>
+
+<h2>Exemplo de utilização: Quantificação universal</h2>
+
+Verificar se todos os elementos duma lista são pares:
+
+<ul><pre class='notranslate'>
+let allEven l =
+    List.for_all (fun x -> x mod 2 = 0) l
+;;
+</pre></ul>
+
+Testar se todos os elementos duma lista são menores do que os elementos de outra lista:
+
+<ul><pre class='notranslate'>
+let allLess l1 l2 =
+    List.for_all (fun x ->
+          List.for_all (fun y -> x &lt; y) l2) l1
+;;
+</pre></ul>
+    
+
+E se forem três listas?
+
+<ul><pre class='notranslate'>
+let allLess3 l1 l2 l3 =
+    List.for_all (fun x ->
+          List.for_all (fun y ->
+             List.for_all (fun z -> x &lt; y && y &lt; z) l3) l2) l1
+;;
+</pre></ul>
+
+-->
+
+<HR><HR>
+#120
