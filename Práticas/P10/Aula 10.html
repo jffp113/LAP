@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+	<title>Aula 10</title>
+<script>
+function isPrime(n){
+	var nDivisors = 0;
+	var i = 0;
+	while(i <= n){
+		if(n % i == 0){
+			nDivisors++;
+			console.log(nDivisors + " divided by " + i);
+		}
+		i++;
+	}
+	return nDivisors <= 2 ;
+}
+function runForm1(form){ 
+	 var text = "Is not a prime number";
+	 if(isPrime(parseInt(form.text1.value)))
+		text = "Is a prime number";
+	
+	form.text2.value = text;
+}
+	
+function runForm2(form, c){
+	var goPage;
+	switch(c){
+		case "google": goPage = "http://www.google.com/search?q=" + form.text1.value; break;
+		case "wikipedia": goPage = "https://en.wikipedia.org/wiki/Special:Search/" + form.text1.value; break;
+		case "dicionary": goPage = "https://www.thefreedictionary.com/" + form.text1.value; break;
+		case "thesaurus": goPage = "http://www.thesaurus.com/browse/" + form.text1.value; break;
+		case "images": goPage = "http://www.google.com/search?q="+form.text1.value+"+photos" ; break; //Incorrecto url
+		default:
+			
+	}
+	console.log(goPage);
+	document.location = goPage
+}
+	
+function primeGen(n){
+	//console.log("Algortim init");
+	var a = []; var b = []; var j;
+	a[0] = -1; a[1] = -1;
+	for(var i = 2; i <= n; i++){
+		a[i] = i;
+	}
+	for(i = 2; i <= n; i++){
+		j = 2;
+		if(a[i] != -1){
+			b.push(i);
+			//console.log(i);
+			while(i*j <= n){
+				a[i*j] = -1;
+				j++;
+			}
+		}
+	}
+	//console.log("Algortim finish");
+	return b;
+}
+	
+function runForm3(form){
+	var a = primeGen(parseInt(form.text1.value));
+	form.text2.value = a;
+}
+</script>
+</head>
+<body bgcolor="#E0F0E0">
+	<hr>
+	<hr>
+	<h1>Aula Prática 10 Uma Proposta De Resolução</h1>
+	<hr>
+	<hr>
+	<h2>ex.48</h2>
+	<FORM NAME="form1">
+		 <INPUT TYPE="text" NAME="text1" VALUE="1" SIZE=10 style="text-align: right">
+		<INPUT TYPE="text" NAME="text2" VALUE="Click the button" readonly SIZE=20 style="text-align: right">
+		<p> <INPUT TYPE="button" NAME="button1" VALUE="Prime?" ONCLICK="runForm1(form)"> </p>
+	</FORM>
+	<hr>
+	<h2>ex.48</h2>
+	<FORM NAME="form2">
+		<p>Enter text in english <INPUT TYPE="text" NAME="text1" VAlue = "" SIZE = 100 style="text-align: right"></p>
+		<p> <INPUT TYPE="button" NAME="Google" VALUE="Google" ONCLICK="runForm2(form, 'google')">
+			<INPUT TYPE="button" NAME="Wikipedia" VALUE="Wikipedia" ONCLICK="runForm2(form, 'wikipedia')">
+			<INPUT TYPE="button" NAME="Dicionary" VALUE="Dicionary" ONCLICK="runForm2(form, 'dicionary')">
+			<INPUT TYPE="button" NAME="Thesaurus" VALUE="Thesaurus" ONCLICK="runForm2(form, 'thesaurus')">
+			<INPUT TYPE="button" NAME="Images" VALUE="Images" ONCLICK="runForm2(form, 'images')">
+		</p>
+	</FORM>
+	<hr>
+	<h2>ex.50</h2>
+	<FORM NAME="form3">
+		 <p> Generate Primes Until <INPUT TYPE="text" NAME="text1" VALUE="" SIZE=10 style="text-align: left"></p>
+		<p><textarea name="text2" rows="10" cols="30">EMPTY. CHOOSE A NUMBER</textarea></p>
+		<p> <INPUT TYPE="button" NAME="button1" VALUE="Generate" ONCLICK="runForm3(form)"> </p>
+	</FORM>
+</body>
+</html>
