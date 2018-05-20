@@ -1,0 +1,515 @@
+<title>Enunciado do 2&deg; Trabalho Pr&aacute;tico (OCaml)</title>
+<head></head>
+<body text="#000000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<H1>Linguagens e Ambientes de Programa&ccedil;&atilde;o (2016/2017) [Eng.Inf. - DI/FCT/UNL]<H1>
+<H2>Enunciado do 2&deg; Projeto Pr&aacute;tico (C)</H2>
+<H4>Jo&atilde;o Costa Seco, Guilherme Rito</H4>
+
+<HR>
+<h2 id="important-dates"><a name="user-content-important-dates" href="#important-dates" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Important Dates</h2>
+<ul>
+<li>4PM, 5th May: Publication of the assignment</li>
+<li>8PM, 13th May: due date</li>
+<li>8PM, 15th May: limit to the submission with penalties (1 point per day)</li>
+</ul>
+
+<HR>
+<h2 id="change-log"><a name="user-content-change-log" href="#change-log" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Change log</h2>
+<p>In this section we list the major modifications to this document, or in the starter code that is linked below.</p>
+<ul>
+<li>12th May: Corrected the description of flip-v and flip-h operations</li>
+<li>8th May: Added the descriptions of the last required operations</li>
+<li>5th May: Publication</li>
+</ul>
+
+<HR>
+<h2 id="submission-rules"><a name="user-content-submission-rules" href="#submission-rules" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Submission Rules</h2>
+<p>Special rules that apply to the submission of the assignment will be posted here in a date closer to the submission date.</p>
+
+<h1><A HREF="submiss2017-2.html">Submission rules</a>
+
+
+<HR>
+<h1 id="introduction"><a name="user-content-introduction" href="#introduction" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Instakilo</h1>
+<p>In this project, you are going to develop a powerful image transformation machine that you can use to extend the popular photo sharing and social network application <em>Instagram</em>.</p>
+<p>Your mission is to develop a series of image transformations, using the C programming language, and integrate them with the code provided together with this assignment.</p>
+<p>We provide a starter code for the application that consists in a virtual (stack) machine that runs small Instakilo programs based on a set of primitive operations, and assembly language for image processing. The starter code provides the stack machine and some base operations, your mission is to extend the machine with new operations.</p>
+<h2 id="evaluation"><a name="user-content-evaluation" href="#evaluation" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Evaluation</h2>
+<p>You will submit the <em>stack_machine.c</em> file via Mooshak. Around 80% of the grade of your group is automatically assigned by Mooshak by testing programs written in the image processing assembly language. The remaining 20% is assigned manually by the teacher, who analyses the quality of your code.</p>
+<p>To compile your module, Mooshak uses the command <code>make</code> using the given <code>Makefile</code>, and calls the main file with a series of input programs.</p>
+<p>It is not mandatory to develop this project in Linux. However, you should test the final version of your module in the laboratories because the official environmental for this project is the Linux version installed in the laboratories.</p>
+<p>It is also recommended you develop the project in Eclipse using a Makefile C project but, of course, this is also not mandatory.</p>
+<h2 id="files-provided-in-the-zip-archive"><a name="user-content-files-provided-in-the-zip-archive" href="#files-provided-in-the-zip-archive" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Files provided in the <code>zip</code> archive</h2>
+<p>Here is the provided zip file: <a href="instakilo.zip">instakilo.zip</a>. Note that is contains a starter version of the file <code>stack_machine.c</code>.</p>
+<pre><code>instakilo/
+|- assignment.md
+|- include/
+|  |- libppm.h
+|  |- ligimg.h
+|  |- instakilo.h
+|  |- insta_utils.h
+|  |- image_stack.h
+|  |- stack_machine.h
+|  \- test_instakilo.h
+|
+|- src/
+|  |- main.c
+|  |- libppm.c
+|  |- ligimg.c
+|  |- instakilo.c
+|  |- image_stack.c
+|  |- stack_machine.c
+|  \- test_instakilo.c
+|
+|- images/
+|  |- baboon.ppm
+|  |- castle.ppm
+|  |- fighter.ppm
+|  |- lena.ppm
+|  |- parrot.ppm
+|  |- plane.ppm
+|  \- space.ppm
+|
+|- scripts/
+   |- ...
+</code></pre>
+
+<p>To avoid using external libraries, we will work with a simplified image format, called <code>ppm</code>. If you are curious, the format can be found <a href="http://netpbm.sourceforge.net/doc/ppm.html">here</a>, and a tool called <code>convert</code> is usually available in <em>Linux</em> and <em>Mac OS x</em> machines, and can be found in tool packages like <a href="https://www.imagemagick.org/script/index.php">image magick</a>.</p>
+<p>We also use some images that are classics of image processing community, which are public domain for image processing purposes (<a href="https://homepages.cae.wisc.edu/~ece533/images/">site</a>).</p>
+
+<p><img alt="baboon" src="images/baboon.jpg" /></p>
+<p><img alt="castle" src="images/castle.jpg" /></p>
+<p><img alt="fighter" src="images/fighter.jpg" /></p>
+<p><img alt="lena" src="images/lena.jpg" /></p>
+<p><img alt="parrot" src="images/parrot.jpg" /></p>
+<p><img alt="plane" src="images/plane.jpg" /></p>
+<p><img alt="space" src="images/space.jpg" /></p>
+
+
+<h2 id="a-stack-machine"><a name="user-content-a-stack-machine" href="#a-stack-machine" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>A stack machine</h2>
+<p>A <a href="https://en.wikipedia.org/wiki/Stack_machine">stack machine</a> is one of the simplest execution models for a computer, it is based on an execution stack where operation arguments are fetched from, and the results are pushed onto. The Java virtual machine (JVM), and the .NET virtual machine (CLR) are examples of stack machines. Refer to the lecture <a href="http://ctp.di.fct.unl.pt/miei/lap/teoricas/14.html">#14</a> for a summary. But basically, a program like:</p>
+<pre><code>push 1
+push 2
+add
+</code></pre>
+
+<p>starts from any stack contents, and ends with that same stack with a new value resulting from the addition of <code>1</code> and <code>2</code>, which is <code>3</code>.</p>
+<p>In this assignment you will receive working stack machine that manipulates images, and will have to complete it with a few more operations.</p>
+<h2 id="image-processing-assembly-language"><a name="user-content-image-processing-assembly-language" href="#image-processing-assembly-language" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Image Processing Assembly Language</h2>
+<p>Now we give a series of examples of the assembly language of the <code>instakilo</code> stack machine, of each one of its operations and the corresponding results. The <code>instakilo</code> executable that you will be able to <code>make</code> with the contents of the provided zip archive accepts as argument the name of a file containing a script for a stack machine. For example, file <code>scripts/example1.ppl</code> contains:</p>
+<pre><code>load images/baboon.ppm
+bw
+store output/res1.ppm
+</code></pre>
+
+<p>Loads the <code>baboon</code> image onto the stack, applies the black and white operation <code>bw</code> to the image and stores the result into the file <code>output/res1.ppm</code>.</p>
+<p><img alt="baboonbw" src="images/res1.jpg" /></p>
+<p>Another operation that is included in the starter code is the sepia filter. The second example <code>scripts/example2.ppl</code>:</p>
+<pre><code>load images/lena.ppm
+sepia
+store output/res2.ppm
+</code></pre>
+
+<p><img alt="lenasepia" src="images/res2.jpg" /></p>
+<p>Stack machine operations work by taking their arguments from the stack (images in this case), applying their effects to them, and them pushing the results back onto the stack. For example, <code>scripts/example3.ppl</code>:</p>
+<pre><code>load images/parrot.ppm
+green 1024 768 65535
+blue 1024 768 65535
+add
+negative
+mask
+store output/res3.ppm
+</code></pre>
+
+<p>isolates the red component of the parrot image and presents only the green and blue layers. Can you find out how?</p>
+<p><img alt="parrotnogreen" src="images/res3.jpg" /></p>
+<p>We next describe the operations that are both provided and required to complete the assignment, and after that we explain the implementation that can be used as base to integrate new operations on the starter code provided.</p>
+<h3 id="stack-machine-architecture"><a name="user-content-stack-machine-architecture" href="#stack-machine-architecture" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Stack machine architecture</h3>
+<p>The main loop of the stack machine is implemented in file <code>stack_machine.c</code> and makes use of helper functions present in the same file. These helper functions then make use of special functions <code>paint_image</code>, <code>combine_image</code>, and <code>copy_image</code> present in file <code>instakilo.c</code>.</p>
+<p>All the machine is based on the data representation of an image, defined in file <code>libimg.h</code> which is quite simple:</p>
+<pre><code>typedef uint16_t color_field;
+
+#pragma pack(push, 1)
+typedef struct
+{
+  color_field r;
+  color_field g;
+  color_field b;
+} pixel;
+#pragma pack(pop)
+
+typedef struct
+{
+  size_t width, height;
+  pixel *pixels;
+} image;
+</code></pre>
+
+<p>Each image contains elements that indicate the dimensions of the image (width and height), and a series of pixels, composed by three 16 bit unsigned integers, packed with no <a href="https://en.wikipedia.org/wiki/Data_structure_alignment">alignment padding</a>, as noted by the pragma directive <code>#pragma pack(push,1)</code>. Notice that the matrix that corresponds to the image is linearised in the input file and in memory (with a small detail when treating <a href="https://en.wikipedia.org/wiki/Endianness">little endian</a> file representations).</p>
+<p>Function <code>paint_image</code> below traverses the image with a (pointer) cursor and calls a function passed as argument to process each of the pixels. The contract with the function is that the pixel should be modified in place, and that other arguments (<code>img</code>, <code>i</code>, and <code>j</code>) can also be used as reference. The result is the same allocated image.</p>
+<pre><code>/*
+ * function: paint_image
+ * --------------------------------------------------------
+ * returns the image provided as argument, modified by the
+ * function also given as argument.
+ * --------------------------------------------------------
+ * img: the target image
+ * f:   the painting function
+ * --------------------------------------------------------
+ * pre: img != NULL &amp;&amp; f != NULL
+ * post: res == img
+ */
+
+image *
+paint_image (image *img, pixel_set f)
+{
+  pixel *pt = img-&gt;pixels;
+  for (size_t j = 0; j &lt; img-&gt;height; j++)
+  {
+    for (size_t i = 0; i &lt; img-&gt;width; i++)
+    {
+      f (img, pt++, i, j);
+    }
+  }
+  return img;
+}
+</code></pre>
+
+<p>Using this function we can implement many operations on one single image, for instance operations <code>bw</code> and <code>sepia</code> given in the starter code are implemented by the following function call:</p>
+<pre><code>  image *img1     = image_stack_peek ();
+  image_stack_pop ();
+
+  paint_image (img1, bw_pixels);
+  image_stack_push (img1);
+</code></pre>
+
+<p>where <code>img1</code> is a pointer to an image, taken from the stack, and whose result (the same allocated object) is pushed back. The function <code>bw_pixels</code> used as argument is the following:</p>
+<pre><code>void
+bw_pixels (image *img1, pixel *p, size_t i, size_t j)
+{
+  color_field c = (3 * ((int) p-&gt;r) + 2 * ((int) p-&gt;g) + (int) p-&gt;b) / 6;
+  p-&gt;r = p-&gt;g = p-&gt;b = c;
+}
+</code></pre>
+
+<p>which reaches a grey level by a weighted mean of the values for red, green and blue of the original pixel. The same happens with the filter <code>sepia</code>, by using the function <code>sepia_pixels</code> instead.</p>
+<pre><code>void
+sepia_pixels (image *img1, pixel *p, size_t i, size_t j)
+{
+  p-&gt;r = min_color (__COLORS,
+                    ((double) p-&gt;r) * 0.393 + ((double) p-&gt;g) * 0.769
+                      + ((double) p-&gt;b) * 0.189);
+  p-&gt;g = min_color (__COLORS,
+                    ((double) p-&gt;r) * 0.349 + ((double) p-&gt;g) * 0.686
+                      + ((double) p-&gt;b) * 0.168);
+  p-&gt;b = min_color (__COLORS,
+                    ((double) p-&gt;r) * 0.272 + ((double) p-&gt;g) * 0.534
+                      + ((double) p-&gt;b) * 0.131);
+}
+</code></pre>
+
+<p>This time, the colors are reached by three different weighted sums of all colors (the weights are taken from <a href="
+http://www.techrepublic.com/blog/how-do-i/how-do-i-convert-images-to-grayscale-and-sepia-tone-using-c/">here</a>).</p>
+<p>Notice the use of type <code>pixel_set</code> defined below, to describe fuctions whose contract is that the effect of the function is to be applied in the image passed as argument. Either using the pointer to the whole image (<code>img</code>), or the pointer to the single pixel (<code>p</code>). </p>
+<pre><code>typedef void(pixel_set) (image *img, pixel *p, size_t i, size_t j);
+</code></pre>
+
+<p>Other function types are provided and can (should) be used in the project. For instance, type <code>pixel_copy</code> has a contract that the effect is applied in the second argument (<code>copy</code>) and the first one (<code>img</code>) is kept untouched.</p>
+<pre><code>typedef void(pixel_copy) (
+  image *img, image *copy, pixel *p, size_t i, size_t j);
+</code></pre>
+
+<p>Another example, function <code>pixel_op</code> is used to combine two pixels of images of the same size (not strictly), and store the result on the first argument (<code>img1</code> or <code>p</code>).</p>
+<pre><code>typedef void(pixel_op) (
+  image *img1, pixel *p, image *img2, pixel *q, size_t i, size_t j);
+</code></pre>
+
+<h3 id="provided-machine-operations"><a name="user-content-provided-machine-operations" href="#provided-machine-operations" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Provided Machine Operations</h3>
+<p>These operations of the language are given next. Some operations are already available in the starter code given together with this assignment, <strong>you should implement the remaining operations</strong>.</p>
+<p><strong>load <em>filename</em> </strong> (provided): loads an image from the file <em>filename</em> onto the top of the stack. This functionality is implemented by function <code>ppm_load_image</code>.</p>
+<p><strong>store <em>filename</em> </strong> (provided): stores the image on the top of the stack to the file <em>filename</em>. The image is taken out of the stack and disposed. This functionality is implemented by function <code>ppm_write_image</code>.</p>
+<p><strong>bw</strong> (provided): takes an image from the top of the stack and pushes a black and white version of it.</p>
+<p><strong>sepia</strong> (provided): takes an image from the top of the stack and pushes a sepia version of it.</p>
+<p><strong>red</strong>, <strong>green</strong>, <strong>blue</strong> (provided): Pushes a new image in the red, green, or blue layer, and takes as arguments in the instruction a <code>width</code>, a <code>height</code> and a value for the colour intensity. Example <code>scripts/example4.ppl</code></p>
+<pre><code>red 500 500 65535
+store output/res4.ppm
+</code></pre>
+
+<p>provides the result</p>
+<p><img alt="red" src="images/res4.jpg" /></p>
+<p><strong>droplet</strong> (partially provided): Creates a droplet effect from the centre of the image. It uses function <code>paint_image</code>, with the following function <code>sin_distance_to_center</code> for the droplet effect</p>
+<pre><code>void
+sin_distance_to_center (image *img, pixel *p, size_t i, size_t j)
+{
+  double dx  = fabs (i - img-&gt;width / 2.0);
+  double dy  = fabs (j - img-&gt;height / 2.0);
+  double dst = sqrt (dx * dx + dy * dy) / 20;
+
+  p-&gt;r = p-&gt;g = p-&gt;b = 0.7 * __COLORS + 0.3 * __COLORS * sin (dst);
+}
+</code></pre>
+
+<p>Notice the calibration from the <code>-1</code> to <code>1</code> of the <code>sin</code> function, to a positive scale from <code>70%</code> grey, to white. Example <code>scripts/example5.ppl</code></p>
+<pre><code>droplet 500 500 
+store output/res5.ppm
+</code></pre>
+
+<p>provides the result</p>
+<p><img alt="droplet" src="images/res5.jpg" /></p>
+<h1 id="required-machine-operations"><a name="user-content-required-machine-operations" href="#required-machine-operations" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Required Machine Operations</h1>
+<p><strong>negative</strong>: takes an image from the top of the stack and pushes a negative version of it. A negative is the inversion with relation to the maximum number of colours possible (given by constant <code>__COLORS</code> defined in the file <code>libppm.h</code>). Example <code>scripts/example6.ppl</code></p>
+<pre><code>load images/castle.ppm
+negative
+store output/res6.ppm
+</code></pre>
+
+<p>provides the result</p>
+<p><img alt="castlenegative" src="images/res6.jpg" /></p>
+<p><strong>gradient-h</strong>, <strong>gradient-v</strong>, <strong>gradient-c</strong>: Pushes a new grey image that goes from white to black in the horizontal direction, vertical direction, or from the centre to the edges. The arguments are the width and height of the image being produced. Example <code>scripts/example6.ppl</code></p>
+<pre><code>gradient-h 500 500 
+store output/res7-1.ppm
+gradient-v 500 500 
+store output/res7-2.ppm
+gradient-c 500 500 
+store output/res7-3.ppm
+</code></pre>
+
+<p><img alt="gradient1" src="images/res7-1.jpg" /><br />
+<img alt="gradient2" src="images/res7-2.jpg" /><br />
+<img alt="gradient3" src="images/res7-3.jpg" /></p>
+<p><strong>add</strong>: Adds images pixel by pixel, colour component by colour component. It requires that the two images are of the same size. Example <code>scripts/example8.ppl</code></p>
+<p><pre><code>red 500 500 30000
+green 500 500 30000
+blue 500 500 30000
+add
+add
+store output/res8.ppm
+</code></pre><br />
+provides a grey image, by adding all images (which have separate components).</p>
+<p><img alt="grey" src="images/res8.jpg" /></p>
+<p>The implementation of such operation cannot be obtained by iterating an image, like in the case of <code>paint_image</code>. You should program a function called <code>combine_image</code> that accepts helper functions of the following type, found in <code>instakilo.h</code></p>
+<pre><code>typedef void(pixel_op) (
+  image *img1, pixel *p, image *img2, pixel *q, size_t i, size_t j);
+</code></pre>
+
+<p>where <code>p</code> is the pointer to the first image (<code>img1</code>), and <code>q</code> is a pointer to the second image (<code>img2</code>).</p>
+<p><strong>mask</strong>: This operation combines two images (on the stack), by first converting the levels of color to a scale of <code>0.0</code> to <code>1.0</code> and multiplying by the three components of the pixels on the first image. The result is given by transforming the first image. Example <code>scripts/example9.ppl</code></p>
+<pre><code>load images/plane.ppm
+droplet 500 500 
+mask
+store output/res9.ppm
+</code></pre>
+
+<p>produces the following image</p>
+<p><img alt="dropleted" src="images/res9.jpg" /></p>
+<p>and the example</p>
+<pre><code>load images/space.ppm
+gradient-c 990 658
+mask
+store output/res10.ppm
+</code></pre>
+
+<p><img alt="centered" src="images/res10.jpg" /></p>
+<p>and yet another combination</p>
+<pre><code>load images/castle.ppm
+gradient-v 512 512
+sepia
+mask
+store output/res11.ppm
+</code></pre>
+
+<p><img alt="sepiacastle" src="images/res11.jpg" /></p>
+<p><strong>dup</strong>: This operation duplicates an image, and pushes the result onto the stack. This is the first operation that actually produces a new image and the result is not set into the first image given as argument. Example <code>scripts/example12.ppl</code></p>
+<pre><code>load images/parrot.ppm
+gradient-c 1024 768
+dup
+add
+mask
+store output/res12.ppm
+</code></pre>
+
+<p>provides the following result</p>
+<p><img alt="parrotmask" src="images/res12.jpg" /></p>
+<p>which is a much smoother mask than the gradient obtained before (because it is added to itself).</p>
+<p><strong>blur</strong>: The blur operation pushes a new image onto the stack where all the pixels are the mean of the pixels in a square matrix with side <code>2n+1</code>, centered in the current pixel. Example <code>scripts/example13.ppl</code></p>
+<pre><code>load images/fighter.ppm
+blur 5
+store output/res13.ppm
+</code></pre>
+
+<p>produces the output</p>
+<p><img alt="blurredfighter" src="images/res13.jpg" /></p>
+<p>and the combination</p>
+<pre><code>load images/castle.ppm
+gradient-c 512 512
+mask
+load images/castle.ppm
+blur 5
+gradient-c 512 512
+negative
+mask
+add
+store output/res14.ppm
+</code></pre>
+
+<p><img alt="blurredcentercastle" src="images/res14.jpg" /></p>
+<p>shows how masks and filters can be combined.</p>
+<p><strong>flip-v</strong>, <strong>flip-h</strong>: These <strong>flip-h</strong> and <strong>flip-v</strong> operations take an image from the stack and pushes a newly created image that is the mirror image of the first one. In the case of <strong>flip-h</strong>, the axis of mirroring is vertical; in the case of <strong>flip-v</strong>, the axis is horizontal. </p>
+<p>For instance, the example <code>scripts/example15.ppl</code></p>
+<p><pre><code>load images/lena.ppm
+flip-v
+store output/res15.ppm
+load images/lena.ppm
+flip-h
+store output/res16.ppm
+</code></pre><br />
+produces the results</p>
+<p><img alt="babbonflipv" src="images/res15.jpg" /></p>
+<p><img alt="babbonfliph" src="images/res16.jpg" /></p>
+<p><strong>resize</strong>: This instruction receives a pair of unsigned integers, takes an image from the stack and produces an image with the same content but new size. No rescaling of the image takes place: if the new size is smaller, the image is truncated; if the new size is larger, the remaining space is filled with black pixels (to the right and below).
+
+
+<p>For instance, the example <code>scripts/example16.ppl</code></p>
+<pre><code>red 100 100 0 
+negative
+resize 500 500
+store output/res17.ppm
+green 1000 1000 65535
+resize 200 100
+store output/res18.ppm
+</code></pre>
+
+<p>produces the results</p>
+<p><img alt="smallsquare" src="images/res17.jpg" /></p>
+<p><img alt="greenrectangle" src="images/res18.jpg" /></p>
+<p><strong>shift</strong>: This operation translates the image by a non-negative amount of pixels, both vertically and horizontally, given as arguments. The example <code>scripts/example17.ppl</code></p>
+<p><pre><code>red 100 100 0 
+negative
+resize 500 500
+shift 200 200
+store output/res19.ppm
+</code></pre><br />
+produces </p>
+<p><img alt="square" src="images/res19.jpg" /></p>
+<p>The example <code>scripts/example18.ppl</code></p>
+<p><pre><code>load images/castle.ppm
+gradient-c 1000 1000 
+shift 650 650
+resize 512 512
+dup
+dup
+dup
+mask
+mask
+mask
+mask
+store output/res20.ppm
+</code></pre><br />
+produces </p>
+<p><img alt="flashlight" src="images/res20.jpg" /></p>
+<p>The example <code>scripts/example19.ppl</code></p>
+<pre><code>load images/fighter.ppm
+shift 720 0
+store output/res21.ppm
+</code></pre>
+
+<p>produces </p>
+<p><img alt="shifted" src="images/res21.jpg" /></p>
+<p>The example <code>scripts/example20.ppl</code></p>
+<pre><code>load images/plane.ppm
+red 50 500 0
+negative
+resize 500 500
+dup
+shift 100 0
+add
+dup 
+shift 200 0 
+add
+dup
+shift 400 0
+add
+mask
+flip-v
+load images/plane.ppm
+red 50 500 0
+negative
+resize 500 500
+dup
+shift 100 0
+add
+dup 
+shift 200 0 
+add
+dup
+shift 400 0
+add
+negative
+mask
+add
+store output/res22.ppm
+</code></pre>
+
+<p>produces </p>
+<p><img alt="inverted plane" src="images/res22.jpg" /></p>
+<h1 id="main-rules"><a name="user-content-main-rules" href="#main-rules" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Main Rules</h1>
+<ul>
+<li>
+<p>Your submission will be contained in only one file <code>stack_machine.c</code>, where all existing code in the file should be kept intact, the functions tagged with a comment <code>// TODO This function is part of the assignment</code> should be implemented, and new helper functions can and should be added to that same file.</p>
+</li>
+<li>
+<p>You should extend the comment in the beginning of the file with the identification of the authors (student numbers and names).</p>
+</li>
+<li>
+<p>You should include in the initial comment what are the functions that were completed and those that were not. </p>
+</li>
+<li>
+<p>You should make clear if there are any particular aspect that is not obvious to the person evaluating the assignment.</p>
+</li>
+<li>
+<p>The assignment is designed to be developed by two students as a team. A submission by more than two students is not evaluated. Singleton teams (of one student) can be allowed under special circumstances which have to be approved by the teaching staff and should be noted in the initial comment.</p>
+</li>
+<li>
+<p>The assignment can be developed using Windows or MacOS, however the final version of the code should run under the Linux operating system as setup in the department facilities.</p>
+</li>
+<li>
+<p>Your code should be properly indented, to be easily readable. The width of the code should fit in 80 columns, with very few exceptions.</p>
+</li>
+<li>
+<p>Not complying with the assignment rules implies penalties in the grade.</p>
+</li>
+</ul>
+<h1 id="submission-rules_1"><a name="user-content-submission-rules_1" href="#submission-rules_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Submission rules</h1>
+<ul>
+<li>
+<p>There will be a Mooshak contest for all students to submit the completed assigments. The details about the submission will be posted in due time. You should focus on writing code that is correct, efficient, and easy to read. </p>
+</li>
+<li>
+<p>There are penalties for delayed submissions. 1 point for each day of delay, up to 2 points.</p>
+</li>
+</ul>
+<h1 id="other-rules"><a name="user-content-other-rules" href="#other-rules" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Other rules</h1>
+<ul>
+<li>Each team member is responsible for the code delivered, it is of utmost importance that both members do code.</li>
+<li>Team members can be enrolled in two different lab classes, but for the sake of work efficiency, you should attend the same classes. </li>
+<li>There are no previous enrolment in the project, they should be identified in the code.</li>
+<li>The maximum grade is 20 points.</li>
+</ul>
+<h2 id="project-grading"><a name="user-content-project-grading" href="#project-grading" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Project Grading</h2>
+<p>The Professor responsible for the management and evaluation of this project is João Costa Seco. The project grade will be determined automatically by the tests
+installed in a Mooshak contest. Therefore it is essential that you strictly comply with the specification described in this assignment.</p>
+<p>The following aspects will also be taken into consideration:</p>
+<ul>
+<li>code organization,</li>
+<li>code elegance and simplicity,</li>
+<li>good use of the programming language,</li>
+<li>code legibility,</li>
+<li>efficiency.</li>
+</ul>
+<p>It is not mandatory to complete all functions, a partial implementation can be
+graded with a positive result. </p>
+<h2 id="observations"><a name="user-content-observations" href="#observations" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Observations</h2>
+<p>For style on writing C, see <a href="http://www.oualline.com/style/">http://www.oualline.com/style/</a></p>
+<h2 id="conclusions"><a name="user-content-conclusions" href="#conclusions" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Conclusions</h2>
+<p>Have fun! </p></article></body></html>

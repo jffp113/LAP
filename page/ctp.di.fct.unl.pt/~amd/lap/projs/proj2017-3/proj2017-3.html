@@ -1,0 +1,170 @@
+<title>Enunciado do 3º Projeto Prático (JavaScript)</title> 
+<head><meta http-equiv="refresh" content="600"></head>
+<body text="#000000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" alink="#FF0000"> 
+ 
+<H1>Linguagens e Ambientes de Programação (2016/2017) [Eng.Inf. - DI/FCT/UNL]</H1> 
+<H2>Enunciado do 3º Projeto Prático (JavaScript)</H2> 
+<H4>Artur Miguel Dias</H4>
+
+
+<HR><h2>Important Dates</h2> 
+<ul> 
+<li>26/Mai (20:00) - publication of the assignment
+<li>04/Jun (22:00) - due date (one extra day was added)
+<li>05/Jun (24:00) - limit to the submission with a penalty of 2 points
+</ul> 
+ 
+<HR><h2>Changelog</h2> 
+<ul>
+<li>29/May (13:00): New version of the file "caches.xml", inside "resources.zip". There was one "0" missing at each of the lines 15, 7575 and 11875.
+<li>27/May (23:00): At the end of the "Functionalities" section, added one sentence explaining what is the state of the program when it starts.
+<li>27/May (10:00): Added profuse commentaries to the code of the file "geo-browser.js"
+<li>26/May (18:00): Publication
+</ul> 
+
+<HR>
+<h2>Submission Rules</h2>
+<p>Special rules that apply to the submission of the assignment will be posted here in a date closer to the submission date.</p>
+
+<h1><A HREF="submiss2017-3.html">Submission rules</A>
+
+
+
+<HR><h1><font size=+4>GeoBrowser</font></h1>
+
+Geocaching is an open-air fun activity with many adepts. This project consists in the development of a browser of geocaching data using some essential Web technologies. One of the goals is to exploit historical data and allow, for example, to observe the current situation at any time in the past. A file is provided with the historical geocaching data of the municipality of Almada.
+
+<p>There are some challenges: deal with a sophisticated JavaScript library (<a href="http://leafletjs.com/">Leaflet</a>) to handle geographic maps; work with HTML and HTML forms to create a graphical user interface; perform a bit of XML manipulation; work with classes and objects in JavaScript.
+
+<P> This project will be tested in the Firefox browser installed on the Linux of the labs. Note that there are some incompatibilities between different browsers on different platforms.
+ 
+<P>Note: Firefox is the best browser to develop the project because it supports access to local files via AJAX (cf. the end of lecture 21). Of course, when the system is finalized and deployed in a proper Web server, any client browser should be able to get the remote geocaching database.
+
+
+<HR><h1>What is Geocaching?</h1>
+
+With the widespread use of  <a href="http://en.wikipedia.org/wiki/Global_Positioning_System">GPS</a>
+<a href="https://www.google.pt/search?q=gps+receivers+geocaching&tbm=isch">receivers</a>, there are more and more games and activities taking advantage of the possibility of determining the
+coordinates of the current location. This promotes outdoor fun and physical activity for the whole family.
+
+<p> Here are some of these games and activities that use GPS: <a href="http://geodashing.gpsgames.org/">Geodashing</a>, <a href="http://www.confluence.org/">Degree Confluence Project</a>, 
+<a href="http://www.geocaching.com/mark/">Benchmarking</a>, <a href="http://www.wherigo.com/">Wherigo</a>, <a href="http://www.geocaching.com/">Geocaching</a>, <a href="http://www.waymarking.com/">Waymarking</a>, <a href="https://www.ingress.com/">Ingress</a>, <a href="http://www.pokemongo.com">Pokémon GO</a>.
+
+<p> As of now, Geocaching is the most popular GPS game with more than one million active players and more than three million geocaches worldwide. In Portugal there are 30000 players and 40000 geocaches available.
+
+<p> Geocaching consists in finding physical <i>treasures</i> (called <b>geocaches</b> or more simply <b>caches</b>) which are hidden in supposedly interesting locations. Some physical activity is often involved in reaching those locations. In English, the word "cache" is synonymous with "treasure", "hideout" and "stash".
+
+<p>A typical cache is a waterproof container containing a logbook and some small goodies that the visitor can exchange. The player discovers the container, signs the logbook, and hides back the container. Later, at home, the player writes an electronic log at the geocaching site to share their experiences with the others.  
+
+<p>Sometimes hiding a treasure involves clever techniques so that the cache does not get stolen. For example: <a href="http://i.imgur.com/maf7E9S.jpg">hide1</a>, <a href="https://beatuproadsign.files.wordpress.com/2011/02/dsc05132.jpg">hide2</a>, <a href="https://s-media-cache-ak0.pinimg.com/736x/ba/fe/7c/bafe7c5dcc9a35b4bb67ecfe1db0ab0d.jpg">hide3</a>. 
+
+<p>Here is some vocabulary and concepts concerned with GeocaSching: <a href="http://www.geocaching.com/about/cache_types.aspx">cache kinds</a>, <a href="https://www.geocaching.com/help/index.php?pg=kb.chapter&id=97&pgid=815">cache sizes</a>, <a href="https://www.geocaching.com/help/index.php?pg=kb.chapter&id=97&pgid=82">difficulty/terrain (D/T)</a>, <a href="http://www.geocaching.com/about/glossary.aspx">general glossary</a>
+
+
+
+<hr><h1>Goals of the project</h1>
+
+<p>The aim is to develop an interactive a Web page to browse geocaching data.  The page consists in two parts:
+
+<ul>
+<li> A geographic map occupying almost the entire page and displaying the available geocaches at their geographical locations. The caches are presented using different icons, according to the type of each cache. There is a tooltip showing the name of the cache when the mouse cursor is positioned over a cache. There is a popup balloon showing detailed information about the cache when the user clicks in a cache.
+
+<p><li> A control panel at the left displays statistics and provides several control widgets.
+</ul>
+
+<p>We offer, as a starting point, these two files: <a href="geo-browser.html">geo-browser.html</a> and <a href="geo-browser.js">geo-browser.js</a>. The HTML file includes the JavaScript file. These are the files you need to develop and submit in Mooshak before the deadline of the project.
+
+<p>We also offer a zip file containing the icons of the visual representation of the caches and a XML file containing the geocaching data of the municipality of Almada: <a href="resources.zip">resources.zip</a>.
+
+<p>Create a folder containing the three files, expand the zip file, and you are ready to go. To get each of the three files, right-click and "Save link as...".
+
+
+<hr><h1>Available caches and archived caches</h1>
+
+A cache is considered to have been <b>archived</b> on a date D if: (1) the "status" field of a cache is "A"; and (2) the date of the last log is D.
+
+<p>A cache is said to be <b>available</b> on a certain date D if: (1) it was published on D or before D; and (2) it was not archived on D or before D.
+
+
+
+
+<hr><h1>Functionalities</h1>
+
+These are the required functionalities. Try to implement as many as possible and be ambitious in the aesthetics and in the sophistication of the control panel.
+
+
+<ol>
+
+<p><li> There is a notion of <b>reference date</b>. The reference data is displayed in the control panel. The map only displays the caches that were available on the reference date. By default, the reference date is the date of today, but the user can select any other reference date in the past. Changing the reference date in the control panel causes the caches to be updated on the screen. 
+
+<p><li> There is an option in the control panel that makes the program display all the caches published before the reference date, even archived caches. Toggling this option in the control panel causes the caches to be updated on the screen.
+
+<p><li> There is a filtering system in the control panel to allow the user to make visible in the map only the caches that correspond to the logic conjunction of four properties: (1) kind, (2) size, (3) difficulty, (4) terrain. For example, we may want to display only the caches such that, all at the same time: (1) kind is "traditional", "multi" or "mystery"; (2) size is "micro or "other"; (3) "difficulty" is above 3.5; (4) "terrain" is 1.5, 4 or 5. This filtering system acts only over the caches that were select for visibility by the two previous items. Changing one filtering option in the control panel causes the caches to be updated on the screen.
+
+<p><li> There is an option in the control panel that enables automatic navigation in time, producing an animation effect in the map. The reference date advances automatically in response to the events of a timer and the caches in the map keep being updated accordingly. The automatic navigation stops when the date of today is reached or when the user disables the automatic navigation option.
+
+<p><li> There is a small section in the control panel with some statistics about the caches currently displayed: for example, the number of caches currently displayed; the top 3 of the more prolific owners; the cache with highest altitude (note that the special altitude "-32768" means "altitude unknown"), etc.
+
+<p><li> The popup balloon associated with each cache in the map presents in a very readable way most of the available information about that cache. One extra item of information is the number of neighbor caches visible in the map at the distance of 500 meters or less.
+
+</ol>
+
+
+<p>Beyond the required functionalities, everything you do to improve the program will be appreciated, for example trying to make the program faster and consuming less memory, or even adding some extra feature that proves to be useful. If you do any of this, please tell us about it the comment at the top of the JavaScript file.
+
+<p>When the program starts, the reference date is the date of today and all the options of the filtering system are setup in order to display all the available caches, but not the archived caches.
+
+
+<hr><h1>About the provided starting code</h1>
+
+<p>Read the commentaries added to the code in the file "geo-browser.js".
+
+
+<hr><hr><h1>Project grading</h1>
+
+<p>The teachers responsible for the management and grading of this project are Artur Miguel Dias and Mário Almeida.
+
+<p>Around 80% of the grade will be assigned using objective criteria, considering only the execution of the program.
+
+<p>The remaining 20% will be assigned by checking out the quality of the code, including the following aspects:
+
+<ul>
+<li>code organization,
+<li>code elegance and simplicity,
+<li>good use of the programming language and libraries,
+<li>code legibility,
+<li>efficiency.
+</ul>
+
+<p>It is not mandatory to complete all the functionalities. A partial implementation can be graded with a positive result.
+
+
+
+<hr><h1>Main rules</h1>
+<ul>
+<li>You must produce two files: "geo-browser.html" and "geo-browser.js". In the rules of submission will be explained how to submit in Mooshak.
+
+<li>You should extend the comment in the beginning of the file "geo-browser.js" with the identification of the authors (student numbers and names). You should include in the initial comment what are the functions that were completed and those that were not. You should make clear if there are any particular aspect that is not obvious to the person evaluating the assignment.
+
+<li>The assignment is designed to be developed by two students as a team. A submission by more than two students is not evaluated. Singleton teams (of one student) can be allowed under special circumstances which have to be approved by the teaching staff and should be noted in the initial comment.
+
+<li>The assignment can be developed using any browser in any OS. However, the final version of the code should run of Firefox under the Linux operating system as setup in the department facilities.
+
+<li>Your code should be properly indented, to be easily readable. The width of the code should fit in 80 columns, with very few exceptions.
+
+<li>Not complying with the assignment rules implies penalties in the grade.</p>
+
+</ul>
+
+
+<hr><h1>Other rules</h1>
+<ul>
+<li>Each team member is responsible for the code delivered, it is of utmost importance that both members do code.
+<li>Team members can be enrolled in two different lab classes, but for the sake of work efficiency, you should attend the same classes.
+<li>The maximum grade is 20 points.
+</ul>
+
+<hr>
+<p>Have fun!
+
+<hr><hr>

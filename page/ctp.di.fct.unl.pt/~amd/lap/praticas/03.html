@@ -1,0 +1,104 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 3</H2>
+<p>Árvores e outros tipos soma. Exercícios de 21 a 26. 
+
+<HR>
+
+<HR><li>21 - Considere o tipo árvore binária em OCaml:
+<pre class='notranslate'>
+	type 'a tree = Nil | Node of 'a * 'a tree * 'a tree
+</pre>
+Escreva as seguintes três funções sobre árvores:
+<ul><pre class='notranslate'>
+howMany : 'a -> 'a tree -> int    (* Conta número de ocorrências do valor na árvore *)
+eqPairs : ('a * 'a) tree -> int   (* Conta número de pares com as duas componentes iguais *)
+treeToList : 'a tree -> 'a list   (* Converte árvore em lista, por uma ordem qualquer *)
+</pre></ul>
+
+<HR><li>22 - Programe uma função:
+<pre class='notranslate'>
+    balanced: 'a tree -> bool 
+</pre>
+que determine se uma árvore binária está ou não equilibrada. Uma árvore binária diz-se <i>equilibrada</i> se, para cada nó, a diferença de profundidades das suas subárvores não superar a unidade. (Copie a função  a função auxiliar <tt class='notranslate'>height</tt> da teórica 4.)
+<p>Exemplos:
+<pre class='notranslate'>
+    balanced Nil = true
+    balanced (Node(3,Node(5,Nil,Nil),Node(6,Nil,Nil))) = true
+    balanced (Node(1,Nil,Node(2,Nil,Node(3,Nil,Nil)))) = false
+</pre>
+
+<HR><li>23 - Programe uma função:
+<pre class='notranslate'>
+	subtrees: 'a tree -> 'a tree list
+</pre>
+que produza a lista de todas as subárvores distintas que ocorrem na árvore argumento.
+<p>Exemplos:
+<pre class='notranslate'>
+    subtrees (Node(5,Nil,Node(6,Nil,Nil))) =
+	    [Node(5,Nil,Node(6,Nil,Nil)); Node(6,Nil,Nil); Nil]
+    subtrees Nil = [Nil]
+</pre>
+
+<HR><li>24 - Primavera. Programe uma função:
+<pre class='notranslate'>
+	spring: 'a -> 'a tree -> 'a tree
+</pre>
+que faça crescer novas folhas em todos os pontos duma árvore onde esteja Nil. As novas folhas são todas iguais entre si.
+
+<HR><li>25 - Outono. Programe uma função:
+<pre class='notranslate'>
+	fall: 'a tree -> 'a tree
+</pre>
+<p> que elimine todas as folhas existentes duma árvore. Os nós interiores que ficam a descoberto tornam-se folhas, claro, as quais já não são para eliminar.
+
+<HR><li>26 - Repita os exercícios 23, 24 e 25, mas agora para árvores n-árias. O tipo árvore n-ária em OCaml define-se assim:
+<pre class='notranslate'>
+	type 'a ntree = NNil | NNode of 'a * 'a ntree list
+</pre>
+
+<pre class='notranslate'>
+	treeToList : 'a ntree -> 'a list
+	subtrees : 'a ntree -> 'a ntree list
+	spring: 'a -> 'a ntree -> 'a ntree
+	fall: 'a ntree -> 'a ntree
+</pre>
+
+<p> Nota: Uma folha duma árvore binária tem dois Nil por baixo, mas uma folha duma árvore n-ária costuma ter apenas uma lista vazia de filhos, portanto sem qualquer Nil.
+
+
+<hr><li>27 - Defina um tipo soma <tt class='notranslate'><b>exp</b></tt> para representar <b>expressões algébricas com uma variável real "x"</b>. Nas expressões devem poder ocorrer os operadores binários "+", "-", "*", "/", o operador unário "-", a variável "x" e ainda literais reais. Exemplos de expressões:
+
+<pre class='notranslate'>
+    2*x<sup>2</sup>+5
+    2*x<sup>7</sup>+5*(x-5)<sup>2</sup>-3
+</pre>
+
+Depois de definido o tipo, escreva as seguintes funções sobre expressões algébricas:
+
+<ul><pre class='notranslate'>
+a) eval: float -> exp -> float    (* Avalia a expressão para um dado valor de "x" *)
+b) deriv: exp -> exp              (* Determina a derivada em ordem a "x". Não simplifique o resultado. *)
+</pre></ul>
+
+
+
+
+<i>Ajuda: O tipo <tt class='notranslate'><b>exp</b></tt> pode ser definido assim</i>
+<ul><pre class='notranslate'>
+type exp =
+      Add of exp*exp   (* soma *)
+    | Sub of exp*exp   (* subtração *)
+    | Mult of exp*exp  (* multiplicação *)
+    | Div of exp*exp   (* divisão *)
+    | Power of exp*int (* potência *)
+    | Sym of exp       (* simétrico *)
+    | Const of float   (* constante*)
+    | Var              (* variável *)
+;;
+</pre></ul>
+<p> Usando esta representação, a expressão <tt class='notranslate'>2*x<sup>2</sup>+5</tt> escreve-se: <tt class='notranslate'>Add(Mult(Const 2.0,Power(Var,2)),Const 5.0)</tt>.
+
+
+<hr><hr>

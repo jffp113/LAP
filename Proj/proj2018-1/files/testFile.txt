@@ -1,0 +1,81 @@
+(*matchAtStart*)
+
+matchAtStart "aabbcc" (Str "aa") = (true, "aa", "bbcc");;
+matchAtStart "aabbcc" (Str "ab") = (false, "", "");;
+matchAtStart "aabbcc" (Str "aac") = (false, "", "");;
+matchAtStart "a" (Str "aa") = (false, "", "");;
+matchAtStart "aaaabbcc" (OneOrMore (Str "aaa"));;
+matchAtStart "aabbbbcc" (Seq(Str "aa", Str "bb")) = (true,"aabb","bbcc");;
+matchAtStart "aacc" (Seq(Str "aa", Not(Str "bb"))) = (true,"aa","cc");;
+matchAtStart "aaapasdl" (Repeat( 0, 2 ,(Str "a"))) = (true, "aa", "apasdl" );;
+
+allMatches "aabbabb" (Str "a") = [("", "a", "abbabb"); ("a", "a", "bbabb"); ("aabb", "a", "bb")];;
+allMatches "aabbabb" (Str "z") = [];;
+allMatches "aabbacac" (Seq (Str "a",Not (Str "b"))) = [("", "a", "abbacac"); ("aabb", "a", "cac"); ("aabbac", "a", "c")];;
+allMatches "aabbccbb" (OneOrMore (Str "b") ) =  [("aa", "bb", "ccbb"); ("aabbcc", "bb", "")];;
+allMatches "2580-055" (Seq((Repeat( 4 ,4 ,(Class "0123456789"))),Seq((Str "-"),(Repeat( 3 ,3 ,(Class "0123456789"))) ) ));;
+allMatches "abc" (Zero(Any)) = [("","","abc");("a","","bc");("ab","","c");("abc","","")];;
+
+replaceAllMatches "aabbabb" "Q" (Str "ab") = "aQbQb";;
+
+
+matchAtStartGreedy "|aaa|" (Seq (Str "|", Seq(OneOrMore(Any), Str "|"))) = (true, "|aaa|", "");;
+matchAtStartGreedy "aaa" (Or((Str"a"),(Str"aa"))) = (true,"aa","a");;
+matchAtStartGreedy "aaaba" (Seq(OneOrMore(Str"a"),OneOrMore(Str"ab"))) = (true,"aaab","a");;
+matchAtStartGreedy "aaab" (Seq(OneOrMore(Str"a"),OneOrMore(Str"ab"))) = (true,"aaab","");;
+
+matchAtStart "abazzz" (Repeat (2,4,Str "ab")) =  (false, "", "");;
+matchAtStart "ababazzz" (Repeat (2,4,Str "ab")) =  (true, "abab", "azzz") ;;
+matchAtStart "ababazzz" (Repeat (3,4,Str "ab")) =  (false, "", "") ;;
+matchAtStart "abababazzz" (Repeat (2,4,Str "ab")) =  (true, "ababab", "azzz");; 
+matchAtStart "ababababazzz" (Repeat (2,4,Str "ab")) =  (true, "abababab", "azzz");; 
+matchAtStart "abababababazzz" (Repeat (2,4,Str "ab")) =  (true, "abababab", "abazzz");; 
+matchAtStart "ababababababazzz" (Repeat (2,4,Str "ab")) =  (true, "abababab", "ababazzz");;
+matchAtStart "abababababababazzz" (Repeat (2,4,Str "ab")) =  (true, "abababab", "abababazzz");;
+
+
+allMatches "-123abfd"  (Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))) = [("","-123","abfd")];;
+allMatches "123abfd"  (Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))) = [("","123","abfd")];;
+allMatches "abfd"  (Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))) = [];;
+allMatches "-abfd"  (Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))) = [];;
+allMatches "--abfd"  (Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))) = [];;
+allMatches "--abfd"  (Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))) = [];;
+allMatches "--123abfd"  (Seq(ZeroOrOne (Str "-"), OneOrMore (Class "0123456789"))) = [("-", "-123", "abfd")];;
+
+
+matchAtStart "aabbcc" (Str "aa");;
+matchAtStart "aabbcc" (Str "ab");;
+matchAtStart "aaarest" (ZeroOrMore (Str "a"));;
+firstMatch "aabbcc" (Str "bb");;
+firstMatch "aabbcc" (Str "d");;
+allMatches "aabbabb" (Str "a");;
+allMatches "aabbabb" (Str "z");;
+replaceAllMatches "aabbabb" "Q" (Str "ab");;
+allMatchesFile "file.txt" (Str "bb") = [[("aa", "bb", "ccbb zz"); ("aabbcc", "bb", " zz")]; []; [("", "bb", "b")];[]; []; []; [("a", "bb", "a")]];;
+allMatchesOverlap "aabbabb" (Str "a");;
+matchAtStart "aabbcc" (Str "aa");;
+
+
+matchAtStart "aaaaabaaaab" (Seq(ZeroOrMore(Str"a"), (Str "b"))) = (true, "aaaaab", "aaaab");;
+
+matchAtStart "abcd" (Or((Class""),(Str""))) = (true,"","abcd");;
+matchAtStart "" (Str"ola") = (false,"","");;
+
+
+allMatches "aabc" (Not(Str"a")) ;;
+allMatches "aabcabaah" (Seq((Str"a"),(Not(Str"a")))) = [("a", "a", "bcabaah"); ("aabc", "a", "baah"); ("aabcaba", "a", "h")];;
+
+allMatches "aaaaaa" (Seq((Str"a"),(OneOrMore(Not(Str"a")))));;
+
+allMatches "aaaaaa" (Seq((Str"a"),(Or(Not(Str"a"),(Str "a")))));;
+
+matchAtStart "aaaaaaa" (ZeroOrMore(ZeroOrMore(Str"a")));;
+
+matchAtStartGreedy "bababab" (Seq(ZeroOrMore(Any),(Str"b"))) = (true, "bababab", "");;
+matchAtStartGreedy "bababab" (Seq(ZeroOrMore(Any),(Str"a"))) = (true, "bababab", "");;
+
+
+(match matchAtStartAllRE line e with
+                         | [] -> []
+                         | (false,_,_)::tl -> [(true,[],line)]
+                         | (true,m,r)::tl -> (true,m,r)::(insert2 m (matchAtStartAllRE r (ZeroOrMore e))))

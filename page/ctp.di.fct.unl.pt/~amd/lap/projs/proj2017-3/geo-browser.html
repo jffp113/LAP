@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<HTML>
+<!-- Artur Miguel Dias, 2017 -->
+
+<HEAD>	
+<TITLE>Linguagens e Ambientes de Programação (2016/2017) [Eng.Inf. - DI/FCT/UNL] - 3º projeto prático (Javascript)</TITLE>
+<META charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">	
+<LINK rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+<SCRIPT src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></SCRIPT>
+
+<SCRIPT TYPE="text/javascript" SRC="geo-browser.js"></SCRIPT>
+<STYLE>body { padding: 0; margin: 0; } html, body { height: 100%;  width: 100%; } </STYLE>
+</HEAD>
+
+<BODY ONLOAD="onLoad()">
+<DIV STYLE="position: fixed; top: 0px; left: 0px; height: 100%; width: 200px; background: pink">
+
+
+
+
+
+
+
+<!-- YOUR HTML CODE STARTS HERE -->
+<!-- OUTSIDE THIS AREA, PLEASE DO NOT CHANGE ANYTHING -->
+<!-- INSIDE THIS AREA, CHANGE EVERYTHING YOU WANT -->
+
+<!-- THIS AREA IMPLEMENTS THE CONTROL PANEL -->
+
+<H1>GeoBrowser</H1>
+
+<hr><b>Authors:</b> <br />
+&nbsp;&nbsp;&nbsp;&nbsp;   88888 Fulano <br />
+&nbsp;&nbsp;&nbsp;&nbsp;   99999 Sicrano <br />
+
+<hr><b>Filters:</b> <br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+	<img src="resources/Archived.png" alt="Archived" />
+	<input type="checkbox" id="Archived" onchange="checkboxUpdate(this)"/>
+	<img src="resources/Traditional.png" alt="Traditional" />
+	<input type="checkbox" id="Traditional" checked onchange="checkboxUpdate(this)"/>
+	<img src="resources/Multi.png" alt="Multi" />	
+	<input type="checkbox" id="Multi" checked onchange="checkboxUpdate(this)"/>
+	<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+	<img src="resources/Mystery.png" alt="Mystery" />	
+	<input type="checkbox" id="Mystery" checked onchange="checkboxUpdate(this)"/>
+	<br />
+	... more filters
+
+<hr><b>Time:</b> <br />
+
+<hr><b>Statistics:</b> <br />
+
+<hr>
+
+
+<!-- YOUR HTML CODE ENDS HERE -->
+
+
+
+
+
+
+
+
+</DIV><DIV STYLE="position: fixed; top: 0px; left: 200px; height: 100%; width: 100%;">
+<DIV ID="map" STYLE="height: 100%"></DIV>
+</DIV>
+</BODY>
+
+</HTML>
+

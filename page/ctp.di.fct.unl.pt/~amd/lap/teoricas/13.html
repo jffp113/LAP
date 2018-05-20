@@ -1,0 +1,543 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 13 (19/abr/2018)</H2>
+Apontadores: Criação dinâmica de variáveis.<br />
+Compilação separada e modularidade.<br />
+Módulos abertos em C.<br />
+Módulos fechados em C.<br />
+Listas ligadas em C.
+Usando recursividade no processamento de estruturas com apontadores.
+<p>
+<HR>
+
+
+<hr><h1>Apontadores: Criação dinâmica de variáveis</h1>
+
+A linguagem C não dispõe dum gestor de memória automático. Criação e a eliminação de variáveis dinâmicas são responsabilidades do programador.
+
+<p>Usa-se a função de biblioteca <tt class='notranslate'>malloc</tt> para criar e eliminar variáveis dinâmicas. A função <tt class='notranslate'>malloc</tt> recebe o número de bytes do bloco de memória a reservar e retorna um apontador (de tipo <tt class='notranslate'>void *</tt>) para o início desse bloco. Eis o cabeçalho desta função, tal como está definido no módulo <tt class='notranslate'>stdlib</tt>:
+
+<ul><pre class='notranslate'>
+void *malloc(size_t size);
+</pre></ul>
+
+<p>Exemplo de utilização:
+
+<ul><pre class='notranslate'>
+#include &lt;stdlib.h> /* declara a função malloc, entre muitas outras coisas */
+
+const int *a = malloc(10 * sizeof(int));   /* cria var. dinâmica; o respetivo apontador é guardado na constante a */
+a[3] = 10;                                 /* altera uma célula do bloco de memória apontado (usando notação de vetor) */
+</pre></ul>
+
+<p> A função <tt class='notranslate'>malloc</tt> retorna a constante <tt class='notranslate'>NULL</tt> no caso do gestor de memória não ter mais memória disponível.
+
+<p> Para libertar a memória ocupada por uma variável dinâmica que já não é mais necessária, usa-se a operação:
+
+<ul><pre class='notranslate'>
+void free(void *ptr);
+</pre></ul>
+
+Interessa criar variáveis dinâmicas principalmente nas duas seguintes situações:
+
+<ul>
+<li> Para criar um vetor, cujo tamanho só é conhecido depois do programa começar a correr.
+<p><li> Para criar estruturas de dados dinâmicas, e.g. listas e árvores.
+</ul>
+
+Mais abaixo, mostra-se como se manipulam com listas em C. Uma lista é uma estrutura de dados dinâmica que só pode ser manipulada através de apontadores. Para organizar bem o nosso exemplo, vamos apresentá-lo sob a forma de módulo. Mas primeiro temos de aprender a lidar módulos em C...
+
+
+
+<p><HR><h1>Compilação separada e modularidade</h1>
+
+A linguagem C suporta modularidade e compilação separada. O controlo de visibilidade de nomes é feito ao nível do ficheiro.
+
+<h2>Controlo de visibilidade</h2>
+
+Por omissão, todas as variáveis globais e funções definidas num ficheiro são públicas, isto é podem ser acedidas a partir de outros ficheiros. Consegue-se impedir esse acesso precedendo a definição dessas entidades pela palavra <tt class='notranslate'><b>static</b></tt>.
+
+<ul><pre class='notranslate'>
+static Vetor privado;
+static int f(int x) { return x + 1; }
+</pre></ul>
+
+Antes de se poder aceder a uma entidade definida noutro ficheiro é preciso declarar essa entidade para o compilador a ficar a conhecer. Isso faz-se usando a palavra reservada <tt class='notranslate'><b>extern</b></b></tt>. No caso da declaração das funções o atributo <tt class='notranslate'><b>extern</b></b></tt> pode ser omitido, pois o compilador vê que a declaração não tem corpo e assume que se trata duma entidade externa.
+
+<ul><pre class='notranslate'>
+extern char key;
+extern int f(int x);    /* no caso das funções, a palavra extern pode ser omitida */
+</pre></ul>
+
+
+<h2>Módulo</h2>
+
+Jogando de forma disciplinada com os mecanismos de visibilidade atrás descritos, é possível implementar <b>módulos</b> em C.
+
+<p>Um módulo "fich" é tipicamente definido usando dois ficheiros:
+
+<ul>
+<li> Um <b>ficheiro de interface</b> "fich.h";
+<li> um <b>ficheiro de implementação</b> "fich.c".
+</ul>
+
+No ficheiro de interface definem-se todas as entidades exportadas pelo módulo, o que pode incluir: funções, variáveis globais, tipos e constantes.
+
+<p> O cliente do módulo só precisa fazer
+
+<ul><pre class='notranslate'>
+#include "fich.h"
+</pre></ul>
+
+para ter acesso à definição dos símbolos exportados.
+
+<p><HR><h1>Módulos abertos em C</h1>
+
+Apresenta-se uma implementação de listas ligadas, feita num módulo aberto em C. Estas listas são homogéneas e decidimos que vão conter valores de tipo <tt class='notranslate'>double</tt>.
+
+<p>Este módulo diz-se <b>aberto</b> porque a representação das listas é pública. Veremos na secção seguinte como ocultar essa representação.
+
+<p>Definimos um pequeno conjunto de operações, só para exemplificar.
+
+<h2>Ficheiro LinkedList.h</h2>
+
+A definição do símbolo <tt class='notranslate'>_LinkedList_</tt>, protege o ficheiro de interface relativamente à possibilidade da inclusão múltipla do mesmo ficheiro.
+
+<p>Uma <b>lista ligada</b> consiste numa sequência de nós. Cada nó contém um valor dum dado tipo Data e um apontador indicando qual o nó seguinte. O valor NULL serve para indicar que não existe nó seguinte.
+
+<p>É interessante comparar a utilização de listas face à utilização de vetores, para guardar sequências de valores:
+<ul>
+<li> A vantagem duma lista relativamente um vetor é o facto da sucessão de nós não ter de estar em posições contíguas de memória. Isso permite a inserção e remoção de valores em tempo constante (sem ser preciso estar a desviar parte do conteúdo para a frente).
+<p><li>A desvantagem duma lista relativamente um vetor é não ser possível implementar acesso indexado em tempo constante.
+</ul>
+
+No ficheiro ".h", as duas primeiras linhas servem para garantir que não haverá problema se o ficheiro for acidentalmente incluído duas ou mais vezes.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#ifndef _LinkedList_
+#define _LinkedList_
+
+#include &lt;stdbool.h>
+
+typedef double Data;
+typedef struct Node {
+    Data data;
+    struct Node *next;
+} Node, *List;  /* Uma lista e' um apontador para um no' */
+
+typedef bool BoolFun(Data);
+
+List listMakeRange(Data a, Data b);
+int listLength(List l);
+bool listGet(List l, int idx, Data *res);
+List listPutAtHead(List l, Data val);
+List listPutAtEnd(List l, Data val);
+void listPrint(List l);
+List listFilter(List l, BoolFun toKeep);
+void listTest(void);
+#endif
+</pre></table></ul>
+
+
+<h2>Ficheiro LinkedList.c</h2>
+
+Repare que a função auxiliar <tt class='notranslate'>NewNode</tt> é declarada como estática para ficar privada ao módulo. A palavra reservada <tt class='notranslate'>static</tt>, quando aplicada a uma função ou a uma variável global, torna essas entidades privadas: portanto o <b>âmbito</b> da sua definição é o ficheiro onde essa definição ocorre.
+
+<p>Repare que todas as funções deste módulo estão programadas com base em raciocínios imperativos, sem usar recursividade. Essa é a forma normal de trabalhar em C.
+
+<h4>Técnica do apontador para o último nó</h4>
+
+<p> A função <tt class='notranslate'>listMakeRange</tt> ilustra uma técnica importante.
+
+<p> É sempre muito fácil fazer crescer as listas acrescentando nós novos à cabeça. Mas usando a técnica exemplificada, consegue-se criar uma nova lista acrescentando os novos nós no final. Repare que se usa de forma habilidosa um apontador auxiliar <tt class='notranslate'>last</tt> que aponta sempre para o último nó da lista. Tome nota desta técnica, porque precisará de a usar muitas vezes.
+
+<h4>Técnica do apontador atrasado</h4>
+
+<p> A função <tt class='notranslate'>listFilter</tt> ilustra outra técnica importante.
+
+<p>De forma geral, as funções que apagam ou inserem nós precisam de alterar o campo next do nó anterior. Realmente, quando se descobre qual o ponto de inserção, o nó anterior já ficou para trás. Por isso, neste tipo de função, convém navegar na lista usando um apontador atrasado, que aponta para o nó que antecede aquele em que estamos interessados em cada momento.
+
+<p>Mas, levanta-se então o problema de como tratar o primeiro nó da lista, visto que ele não tem antecedente. A nossa solução foi inserir um nó auxiliar (com nome <tt class='notranslate'>dummy</tt>) na primeira posição.
+
+<h4>Recomendação geral para a escrita de funções sobre listas</h4>
+
+As funções sobre listas costumam ser complicadas por envolverem vários detalhes de gestão dos apontadores.
+
+<p>Em primeiro lugar, é importante ir fazendo um desenho em papel para apoiar o raciocício.
+
+<p>Não interessa começar por escrever a inicialização! Interessa sim começar por escrever o ciclo, imaginando que vamos a meio dele, e numa primeira fase podem-se assumir algumas simplificações que facilitem a escrita duma primeira versão. Depois é preciso refinar o ciclo para tratar todas as situações possíveis. Finalmente, agora que já percebemos as necessidades do ciclo, podemos escrever a sua inicialização e finalização.
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;stdbool.h>
+#include "LinkedList.h"
+
+static List newNode(Data val, List next)
+{
+    List n = malloc(sizeof(Node));
+    if( n == NULL )
+        return NULL;
+    n->data = val;
+    n->next = next;
+    return n;
+}
+
+List listMakeRange(Data a, Data b)
+{  <font color=blue>// TECNICA ESSENCIAL: Ir fazendo crescer a lista no ultimo no'.</font>
+    if( a > b )
+        return NULL;
+    double i;
+    List l = newNode(a, NULL), last = l;
+    for( i = a + 1 ; i &lt;= b ; i++ )
+        last = last->next = newNode(i, NULL);
+    return l;
+}
+
+/* Outra maneira, mais palavrosa, de escrever a funcao anterior:
+
+List listMakeRange(Data a, Data b)
+{
+    if( a > b )
+        return NULL;
+    double i;
+    List l = newNode(a, NULL);
+    List last = l;
+    for( i = a + 1 ; i &lt;= b ; i++ ) {
+        List q = newNode(i, NULL);
+        last->next = q;
+        last = q;
+    }
+    return l;
+}
+*/
+
+int listLength(List l) {
+    int count;
+    for( count = 0 ; l != NULL ; l = l->next, count++ );
+    return count;
+}
+
+bool listGet(List l, int idx, Data *res)
+{
+    int i;
+    for( i = 0 ; i &lt; idx && l != NULL ; i++, l = l->next );
+    if( l == NULL )
+        return false;
+    else {
+        *res = l->data;
+        return true;
+    }
+}
+
+List listPutAtHead(List l, Data val)
+{
+    return newNode(val, l);
+}
+
+List listPutAtEnd(List l, Data val)
+{
+    if( l == NULL )
+        return newNode(val, NULL);
+    else {
+        List p;
+        for( p = l ; p->next != NULL ; p = p->next ); // Stop at the last node
+        p->next = newNode(val, NULL);  // Assign to the next of the last node
+        return l;
+    }
+}
+
+List listFilter(List l, BoolFun toKeep)
+{  <font color=blue>// TECNICA ESSENCIAL: Adicionar um no' auxiliar inicial para permitir tratamento uniforme.
+      // Tente fazer sem o no' suplementar e veja como fica muito mais complicado.</font>
+    Node dummy;
+    dummy.next = l;
+    l = &dummy;
+    while( l->next != NULL )
+        if( toKeep(l->next->data) )
+            l = l->next;
+        else {
+            List del = l->next;
+            l->next = l->next->next;
+            free(del);
+        }
+    return dummy.next;
+}
+
+void listPrint(List l)
+{
+    for( ; l != NULL ; l = l->next )
+        printf("%lf\n", l->data);
+}
+
+static bool isEven(Data data) {
+    return (int)data % 2 == 0;
+}
+
+static bool isOdd(Data data) {
+    return (int)data % 2 != 0;
+}
+
+void listTest(void) {
+    List l = listMakeRange(1.1, 7.8);
+    printf("----------\n");
+    listPrint(l);
+    printf("----------\n");
+    l = listFilter(l, isEven);
+    listPrint(l);
+    printf("----------\n");
+    l = listFilter(l, isOdd);
+    listPrint(l);
+    printf("----------\n");
+}
+</pre></table></ul>
+
+
+
+
+<HR><h1>Módulos fechados em C</h1>
+
+Os módulos fechados em C baseiam-se na possibilidade de definir um tipo apontador para um tipo estrutura que ainda não foi definido, assim:
+
+<ul><pre class='notranslate'>
+typedef struct Node *List;
+</pre></ul>
+
+Estão, onde é que finalmente se define o tipo <tt class='notranslate'>struct Node</tt>? Somente no interior ficheiro LinkedList.c.
+
+
+<h2>Ficheiro LinkedList.h</h2>
+
+Para o módulo ficar opaco, altera-se apenas a definição do tipo List.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#ifndef _LinkedList_
+#define _LinkedList_
+
+#include &lt;stdbool.h>
+
+typedef double Data;
+<b>typedef struct Node *List;</b> // so' mudou isto
+
+typedef bool BoolFun(Data);
+
+List listMakeRange(Data a, Data b);
+int listLength(List l);
+bool listGet(List l, int idx, Data *res);
+List listPutAtHead(List l, Data val);
+List listPutAtEnd(List l, Data val);
+void listPrint(List l);
+List listFilter(List l, BoolFun toKeep);
+void listTest(void);
+#endif
+</pre></table></ul>
+
+
+<h2>Ficheiro LinkedList.c</h2>
+
+A definição do tipo passa para dentro do ficheiro ".c", mas sem a parte "*List", que já está presente no ficheiro ".h". O resto do ficheiro fica igual.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;stdbool.h>
+#include "LinkedList.h"
+
+<b>typedef struct Node {
+    Data data;
+    List next;
+} Node;</b>
+
+...
+</pre></table></ul>
+
+
+
+
+
+
+
+
+<hr>
+
+<h1>Usando recursividade e método indutivo no processamento de estruturas com apontadores</h1>
+
+Eis uma nova implementação do nosso módulo, agora usando recursividade e raciocínios indutivos, à maneira do OCaml.
+
+<p> A técnica indutiva tem a vantagem de dar origem a código mais legível, mas tem a desvantagem de ser pouco eficiente e fazer crescer muito a pilha de execução - listas longas causam sempre transbordo da pilha de execução. Note que, ao contrário do OCaml, a linguagem C não está otimizada para suportar recursividade de forma económica.
+
+<p> Portanto, a técnica recursiva é de evitar quando se processam listas.
+
+<p> Contudo, para processar árvores e outras estruturas não-lineares, já fará sentido usar recursividade em algumas das operações. Sem usar recursividade essas operações ficariam demasiado complicadas, além de que a complexidade espacial dos algoritmos recursivos sobre árvores é muitas vezes <tt class='notranslate'>log N</tt> (pois depende da altura da árvore e não do seu tamanho), o que é bastante melhor do que a complexidade espacial linear típica das listas tratadas recursivamente.
+
+<p> Nos testes e exames serão pedidas explicitamente soluções imperativas, pelo que este estilo será considerado errado.
+
+<ul><table border="1"><tr><td><pre class='notranslate'><font color=red>
+/* ESTE É UM EXEMPLO NEGATIVO. É má ideia programar listas
+   ligadas em C desta forma, apesar de funcionar */
+
+#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;stdbool.h>
+#include "LinkedList.h"
+
+static List newNode(Data val, List next)
+{
+    List n = malloc(sizeof(Node));
+    if( n == NULL )
+        return NULL;
+    n->data = val;
+    n->next = next;
+    return n;
+}
+
+List listMakeRange(Data a, Data b)
+{
+    if( a > b )
+        return NULL;
+    else
+        return newNode(a, listMakeRange(a+1, b));
+}
+
+int listLength(List l)
+{
+    if( l == NULL )
+        return 0;
+    else
+        return 1 + listLength(l->next);
+}
+
+bool listGet(List l, int idx, Data *res)
+{
+    if( l == NULL )
+        return false;
+    else if( idx == 0 ) {
+        *res = l->data;
+        return true;
+    }
+    else
+        return ListGet(l->next, idx-1, res);
+}
+
+List listPutAtHead(List l, Data val)
+{
+    return newNode(val, l);
+}
+
+List listPutAtEnd(List l, Data val)
+{
+    if( l == NULL )
+        return newNode(val, NULL);
+    else {
+        l->next = listPutAtEnd(l->next, val);
+        return l;
+    }
+}
+
+void ListPrint(List l)
+{
+    if( l != NULL ) {
+        printf("%lf\n", l->data);
+        listPrint(l->next);
+    }
+}
+
+List ListFilter(List l, BoolFun toKeep) {
+    if( l == NULL )
+        return NULL;
+    else if( toKeep(l->data) ) {
+        l->next = listFilter(l->next, toKeep);
+        return l;
+    }
+    else
+        return listFilter(l->next, toKeep);
+}
+
+void listTest(void) {
+	// ...
+}
+</font></pre></table></ul>
+
+<HR><h1>Discussão da função <tt class='notranslate'>listFilter</tt></h1>
+
+No módulo de listas ligadas,  a função <tt class='notranslate'>listFilter</tt> é a mais complicada. Resolvemos o problema usando um <i>apontador atrasado</i>. Eis a solução novamente:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+List listFilter(List l, BoolFun toKeep)
+{
+    Node dummy;
+    dummy.next = l;
+    l = &dummy;
+    while( l->next != NULL )
+        if( toKeep(l->next->data) )
+            l = l->next;
+        else {
+            List del = l->next;
+            l->next = l->next->next;
+            free(del);
+        }
+    return dummy.next;
+}
+</pre></table></ul>
+
+Também se pode tentar resolver o problema sem inserir o nó auxiliar no início. Contudo, descobre-se que a solução fica bem mais complicada, especialmente porque surge o novo problema de descobrir qual vai ser a cabeça da lista resultado. Não gostamos desta solução, mas cá vai... 
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+List listFilter2(List l, BoolFun toKeep)
+{
+    List res;
+// Determina cabeça do resultado
+    while( l != NULL && !toKeep(l->data) ) {
+        List del = l;
+        l = l->next;
+        free(del);
+    }
+    res = l;
+// Trata o resto da lista
+    if( l != NULL && l->next != NULL ) {
+		// este é o mesmo ciclo da primeira solução
+        while( l->next != NULL )
+            if( toKeep(l->next->data) )
+                l = l->next;
+            else {
+                List del = l->next;
+                l->next = l->next->next;
+                free(del);
+            }
+    }
+    return res;
+}
+</pre></table></ul>
+
+Uma outra técnica possível, é usar um apontador diretamente para o campo next do nó antecede aquele em que estamos interessados em cada momento. Note que se trata dum apontador para um apontador, pois o campo next contém um apontador.
+
+<p>Esta técnica tem a vantagem de não necessitar de nó artificial na primeira posição, visto que se pode iniciar o ciclo atribuindo ao apontador o endereço da variável que indica a cabeça da lista. Essa variável funciona como o campo next dum primeiro nó artificial imaginário.
+
+<p>Esta técnica tem a desvantagem de obrigar a trabalhar com apontadores para apontadores, o que complica os raciocínios.
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+List listFilter3(List l, BoolFun toKeep)
+{
+    List *p = &l;
+    while( *p != NULL )
+        if( toKeep((*p)->data) )
+            p = &(*p)->next;
+        else {
+            List del = *p;
+            *p = (*p)->next;
+            free(del);
+        }
+    return l;
+}
+</pre></table></ul>
+
+<p>A conclusão é que a primeira solução, que usa um nó inicial auxiliar, parece ser a melhor.
+
+
+
+
+
+<HR><HR>
+#100

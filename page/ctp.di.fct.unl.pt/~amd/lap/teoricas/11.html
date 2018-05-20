@@ -1,0 +1,474 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 11 (12/abr/2018)</H2>
+Revisão da linguagem C.
+<br />Características e história. Padronizações do C.
+<br />Porque vamos trabalhar com a linguagem C?
+<br />Vamos usar o paradigma imperativo.
+<br />Elementos Básicos. Tipos básicos.
+<br />Variáveis.
+<br />Estruturas de controlo.
+<p>
+<HR>
+
+<HR><h1>Introdução à linguagem C</h1>
+
+<A HREF="http://en.wikipedia.org/wiki/The_C_Programming_Language_(book)"><img src="images/c-2nd.jpg"></A>
+
+<A HREF="http://en.wikipedia.org/wiki/Dennis_Ritchie"><img src="images/dennis_ritchie.jpg"></A>
+<b>Dennis Ritchie</b>
+
+<A HREF="http://en.wikipedia.org/wiki/Brian_Kernighan"><img src="images/kernighan.jpg"></A>
+<b>Brian Kernighan</b>
+
+
+
+<h1>Nota prévia</h1>
+
+Esta é a segunda cadeira em que os alunos lidam com a linguagem C. Nas próximas aulas faremos um percurso pela maioria dos mecanismos da linguagem C, discutido-os com base nos conceitos gerais apresentados na cadeira.
+
+<p>Mas a ênfase será colocada nas seguintes partes, onde se espera que os alunos ganhem novas competências:
+
+<ul>
+<li>Estruturas de dados dinâmicas e manipulação de apontadores.
+<p><li>Acesso direto à memória a baixo nível.
+<p><li>Polimorfismo implementado usando apontadores e macros.
+<p><li>Módulos.
+<p><li>Discussão das inseguranças da linguagem C.
+</ul>
+
+Nesta linha:
+
+<ul>
+<li>A 2ª aula prática desta parte de LAP será sobre estruturas de dados dinâmicas e manipulação de apontadores.
+<p><li>O 2º projeto de programação, o 2º teste e o exame, no que diz respeito ao C, tenderão a ser sobre estruturas de dados dinâmicas, manipulação de apontadores e acesso à memória a baixo nível.
+
+</ul>
+
+<h1>Vamos usar o paradigma imperativo</h1>
+
+Em C deve-se programar de forma assumida usando o paradigma imperativo. Entre programar um algoritmo usando um ciclo ou uma função recursiva, muitas vezes devemos optar pelo ciclo, mesmo que porventura a função recursiva fosse mais legível. Em geral estamos dispostos a pagar alguma coisa pela maior legibilidade, mas neste caso o preço pode ser excessivo.
+
+<p>Ao contrário do OCaml, a linguagem C (e também o Java, por exemplo) não está otimizada para suportar recursividade de forma económica. Em OCaml é possível escrever funções recursivas que funcionam praticamente sem gastar pilha de execução (complexidade espacial constante). Mas na generalidade das implementações de C, as funções recursivas gastam muita pilha de execução (complexidade espacial linear, na melhor das hipóteses).
+
+<p>Claro que há muitas situações especiais em que, por exemplo, o uso da técnica de divisão e conquista nos conduz à criação de funções recursivas e devemos aceitar isso. Ou até alguém pode querer, por opção pessoal, escrever código recursivo mais legível, aceitando o preço de ter de usar muito mais memória para correr os programas. No entanto, nesta disciplina queremos mesmo praticar a escrita de código imperativo e de ciclos mais ou menos complexos.
+
+
+<h1>Algumas características do C</h1>
+
+
+<ul>
+
+<li>Concebida e implementada por Dennis Ritchie entre 1969 e 1973 nos Bell Labs da AT&T. A primeira versão do Unix foi escrita em Assembler, mas em 1973 o Unix foi reescrito em C.
+
+<p><li>Uma das linguagens atualmente mais populares tem sido utilizada para escrever todo o tipo de aplicações tais como compiladores, bases de dados, sistemas operativos (Unix por exemplo), editores gráficos e de texto, etc.
+
+<p><li>É uma linguagem padronizada com standards ANSI e ISO.
+
+<p><li>Linguagem de alto nível, mas que oferece facilidades para manipulações de baixo nível, nomeadamente acesso direto à memória. Originalmente concebida para programação de sistemas, o C permite ao programador escrever código muito eficiente e com acesso direto aos recursos da máquina.
+
+<p><li>Apesar dos mecanismos de baixo nível, a linguagem encoraja independência da máquina. Este aspeto é extremamente importante pois cumpre um dos objetivos das linguagens de programação que é a possibilidade de escrever programas independentes de cada máquina particular. 
+
+<p><li>A maioria das implementações são muito eficientes.
+
+<p><li>Necessidade de uma boa disciplina na programação para produção de programas legíveis --> WOP - 'write only programming' (observação irónica).
+
+<p><li>Tipos básicos: caracteres, inteiros, reais, booleanos, enumerados.
+
+<p><li>Tipos derivados: vetores, registos, uniões, apontadores.
+
+<p><li>Tipificação fraca: por exemplo, os caracteres e os valores enumerados são tratados como inteiros.
+
+<p><li>Não têm gestão automática de memória (ao contrário do Java e do OCaml). É necessário efetuar gerir a memória manualmente (usando as funções "malloc" e "free"). A gestão manual de erros é uma conhecida fonte de erros no software.
+
+<p><li>Estruturas de controlo: condicionais, iterativas, seletivas.
+
+<p><li>Funções. Recursividade é suportada. Não suporta aninhamento de funções.
+
+<p><li>Aritmética de apontadores.
+
+<p><li>Modularidade e compilação separada.
+
+<p><li>Biblioteca padrão.
+
+<p><li>Oferece um grande controlo ao programador:
+<ul>
+<li>a nível sintático devido ao sistema de macros implementado no pré-processador;
+<li>a nível de dados por causa dos apontadores, uniões e campos de bits;
+<li>a nível de abstrações de execução por causa dos apontadores para função;
+<li>a nível de modularidade devido a um sistema de módulos simples e flexível que suporta compilação separada e ocultação de informação.
+</ul>
+</ul>
+
+
+<h2>Exemplo 1</h2>
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+
+int fact(int i)
+{
+    if( i==0 ) return 1 ;
+    else return i * fact(i-1) ;
+}
+
+int main(void)
+{
+    int n ;
+
+    for( n = 0 ; n &lt; 10 ; n++)
+        printf("fact(%d)=%d\n", n, fact(n)) ;
+    return 0 ;
+}
+</pre></ul>
+
+
+<h2>Exemplo 2</h2>
+
+<ul><pre class='notranslate'>
+int main(int argc, char *argv[])
+{
+    int i ;
+    for( i = 0 ; i &lt; argc ; i++ )
+        printf("%s\n", argv[i]) ;
+    return 0 ;
+}
+</pre></ul>
+
+
+<h1>Padronizações do C</h1>
+
+<ul>
+<li>K&R C - Padrão informal estabelecido em 1978 com a publicação da 1ª edição do livro "The C Programming Language". Os argumentos das funções não eram validados e as funções retornavam inteiros por omissão.
+<p><li>Ansi C89 - Padrão criado em 1983 mas só ratificado em 1989. Foram introduzidos <b>protótipos</b> que, quando presentes, permitem validar os argumentos e resultado das funções.
+<p><li>ISO C90 - O padrão anterior foi adotado com muito ligeiras alterações pela ISO em 1990.
+<p><li>ISO C99 - Padrão de 1999. Introduziu diversas características úteis tais como flexibilidade quanto ao ponto onde se definem as variáveis, vetores de tamanho variável e booleanos.
+<p><li>ANSI C99 - Em 2000, a ANSI adotou o padrão anterior sem alterações.
+<p><li>ANSI C11 - Padrão ratificado em Dez 2011.
+</ul>
+
+O GCC é uma das implementações de C atualmente mais usadas. Suporta a maioria do C99 e mais algumas extensões, das quais a mais notável é a possibilidade de definir funções locais a outras funções, algo que sempre foi proibido no padrão do C.
+
+<p>Como o suporte para C99 no GCC ainda não é completo, por omissão o GCC ainda se baseia no C89. Para forçar o GCC a reconhecer o C99, tanto quanto possível, é necessário invocar o GCC assim:
+
+<ul><pre class='notranslate'>
+gcc -std=c99
+</pre></ul>
+
+<h1>Documentação sobre o compilador de C</h1>
+
+Olhamos o que diz o início do manual do comando <tt class='notranslate'>cc</tt>, no Linux:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+$ man cc
+GCC(1)                                         GNU                                         GCC(1)
+
+NAME
+       gcc - GNU project C and C++ compiler
+
+SYNOPSIS
+       gcc [-c|-S|-E] [-std=standard]
+           [-g] [-pg] [-Olevel]
+           [-Wwarn...] [-pedantic]
+           [-Idir...] [-Ldir...]
+           [-Dmacro[=defn]...] [-Umacro]
+           [-foption...] [-mmachine-option...]
+           [-o outfile] infile...
+
+       Only the most useful options are listed here; see below for the remainder.  g++ accepts
+       mostly the same options as gcc.
+
+DESCRIPTION
+       When you invoke GCC, it normally does preprocessing, compilation, assembly and linking.
+       The "overall options" allow you to stop this process at an intermediate stage.  For exam-
+       ple, the -c option says not to run the linker.  Then the output consists of object files
+       output by the assembler.
+
+       Other options are passed on to one stage of processing.  Some options control the prepro-
+       cessor and others the compiler itself.  Yet other options control the assembler and
+       linker; most of these are not documented here, since you rarely need to use any of them.
+</pre></table></ul>
+
+
+
+
+<hr><h1>Porque vamos trabalhar com a linguagem C?</h1>
+
+Na nossa cadeira, vamos estudar e trabalhar com a linguagem C por diversas razões. As principais:
+
+<ul>
+<li> Apesar de ser uma linguagem muito antiga, agrega aspetos de alto nível e baixo nível que a tornam muito indicada para escrever determinado tipo de código, como por exemplo: sistemas operativos, máquinas abstratas, sistemas de runtime, middlewares, sistemas de bases de dados, anti-vírus, etc. A linguagem C continua bem atual e o conhecimento de diversos dos seus aspetos é uma mais valia para a atividade concreta dos informáticos. 
+
+<li> Usaremos a linguagem para implementar implementar uma máquina abstrata e para estudar alguns conceitos de tempo de execução.
+
+<li> Usaremos a linguagem para implementar construções paramétricas através de macros e para escrever código polimórfico usando apontadores de tipo "void *" e manipulação direta de memória. Estas experiências darão alguma luz sobre a forma como determinadas construções de alto nível de linguagens modernas são implementadas. 
+
+<li> Através da identificação dos pontos fracos do sistema de tipos da linguagem, e através duma discussão crítica, chegaremos às propriedades desejáveis dum sistema de tipos estático. Também estudaremos soluções tecnológicas para minorar os problemas anteriores. 
+</ul>
+
+
+
+<hr><h1>Elementos Básicos</h1>
+
+<h2>Programa em C</h2>
+
+Sequência de constantes variáveis, definições de tipos e funções, possivelmente distribuídas por vários ficheiros.
+
+<h2>Identificadores</h2>
+
+Começam por uma letra podendo conter letras, algarismos e ainda o caráter sublinhado '_'. É feita distinção entre maiúsculas e minúsculas.
+
+<h2>Delimitadores de comentário</h2>
+
+<ul><pre class='notranslate'>
+/* comentário  */
+
+// os comentários de linha foram introduzidos no padrão C99
+</pre></ul>
+
+<h2>Terminador de instrução</h2>
+
+Todas as declarações e todas as instruções são terminadas por um ponto e vírgula ';'. Exceção: as funções são terminadas por uma chaveta a fechar '}'.
+</pre></ul>
+
+<h2>Literais</h2>
+
+Há literais dos tipos caráter, inteiro, real, string e booleano. Exemplos:
+
+<ul>
+<li>caráter: 'a'    '\n'    '\t'    '\r'    '\0'      '\123'
+<li>inteiro: 1  5  21056  -56
+<li>real: 5.6  4e7   -5E-5
+<li>string: ""  "supercalifragilisticoexpialidoso"
+<li>bool: false  true
+</ul>
+
+<h2>Definição de constantes</h2>
+
+<ul><pre class='notranslate'>
+#define PI   3.1415962
+#define a6   "aaaaaa"
+#define um   1
+</pre></ul>
+
+<h2>Inicialização de variáveis</h2>
+
+<ul><pre class='notranslate'>
+int i = 100 ;
+double d = 12.3e56 ;
+</pre></ul>
+
+As variáveis estáticas são inicializadas a zero por omissão.
+
+<h2>Atribuição a variáveis</h2>
+
+<ul><pre class='notranslate'>
+v = 14 ;
+x = 5 + 7 + v ;
+</pre></ul>
+
+<hr><h1>Tipos básicos</h1>
+
+<h2>Tipos numéricos</h2>
+
+A linguagem suporta os seguintes cinco tipos básicos numéricos:
+
+<ul>
+<li>char
+<li>short
+<li>int
+<li>float
+<li>double
+</ul>
+
+Um char ocupa 1 byte, um short ocupa pelo menos 2 bytes, um int ocupa pelo menos 2 bytes (normalmente tem 4 bytes em máquinas de 32 bits).
+
+<p>O ficheiro &lt;limits.h> contém informação sobre o tamanho exato de cada tipo, na implementação de C que estiver a ser usada.
+
+<p>O operador <tt class='notranslate'>sizeof</tt> também pode ser usado para saber qual o número de bytes ocupados por um valor de qualquer tipo.
+
+<h4>Qualificadores dos tipos numéricos</h4>
+
+Alguns dos tipos numéricos podem ter a sua semântica modificada por meio dos seguintes qualificadores:
+
+<ul>
+<li>long (int, double)
+<li>long long (int)
+<li>unsigned (char, short, int, long int)
+<li>signed (char, short, int, long int)
+</ul>
+
+Um <tt class='notranslate'>long int</tt> ocupa pelo menos 4 bytes; um <tt class='notranslate'>long long int</tt> ocupa pelo menos 8 bytes.
+
+<p>Exemplos de tipos numéricos qualificados:
+
+<ul><pre class='notranslate'>
+unsigned int
+long double
+unsigned long int
+unsigned char
+</pre></ul>
+
+Por omissão todos os tipos são signed exceto o tipo char cujas características dependem da implementação.
+
+<p>O nome do tipo int pode ser omitido, quando qualificado. Portanto os seguintes são tipos válidos:
+
+<ul><pre class='notranslate'>
+long
+unsigned
+signed
+</pre></ul>
+
+<h2>Tipo booleano</h2>
+
+Tradicionalmente, o C não costumava ter um tipo booleano explícito, embora o conceito sempre tenha existido na linguagem. O valor de verdade é representado por qualquer valor diferente de zero, e o valor de falsidade é representado por zero. Existem três operadores lógicos que interpretam os argumentos como "booleanos": &&, ||, !.
+
+<p>Foi introduzido no padrão C99 um tipo chamado <tt class='notranslate'>bool</tt> com os literais <tt class='notranslate'>false</tt> e <tt class='notranslate'>true</tt>, mas o uso desse tipo requer a inclusão do ficheiro &lt;stdbool.h>. O <tt class='notranslate'>false</tt> é simplesmente representado usando o inteiro 0 e o <tt class='notranslate'>true</tt> é representado usando o inteiro 1.
+
+<h2>Tipos enumerados</h2>
+
+Os tipos enumerados foram introduzidos no padrão C89. São úteis para especificar um número de opções para um atributo. Exemplos de possíveis atributos: cor, mês do ano, dia da semana, etc.
+
+<p>Exemplo:
+
+<ul><pre class='notranslate'>
+<b>typedef enum</b> {
+    JANUARY, FEBRUARY, MARCH,
+    APRIL, MAY, JUNE,
+    JULY, AUGUST, SEPTEMBER,
+    OCTOBER, NOVEMBER, DECEMBER
+} Month ;
+</pre></ul>
+
+Os valores dos tipos enumerados são representados usando inteiros e a representação não é oculta. Por defeito os valores começam em zero e são incrementados sucessivamente - portanto JANUARY vale 0, FEBRUARY vale 1, etc. Veja a seguinte função:
+
+<ul><pre class='notranslate'>
+Month NextMonth(Month m) {
+    return m == DECEMBER ? JANUARY : m + 1 ;
+}
+</pre></ul>
+
+
+O C permite mesmo ao programador especifique a representação inteira de cada valor enumerado. Exemplo:
+
+<ul><pre class='notranslate'>
+<b>typedef enum</b> {
+    RED = 1, GREEN = 2, BLUE = 4, YELLOW = 8
+} Color ;
+</pre></ul>
+
+
+<h2>Tipos derivados</h2>
+
+Os tipos derivados serão discutidos mais tarde:
+
+<ul>
+<li>Arrays
+<li>Registos (structures)
+<li>Uniões
+<li>Apontadores
+</ul>
+
+
+<hr><h1>Variáveis</h1>
+
+<h2>Definição</h2>
+
+As variáveis podem ser definidas globalmente, fora de qualquer função, ou definidas localmente, dentro duma função, logo no primeiro nível ou então dentro dum bloco interno.
+
+<p>Como se sabe, em termos de estilo de programação, é bastante mau usar variáveis globais. Isso cria dependências mútuas, o que aumenta a complexidade e dificuldade de leitura do código. No entanto, como acontece com muitas regras, esta também pode ter algumas exceções bem justificadas.
+
+<ul><pre class='notranslate'>
+int count, n ;
+double stdvar, media ;
+char car, key ;
+</pre></ul>
+
+<h2>Inicialização</h2>
+
+As variáveis podem ser inicializadas no momento da sua definição.
+
+<ul><pre class='notranslate'>
+int x = 6 ;
+Complex z = { 2.0, 5.7  };
+int v[5] = { 1, 2, 3, 4, 5 } ;
+</pre></ul>
+
+Na ausência de qualquer expressão de inicialização, as variáveis globais e as variáveis locais estáticas são inicializadas a zero.
+
+<p>As variáveis locais não têm qualquer inicialização por omissão, ficando indefinidas (com um valor aleatório) enquanto não se fizer a primeira atribuição.
+
+
+<h2>Atributos das variáveis locais</h2>
+
+Eis os atributos disponíveis para as variáveis locais, e o seu significado:
+
+<ul>
+<li><b>static</b> - A variável mantém valor entre ativações da função.
+<li><b>auto</b> - (atributo por omissão) variável automática ou seja não estática.
+<li><b>register</b> - Se possível a variável é guardada num registo do CPU.
+<li><b>volatile</b> - Indica que o valor da variável pode mudar fora do controlo do compilador. Exemplo: posição de memória cujo valor pode ser alterado pelo hardware quando da ocorrência de um interrupt.
+<li><b>const</b> - A variável é inicializada no ponto da sua definição e o seu valor não pode ser alterado depois. Também se aplica a argumentos de funções.
+</ul>
+
+<h2>Atributos das variáveis globais</h2>
+
+Eis os atributos disponíveis para as variáveis globais, e o seu significado:
+
+<ul>
+<li><b>static</b> - A variável é privada no ficheiro, não podendo ser usada a partir de outros ficheiros fonte.
+<li><b>volatile</b> - Indica que o valor da variável pode mudar fora do controlo do compilador.
+<li><b>const</b> - A variável é inicializada no ponto da sua definição e o seu valor não pode ser alterado depois.
+</ul>
+
+Relativamente aos diversos tipos de variáveis, classifique as respetivas ligações em função do momento de ligação e diga qual é o tempo de vida de cada uma delas. 
+
+
+<HR><h1>Estruturas de controlo</h1>
+
+Observe as posições onde se escreve o terminador ';'.
+
+<ul><pre class='notranslate'>
+if(exp) stat
+
+if(exp) stat else stat
+
+while(exp) stat
+
+do stat while(exp);
+
+for(init; test; advance) stat
+
+switch(exp){
+    case const: stats
+    case const: stats
+    default: stats
+}
+
+{ // bloco
+    decls e stats
+}
+
+exp;
+
+break;
+
+continue;
+
+return;
+
+return exp;
+
+goto label;
+
+label: stat
+
+; // instrução nula
+</pre></ul>
+
+<p> Quais são as diferenças relativamente ao Java?
+
+
+<HR><HR>
+#110

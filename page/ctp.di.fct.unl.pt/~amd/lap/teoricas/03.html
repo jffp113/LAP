@@ -1,0 +1,461 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 03 (13/mar/2018)</H2>
+O método indutivo (redução de problemas a problemas mais simples).
+<br>Muitas funções sobre listas programadas usando o método indutivo.
+<br>Nomes locais. Funções mutuamente recursivas.
+<p>
+<HR>
+
+<hr><h1>Método indutivo</h1>
+
+<h2>Revisitando a a recursividade</h2>
+
+A programação de funções recursivas não é novidade pois já foi abordada em cadeiras anteriores, por exemplo POO e AED. Contudo, o estudo duma linguagem funcional é uma excelente oportunidade para revisitar o tema, com os seguintes objetivos: aprofundar a análise do mecanismo; estudar diversos padrões de utilização; passar a encarar a recursividade como uma técnica que ajuda a descobrir soluções para certos problemas complicados.
+
+<p>Numa linguagem funcional, a recursividade está na base da programação de todas as atividades repetitivas, já que não existe o mecanismo da iteração, típico das linguagens de base imperativa.
+
+<p>Além disso, nós queremos usar a recursividade duma forma que enfatize as propriedades lógicas do problema a resolver em vez de questões operacionais. O objetivo é programar a mais alto nível, a um nível mais humano, evitando ter de pensar como uma máquina.
+
+
+<h2>Redução de problemas a problemas mais simples</h2>
+
+Considere as seguintes duas funções recursivas, escritas em OCaml:
+
+<ul><pre class='notranslate'>
+let rec fact n =
+    if n = 0 then 1
+    else n * fact (n-1)
+;;
+
+let rec len l =
+    match l with
+        [] -> 0
+      | x::xs -> 1 + len xs
+;;
+</pre></ul>
+
+Analisando estas duas funções recursivas verificamos que quando lidam com o caso não-trivial - o chamado <b>caso geral</b> - ambas efetuam a <b>redução do problema original a uma instância mais simples do mesmo problema</b>. Concretamente, a função <tt class='notranslate'>len</tt> reduz o problema <tt class='notranslate'>len (x::xs)</tt> ao problema mais simples <tt class='notranslate'>len xs</tt>, e a função <tt class='notranslate'>fact</tt> reduz o problema <tt class='notranslate'>fact n</tt> ao problema mais simples <tt class='notranslate'>fact (n-1)</tt>.
+
+<P>Além de efetuarem <i>redução de problemas</i> no <i>caso geral</i>, as duas funções lidam também, separadamente, com o caso trivial de cada problema - o chamado <b>caso base</b>. Concretamente, a função <tt class='notranslate'>len</tt> trata separadamente o caso base <tt class='notranslate'>len []</tt> e a função <tt class='notranslate'>fact</tt> trata separadamente o caso base <tt class='notranslate'>fact 0</tt>.
+
+<P> Repare que quando uma destas duas funções é aplicada a um argumento, inicia-se uma sucessão de <i>reduções a problemas mais simples</i> que só termina quando o caso base é alcançado. Por exemplo, a sequência de <i>reduções</i> produzida pela aplicação <tt class='notranslate'>len [7;6;5;4]</tt> é a seguinte:
+<ul><pre class='notranslate'>
+<b>len [7;6;5;4]</b>              &lt;-- problema inicial
+= 1 + <b>len [6;5;4]</b>          &lt;-- problema um pouco mais simples
+= 1 + 1 + <b>len [5;4]</b>        &lt;-- problema ainda mais simples
+= 1 + 1 + 1 + <b>len [4]</b>      &lt;-- problema ainda mais simples
+= 1 + 1 + 1 + 1 + <b>len []</b>   &lt;-- caso base
+= 1 + 1 + 1 + 1 + 0
+= 4
+</pre></ul>
+
+<p>As funções recursivas <tt class='notranslate'>len</tt> e <tt class='notranslate'>fact</tt> são representativas do que é programar usando o núcleo funcional do OCaml. Em OCaml programa-se essencialmente <i>reduzindo problemas a problemas mais simples</i>.
+
+<HR><h2>Técnica do método indutivo</h2>
+
+O método indutivo (também conhecido como <a href="http://en.wikipedia.org/wiki/Divide_and_conquer_algorithm">técnica da divisão e conquista</a>) serve para ajudar a programar funções recursivas que efetuam <i>reduções de problemas a problemas mais simples</i>.
+
+<P>O método indutivo consiste na seguinte técnica:
+
+<ul>
+<li>Para programar o caso geral G duma função recursiva, assume-se como PONTO DE PARTIDA (para  começar a raciocinar) que o resultado S de aplicar a função a argumentos <i>mais simples do que os iniciais</i> (por exemplo a cauda da lista-argumento) já se encontra disponível.
+<p><li>O problema para resolver é o seguinte: COMO SE PASSA DE S PARA G?
+</ul>
+
+<h2>Exemplo de utilização do método indutivo</h2>
+
+<b>Problema:</b> Programar uma função <tt class='notranslate'>len</tt> que determine o comprimento de listas.
+
+<P><b>Resolução:</b> Para começar, a função <tt class='notranslate'>len</tt> recebe uma lista, a qual terá de ser processada usando emparelhamento de padrões. Aplicando o método indutivo ao caso geral <tt class='notranslate'>G=len (x::xs)</tt>, vamos começar por assumir que já temos o problema resolvido para o caso mais simples <tt class='notranslate'>S=len xs</tt>.
+
+<P>Desde já podemos ir escrevendo a seguinte estrutura incompleta:
+
+<ul><pre class='notranslate'>
+let rec len l =
+    match l with
+        [] -> ...
+      | x::xs -> ... len xs ...
+;;
+</pre></ul>
+
+O problema que temos para resolver é o seguinte: <i>Como é que se obtém o valor de <tt class='notranslate'>G=len (x::xs)</tt> a partir do valor de <tt class='notranslate'>S=len xs</tt>?</i> Mas este problema é simples! De facto, basta adicionar uma unidade a S para se obter G!
+
+<P>Preenchendo o que falta no esquema anterior, surge a solução final:
+
+<ul><pre class='notranslate'>
+let rec len l =
+    match l with
+        [] -> 0
+      | x::xs -> 1 + len xs
+;;
+</pre></ul>
+
+<b>NOTA1:</b> Neste exemplo, reduzimos o problema <tt class='notranslate'>G=len (x::xs)</tt> ao problema <tt class='notranslate'>S=len xs</tt>. Mas esta não é a única redução possível... Existem muitas outras... Voltaremos a este assunto noutra aula.
+
+<P><b>NOTA2:</b> A função <tt class='notranslate'>len</tt> é tão simples que faz o método indutivo parecer óbvio e desinteressante. No entanto, este método de resolver problemas tem imensas virtualidades:
+<ul>
+<li> Ajuda-nos a organizar o pensamento quando queremos resolver problemas mais complicados, e.g. funções <tt class='notranslate'>power</tt> e <tt class='notranslate'>sort</tt>.
+<li> Simplifica a resolução de problemas. Repare que já não temos de resolver "o problema completo": passamos a ter de resolver "apenas" o problema da passagem de S para G, o que costuma ser "muito mais fácil".
+<li> Ajuda-nos a descobrir soluções simples e compactas.
+</ul>
+
+
+
+<HR><h2>Mais funções sobre listas programadas usando o método indutivo</h2>
+
+Estude-as todas de forma muito atenta. Depois tente programá-las todas "sem espreitar".
+
+
+
+<p>Comprimento de lista:
+<ul><pre class='notranslate'>
+len : 'a list -> int
+
+let rec len l =
+    match l with
+        [] -> 0
+      | x::xs -> 1 + len xs
+;;
+</pre></ul>
+
+Soma dos elementos de lista:
+<ul><pre class='notranslate'>
+sum : int list -> int
+
+let rec sum l =
+    match l with
+        [] -> 0
+      | x::xs -> x + sum xs
+;;
+</pre></ul>
+
+Concatenação de listas:
+<ul><pre class='notranslate'>
+append : 'a list -> 'a list -> 'a list
+
+let rec append l1 l2 =
+    match l1 with
+        [] -> l2
+      | x::xs -> x::append xs l2
+;;
+</pre></ul>
+
+Acrescentar elemento no final de lista:
+<ul><pre class='notranslate'>
+putAtEnd : 'a -> 'a list -> 'a list
+
+let rec putAtEnd v l =
+    match l with
+        [] -> [v]
+      | x::xs -> x::putAtEnd v xs
+;;
+</pre></ul>
+
+Inversão de lista:
+<ul><pre class='notranslate'>
+rev : 'a list -> 'a list
+
+let rec rev l =
+    match l with
+        [] -> []
+      | x::xs -> append (rev xs) [x]
+;;
+</pre></ul>
+
+Máximo duma lista (tratamento implícito do erro):
+<ul><pre class='notranslate'>
+maxList : 'a list -> 'a
+
+let rec maxList l = (* pre: l <> [] *)
+    match l with
+        [x] -> x
+      | x::xs -> max x (maxList xs)
+;;
+</pre></ul>
+
+Máximo duma lista (tratamento explícito do erro):
+<ul><pre class='notranslate'>
+maxList : 'a list -> 'a
+
+let rec maxList l =  (* pre: l <> [] *)
+    match l with
+        [] -> raise (Arg.Bad "maxList: lista vazia")
+      | [x] -> x
+      | x::xs -> max x (maxList xs)
+;;
+</pre></ul>
+
+
+Aplicação de função a todos os elementos de lista:
+<ul><pre class='notranslate'>
+map : ('a -> 'b) -> 'a list -> 'b list
+
+let rec map f l =
+    match l with
+        [] -> []
+      | x::xs -> (f x)::map f xs
+;;
+</pre></ul>
+
+Seleção dos elementos duma lista que verificam uma dada propriedade:
+<ul><pre class='notranslate'>
+filter : ('a -> bool) -> 'a list -> 'a list
+
+let rec filter b l =
+    match l with
+        [] -> []
+      | x::xs ->
+            if b x then x::filter b xs
+            else filter b xs
+;;
+</pre></ul>
+
+Concatenação de todas as listas contidas numa lista de listas:
+<ul><pre class='notranslate'>
+flatten : 'a list list -> 'a list
+
+let rec flatten ll =
+    match ll with
+        [] -> []
+      | l::ls ->
+            l @ flatten  ls
+;;
+</pre></ul>
+
+Concatenação de todos os resultados gerados por uma função de mapping que produz listas:
+<ul><pre class='notranslate'>
+flatMap : ('a -> 'b list) -> 'a list -> 'b list
+
+let rec flatMap f l =
+    match l with
+        [] -> []
+      | x::xs ->
+            (f x) @ flatMap f xs
+;;
+</pre></ul>
+
+Ordenação de listas:
+<ul><pre class='notranslate'>
+sortList : 'a list -> 'a list
+
+let rec insOrd v l =
+    match l with
+        [] -> [v]
+      | x::xs ->
+          if v <= x then v::x::xs
+          else x::insOrd v xs
+;;
+
+let rec sortList l =
+    match l with
+        [] -> []
+      | x::xs ->
+          insOrd x (sortList xs)
+;;
+</pre></ul>
+
+Fusão de listas ordenadas sem repetições (aqui dá jeito usar matching duplo):
+<ul><pre class='notranslate'>
+fusion : 'a list -> 'a list -> 'a list
+
+let rec fusion l1 l2 =
+    match l1, l2 with
+        _, [] -> l1
+      | [], _ -> l2
+      | x::xs, y::ys ->
+          if x &lt; y then x::fusion xs l2
+          else if y &lt; x then y::fusion l1 ys
+          else x::fusion xs ys
+;;
+</pre></ul>
+
+<h4>Exemplos de avaliações</h4>
+<ul><pre class='notranslate'>
+sum [1;2;3]
+= 1 + sum [2;3]
+= 1 + 2 + sum [3]
+= 1 + 2 + 3 + sum []
+= 1 + 2 + 3 + 0
+= 6
+
+append [1;2;0] [3;4]
+= 1::append [2;0] [3;4]
+= 1::2::append [0] [3;4]
+= 1::2::0::append [] [3;4]
+= 1::2::0::[3;4]
+= [1;2;0;3;4]
+
+rev [1;2;3]
+= (rev [2;3]) @ [1]
+= (rev [3]) @ [2] @ [1]
+= (rev []) @ [3] @ [2] @ [1]
+= [] @ [3] @ [2] @ [1]
+= [3;2;1]
+</pre></ul>
+
+<HR><h1>A função @</h1>
+A função <tt class='notranslate'>append</tt> está predefinida em OCaml, sendo denotada pelo operador binário <tt class='notranslate'>@</tt>. Assim, podemos escrever:
+<ul><pre class='notranslate'>
+[1;2;3] @ [4;5;6] = append [1;2;3] [4;5;6] = [1;2;3;4;5;6]
+</pre></ul>
+No entanto, a função <tt class='notranslate'>@</tt> é pouco eficiente e deve ser usada com critério. Por exemplo, para acrescentar um zero à cabeça duma lista <tt class='notranslate'>list</tt> é má ideia escrever <tt class='notranslate'>[0]@list</tt>; escreve-se sempre <tt class='notranslate'>0::list</tt>. No entanto, para acrescentar um zero ao final duma lista <tt class='notranslate'>list</tt> não temos alternativa e escreve-se mesmo <tt class='notranslate'>list@[0]</tt>.
+
+<p>
+
+
+<HR><HR><h1>Nomes locais</h1>
+
+Agora, um novo assunto...
+
+<h2>Construção <b>let-in</b></h2>
+
+A construção <b>let-in</b>:
+<pre class='notranslate'>
+    <b>let</b> n = exp <b>in</b>
+        exp1
+</pre>
+
+associa o nome <tt class='notranslate'>n</tt> ao valor da expressão <tt class='notranslate'>exp</tt> no contexto da expressão <tt class='notranslate'>exp1</tt>. O nome <tt class='notranslate'>n</tt> passa a definir uma <b>constante local</b> à expressão <tt class='notranslate'>exp1</tt>.
+
+<p>O nome <tt class='notranslate'>n</tt> também pode ser parametrizado, passando a denotar uma <b>função local</b>, assim
+<pre class='notranslate'>
+    <b>let</b> n x = exp <b>in</b>
+        exp1
+</pre>
+
+Esta forma é equivalente a
+<pre class='notranslate'>
+    <b>let</b> n = (fun x -> exp) <b>in</b>
+        exp1
+</pre>
+
+<p>A palavra reservada <b>and</b> pode ser usada para definir simultaneamente vários nomes no mesmo <tt class='notranslate'>let-in</tt>. Por exemplo:
+
+
+<ul><pre class='notranslate'>
+<b>let</b> a = 1 <b>and</b> b = 2 <b>in</b>
+    a + b ;;
+</pre></ul>
+
+ou
+
+<ul><pre class='notranslate'>
+<b>let</b> f x = x + 1 <b>and</b> g x = x + 2 <b>in</b>
+    f (g x) ;;
+</pre></ul>
+
+
+Exercício: Procure no manual da linguagem a forma sintática geral da construção <b>let-in</b>.
+
+
+
+
+<p> Vamos ver de seguida que a construção <b>let-in</b> permite:
+<ol>
+<li> Aumentar a legibilidade de certas funções;
+<li> Aumentar a eficiência de certas funções;
+<li> Definir funções mutuamente recursivas.
+</ol>
+
+<h2>1. Legibilidade</h2>
+
+Considere o seguinte problema: <tt class='notranslate'>Escreva em OCaml uma função chamada <b>parque</b> que calcule o preço a pagar no parque de estacionamento subterrâneo dos Restauradores, em Lisboa. A função <tt class='notranslate'>parque</tt> recebe 2 pares ordenados de inteiros como argumentos: hora e  minuto de entrada, hora e minuto de saída. Os tempos de permanência são arredondados para horas completas e sempre para cima. Assuma que o carro nunca está no parque mais do que 24:00. Em Março de 1999, a tabela de preços era a seguinte:</tt>
+<ul><pre class='notranslate'>
+1ª hora        120 cêntimos
+2ª hora        140 cêntimos
+3ª hora        150 cêntimos
+seguintes      155 cêntimos
+</pre></ul>
+
+Apresentam-se a seguir duas versões equivalentes da função <tt class='notranslate'>parque</tt>, a segunda programada usando <b>let-in</b>. A escolha entre elas é, em grande medida, uma questão de gosto, mas pode argumentar-se que a segunda versão, apesar de mais longa, é mais fácil de perceber porque torna explícita a ordem de avaliação das sub-expressões dentro duma expressão que é demasiado grande e complexa.
+
+<ul><pre class='notranslate'>
+<b>let</b> parque (he, me) (hs, ms) =
+    pagar (convHoras (permanencia (convMinutos he me) (convMinutos hs ms)))
+;;
+</pre></ul>
+
+<ul><pre class='notranslate'>
+<b>let</b> parque (he, me) (hs, ms) =
+    <b>let</b> te = convMinutos he me <b>in</b>
+        <b>let</b> ts = convMinutos hs ms <b>in</b>
+            <b>let</b> perm = permanencia te ts <b>in</b>
+                <b>let</b> h = convHoras perm <b>in</b>
+                    pagar h
+;;
+</pre></ul>
+
+Exercício: As funções auxiliares não foram ainda programadas. Tente escrevê-las.
+
+<h2>2. Eficiência</h2>
+
+A construção <b>let-in</b> também pode ser usada para aumentar a eficiência de certas funções. Por exemplo a segunda função é mais eficiente do que a primeira (porquê?):
+
+<ul><pre class='notranslate'>
+<b>let</b> f g x =
+    g x + g x * g x
+;;
+
+<b>let</b> f g x =
+    <b>let</b> r = g x <b>in</b>
+        r + r * r
+;;
+</pre></ul>
+
+
+<h2>3. Funções mutuamente recursivas</h2>
+
+A forma geral da construção <b>let-in</b> inclui a possibilidade de utilização simultânea de <b>rec</b> e <b>and</b>. Isso permite definir 2 ou mais <b>funções mutuamente recursivas</b>. Eis um exemplo curioso com duas funções:
+
+<ul><pre class='notranslate'>
+    <b>let rec</b> even n = if n = 0 then true else odd (n-1)
+         <b>and</b> odd n = if n = 0 then false else even (n-1) <b>in</b>
+             exp
+;;
+</pre></ul>
+
+O que fazem estas funções?
+
+<p>
+
+
+<h2>Tradução do let-in</h2>
+
+A construção <b>let-in</b>
+<ul><pre class='notranslate'>
+<b>let</b> n = exp <b>in</b>
+    exp1
+</pre></ul>
+
+é internamente traduzida para a seguinte representação:
+<ul><pre class='notranslate'>
+(<b>fun</b> n -> exp1) exp
+</pre></ul>
+
+As duas formas são equivalentes (medite um pouco nisso!), mas a primeira é mais fácil de perceber.
+
+<h2>Tradução do <b>let</b> simples</h2>
+
+A já nossa conhecida construção <b>let-simples</b>, que permite definir nomes globais, é internamente traduzida para a construção <b>let-in</b> - os nomes globais são habilidosamente traduzidos para nomes locais.
+
+<p>Por exemplo, a seguinte sequência de definições e expressões:
+
+<ul><pre class='notranslate'>
+# <b>let</b> f x = x + 1 ;;
+# <b>let</b> g x = x + 2 ;;
+# f (g x) ;;
+</pre></ul>
+
+é internamente traduzida para um conjunto de <b>let</b> aninhados:
+
+<ul><pre class='notranslate'>
+<b>let</b> f x = x + 1 <b>in</b>
+    <b>let</b> g x = x + 2 <b>in</b>
+        f (g x) ;;
+</pre></ul>
+
+
+<HR><HR>
+#120

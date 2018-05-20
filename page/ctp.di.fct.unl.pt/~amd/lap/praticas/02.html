@@ -1,0 +1,217 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 2</H2>
+<p>Funções e listas. Exercícios de 13 a 15.
+<HR>
+
+<hr><li>13 - Infira o tipo de cada uma das seguintes funções:
+<ul><pre class='notranslate'>
+let f1 x = x + 1 ;;
+let f2 x = f1 x ;;
+let f3 x = 1 + x 5 ;;
+let f4 x y = x &lt; y x ;; (* Veja o tipo de "&lt;" <a href="http://caml.inria.fr/pub/docs/manual-ocaml/libref/Pervasives.html" target="n">aqui</a> *)
+</pre></ul>
+
+<p>Nota: Na resolução de problemas de inferência, o primeiro passo é sempre ver quantos argumentos tem a função - o tipo duma função com n argumentos tem sempre n setas no nível exterior. O segundo passo é descobrir o tipo de cada argumento com base na sua utilização do lado direito da função. O tipo do resultado pode ser descoberto no final do processo, ou misturado com a descoberta do tipo dos argumentos.
+
+<p>Para cada um dos tipos abaixo, dê também um exemplo duma função:
+
+<ul><pre class='notranslate'>
+(int->int) -> int
+bool -> float -> string
+</pre></ul>
+
+<hr>
+<hr>
+<h4>Ambiente de trabalho usando o IDE Eclipse com o plugin OcaIDE instalado</h4>
+
+Apresenta-se a forma recomendada para trabalhar com a linguagem OCaml nas próximas aulas práticas. Explica-se apenas o uso do interpretador. A parte do compilador fica para mais tarde.
+
+<p>Durante a aula, mantenha duas janelas abertas:
+
+<ul>
+  <li>Uma com um Web browser ativo, para acesso &agrave; p&aacute;gina de LAP, onde se encontra o enunciado dos exerc&iacute;cios;
+  <li>Outra com o Eclipse aberto para editar e correr programas em OCaml.
+</ul>
+
+<P>O processo de criação dum projeto novo para OCaml é o seguinte:
+<ol>
+  <li>Da primeira vez que se usa o Eclipse, é necessário escolher explicitamente a perspetiva "O'Caml". Faz-se desta maneira, usando os menus:
+  		<ul>
+		<li> Window > Open Perspective > Other ...    escolher "O'Caml" e carregar no botão OK.
+		</ul>
+  <p><li> Agora cria-se o projeto. Faz-se da seguinte maneira, usando os menus:
+  		<ul>
+		<li> File > New > OCaml Project (ocamlbuild) ... escolher o Project name "LAP" e carregar no botão FINISH.
+		</ul>
+  <p><li> Agora cria-se um módulo de trabalho. Faz-se desta maneira, usando os menus:
+  		<ul>
+		<li> File > New > Module ...   escolher o File name "aula2"  e carregar no botão FINISH.
+		</ul> 
+  <p><li> Está ponto a usar. Escreva algumas funções e expressões na janela de edição "aula2.ml". Para testar o código, basta selecionar as partes pretendidas e carregar na tecla F6. Os resultados aparecem na view "OCaml Toplevel".
+  <p><li> Repare que a view "OCaml Toplevel está dividida em duas partes. Também é possível introduzir funções e expressões para avaliar através do painel de baixo. Nesse caso é preciso carregar na tecla "Return" quando o cursor estiver colocado imediatamente a seguir à sequência ";;", no final da linha.
+  <p><li> Para aceder ao manual completo deste plugin, dentro do Eclipse siga: Help > Help Contents > OCaml Development User Guide.
+</ol>
+
+<p> Depois da criação do Project "LAP", nas execuções seguintes o Eclipse arranca com esse Project já aberto. Se desejar que os exercícios das diversas aulas não fiquem misturados no mesmo módulo, crie um módulo novo no início de cada aula.
+
+<p> Estas regras ensinam a usar apenas o interpretador. Na aula prática 4 veremos como gerar programas standalone executáteis.
+
+<p> <b>Instalação:</b> Já está instalado nos laboratórios. Para instalar no seu computador pessoal, primeiro instala-se o sistema OCaml, que pode ser obtido na página da bibliografia. Depois instala-se o Eclipse. Finalmente instala-se o plugin. Na <a href="http://www.algo-prog.info/ocaide/">página WEB do plugin</a> há regras de instalação fáceis de seguir.
+
+<p> <b>Questões de compatibilidade:</b> O plugin para OCaml não funciona em todas as combinações de Eclipse/Java. No contexto do Linux, já provou funcionar bem nas combinações Eclipse Juno/Java 7, Eclipse Juno/Java 8 e Eclipse Luna/Java 7. A combinação Eclipse Luna/Java 8 fica só parcialmente funcional (funciona o interpretador, mas não o compilador).
+
+
+<hr>
+<!--h4>Resolução de problemas orientada por testes unitários</h4>
+
+Descarregue e trabalhe com o seguinte ficheiro:  <a href="https://bitbucket.org/costaseco/lap-201617/src/0840044cae00c9f0948f61f0fd65ddf570a1031a/src/aula2.ml?at=master&fileviewer=file-view-default">aula2.ml</a>.
+
+<p>Por cada problema, disponibiliza-se uma solução (função) incompleta mais um conjunto de testes unitários. Se uma função estiver incorreta, então pelo menos um dos seus testes unitários vai falhar e gerar uma exceção. Se uma função estiver correta, os seus testes unitários ficam "silenciosos" ao correrem, sendo esse o objetivo a alcançar.
+
+<p>Caso resolva os problemas usando o Eclipse e o interpretador de OCaml embebido, saiba que se introduz cada função no interpretador selecionando o seu código e dando o comando F6. Para testar uma função, selecionam-se os correspondentes testes unitários e também se dá o comando F6. O painel "OCaml Toplevel" deve estar puxado para a frente, para isto funcionar.
+
+<p>Caso resolva os problemas na consola, o ideal é editar o ficheiro "aula2.ml" no gedit. Sempre que quiser testar o código, grave o ficheiro com "Save" e corra o programa na consola com o comando <tt><b>ocaml aula2.ml</b></tt>. O primeiro teste unitário a falhar gerará uma exceção. Quando todos os problemas ficarem bem resolvidos, deixarão de ser geradas exceções. 
+
+
+-->
+
+ 
+
+
+
+<hr><li>14 - Escreva em OCaml uma função
+<pre class='notranslate'>
+    succAll : int list -> int list
+</pre>
+que produza a lista dos sucessores duma lista de inteiros.
+<pre class='notranslate'>
+<i>Exemplos:</i>
+    succAll [] = []
+    succAll [3; 6; 1; 0; -4] = [4; 7; 2; 1; -3]
+</pre>
+
+NOTA: Este exercício será resolvido no quadro e a solução servirá de orientação para a resolução do problema 15.
+
+
+
+<hr><li>15 - Implemente o tipo de dados conjunto. Para representar os conjuntos, use listas não ordenadas mas sem repetições. As funções pretendidas são as seguintes:
+<pre class='notranslate'>
+    belongs: 'a -> 'a list -> bool       (* teste de pertença *) (* para ser resolvido no quadro *)
+    union: 'a list -> 'a list -> 'a list (* união de conjuntos *)
+    inter: 'a list -> 'a list -> 'a list (* intersecção de conjuntos *)
+    diff: 'a list -> 'a list -> 'a list  (* diferença de conjuntos *)
+    power: 'a list -> 'a list list       (* conjunto potência: conjunto dos subconjuntos - difícil *)
+</pre>
+<pre class='notranslate'>
+<i>Exemplos:</i>
+    belongs 4 [1;2;3;4;5;6] = true
+    belongs 4 [1;2] = false
+    union [7;3;9] [2;1;9] = [7;3;2;1;9]
+    inter [7;3;9] [2;1;9] = [9]
+    diff [7;3;9] [2;1;9] = [7;3]
+    power [] = [[]]
+    power [2;3] = [[]; [2]; [3]; [2;3]]
+    power [1;2;3] = [[]; [2]; [3]; [2;3]; [1]; [1;2]; [1;3]; [1;2;3]] <i>(* não interessa a ordem dos elementos *)</i>
+</pre>
+
+
+<p>Nota: Nas funções que recebem duas listas pode surgir a dúvida: faz-se a redução a problemas mais simples no primeiro ou no segundo argumentos da função? Geralmente tenta fazer-se a redução usando o primeiro argumento e chega-se a uma solução satisfatória. Apenas em casos raros é necessário fazer a redução no segundo argumento, ou até nos dois argumentos ao mesmo tempo.
+
+<hr><li>16 - Escreva em OCaml uma função
+<pre class='notranslate'>
+    nat : int -> int list
+</pre>
+que, dado um inteiro n, gere a lista dos n primeiros números naturais, ordenada decrescentemente.
+<pre class='notranslate'>
+<i>Exemplos:</i>
+    nat 0 = []
+    nat 1 = [0]
+    nat 2 = [1;0]
+    nat 5 = [4;3;2;1;0]
+</pre>
+
+
+<p>Nota: Este exercício tem a ver com listas, mas repare que o que determina a estrutura duma função são os seus argumentos. Como o argumento desta função é um inteiro, é provável que esta função tenha uma estrutura parecida com a da função fatorial, do exercício 6.
+
+<hr><li>17 -
+O Departamento de Engenharia do Ambiente possui um dispositivo que regista a
+temperatura ambiente segundo a segundo. No final de cada ciclo de 24 horas, o dispositivo envia para um computador a lista dos 86400 valores reais que representam as amostras do dia.
+
+<P>Mas a temperatura ambiente varia lentamente. Assim é de esperar que uma lista de temperaturas contenha muitos valores repetidos consecutivos. Analisemos a parte inicial duma tal lista:
+
+<pre class='notranslate'>
+    [10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1;
+     10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1;
+     10.1; 10.1; 10.1; 10.1; 10.0; 10.0; 10.0; 10.0; 10.0; ...]
+</pre>
+
+Esta lista indica que à meia-noite a temperatura era de 10.1 graus centígrados.
+Depois, a temperatura não sofreu alteração sensível durante mais 24 segundos, mas ao 26º segundo baixou para os 10.0 graus centígrados [Excitante, não é?!].
+
+<P>O que nos interessa aqui é a questão do armazenamento destas listas de temperaturas no computador. A verdade é que não vale a pena guardar listas tão longas. É preferível guardá-las numa forma compactada para aproveitar melhor a memória.
+
+
+<li>a) Escreva em OCaml uma função
+<pre class='notranslate'>
+       pack : 'a list -> ('a * int) list
+</pre>
+para compactar listas, substituindo cada subsequência de valores repetidos por um par ordenado que indica qual o valor que se repete e qual o comprimento da subsequência. Dois exemplos:
+<pre class='notranslate'>
+   pack [] = []
+   pack [10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.0; 10.0; 10.1; 10.0] =
+                   [(10.1, 7); (10.0, 2); (10.1, 1); (10.0,1)]
+</pre>
+
+
+<li>b) Escreva agora uma função para descompactar listas.
+<pre class='notranslate'>
+   unpack : ('a * int) list -> 'a list
+</pre>
+ Dois exemplos:
+<ul><pre class='notranslate'>
+unpack [] = []
+unpack [(10.1, 7); (10.0, 2); (10.1, 1); (10.0,1)] =
+    [10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.1; 10.0; 10.0; 10.1; 10.0]
+</pre></ul>
+
+
+
+<hr><li>18 - a) Escreva em OCaml uma função de ordem superior sobre listas, que permita aplicar sucessivamente uma operação binária associativa à esquerda a todos os elementos duma lista. A função também precisa de receber o elemento neutro da operação.
+
+<ul><pre class='notranslate'>
+fold_left : ('a -> 'b -> 'a) -> 'a -> 'b list -> 'a
+</pre></ul>
+Esboço do funcionamento da função:
+<ul><pre class='notranslate'>
+fold_left f neutro [a1; a2; ...; an] = f (... (f (f neutro a1) a2) ...) an
+</pre></ul>
+
+b) Escreva uma função de ordem superior sobre listas, semelhante à anterior mas aplicável a operações binárias associativas à direita.
+
+<ul><pre class='notranslate'>
+fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+</pre></ul>
+Esboço do funcionamento da função:
+<ul><pre class='notranslate'>
+fold_right f [a1; a2; ...; an] neutro = f a1 (f a2 (... (f an neutro) ...))
+</pre></ul>
+
+c) Programe a função de ordem superior <tt class='notranslate'>map</tt> recorrendo a uma destas funções.
+
+<p>
+
+
+<hr><li>19 - Procure no manual de referência da linguagem OCaml (disponível na página da cadeira, na coluna da esquerda - veja "Basic Operations") a lista completa das operações associadas aos tipos <tt class='notranslate'>bool</tt>, <tt class='notranslate'>int</tt>, <tt class='notranslate'>float</tt>, <tt class='notranslate'>string</tt> e <tt class='notranslate'>char</tt>.
+
+
+<hr><li>20 - Para cada um dos seguintes tipos, invente uma função com esse tipo:
+<ul><pre class='notranslate'>
+int -> (int->int)
+(int->int) -> (int->int)
+int -> float -> string -> char
+</pre></ul>
+
+
+<HR><HR>

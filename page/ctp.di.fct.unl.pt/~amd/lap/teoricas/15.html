@@ -1,0 +1,408 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#FFE0FF" link="#0000EE" vlink="#551A8B" #FF0000">
+
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 15 (26/abr/2018)</H2>
+Execução de programas
+<br>Modelos de execução para diversos tipos de linguagens de programação.
+<br>Modelo de execução detalhado para linguagens com escopo estático e aninhamento de funções.
+<p>
+<HR><HR><h1>Modelo de execução para diversos tipos de linguagens de programação</h1>
+
+Na implementação da maioria das linguagens de programação, é necessário considerar diversos aspetos para garantir que os efeitos da execução dos programas são os desejados. Algumas das questões mais importantes a considerar são as seguintes:
+
+<ul>
+<li> Avaliação de expressões
+<li> Acesso a variáveis
+<li> Chamada e retorno de funções
+<li> Passagem de funções como argumento
+<li> Funções retornadas por outras funções
+</ul>
+
+Vamos estudar em sucessão estas questões com a ajuda dum modelo de execução. <b>Note que o objetivo de qualquer modelo é simplificar o estudo uma realidade, omitindo deliberadamente pormenores não essenciais e outras complicações.</b> Por exemplo, o nosso modelo não usa registos do CPU para avaliar expressões, apesar das implementações mais eficientes tipicamente os usarem.
+
+<h2>Avaliação de expressões</h2>
+
+No nosso modelo usamos uma pilha para avaliar expressões. Para cada operação a executar, primeiro os seus argumentos são empilhados (pela ordem em que aparecem escritos) e depois a operação é ativada. A operação retira os argumentos do topo da pilha, calcula o resultado e deixa-o no topo da pilha.
+
+<h2>Acesso a variáveis</h2>
+
+1 - Numa linguagem sem recursividade nem aninhamento de funções ou procedimentos, como é o caso do Fortran 77, cada procedimento é dono duma zona de memória própria onde as suas variáveis locais são guardadas. Todas as variáveis são estáticas, ou seja têm localizações de memória fixas. Diversas chamadas do mesmo procedimento reutilizam a mesma zona de memória... não há problema porque, como foi dito, a recursividade não é permitida.
+
+
+<p>2 - Numa linguagem com recursividade mas sem aninhamento de funções, como é o caso do C, há dois casos a considerar. As variáveis globais, ou seja as variáveis declaradas fora das funções, são consideradas variáveis estáticas e têm localizações de memória fixas. Já as variáveis locais são criadas dinamicamente no topo duma pilha sempre que a sua função-mãe é ativada; são removidas do topo da pilha quando a execução da função-mãe termina. A partir do interior duma função em C, as variáveis acessíveis são as seguintes: as variáveis locais da ativação mais recente dessa função e as variáveis globais que não tenham sido redefinidas dentro da função.
+
+
+<p>3 - Numa linguagem com recursividade e com aninhamento de funções, como são os casos do Pascal, do OCaml e do GCC, a implementação fica mais complicada porque surgem variáveis declaradas nas funções envolventes, as chamadas <b>variáveis intermédias</b>. Para aceder às variáveis intermédias é preciso guardar na ativação de cada função o respetivo ambiente de definição ou seja um apontador para a ativação mais recente da função envolvente (<b>static link</b>). Para aceder a uma variável intermédia é preciso percorrer parte duma lista ligada constituída por static links. Foi Dijkstra quem, em 1960, inventou a técnica dos static links. [Numa linguagem com escopo dinâmico, não é necessário usar static links, pelo que a implementação fica mais simples.]
+
+<p>Considere o seguinte exemplo, em GCC, que usa variáveis intermédias. Do ponto de vista do interior da função h, as duas variáveis locais da função f são consideradas variáveis intermédias.
+
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+
+int i = 1, j = 1, k = 1, l = 1;    // variáveis globais
+
+void f(void) {
+    int i = 2, j = 2;
+    void h(void) {        // função aninhada
+        int i = 3;
+        l = i + j + k;
+    }
+    void g(void) {        // outra função aninhada
+        int i = 7, j = 7, k = 7, l = 7;
+        h();
+    }
+    g();
+}
+
+int main(void)
+{
+    f();
+    printf("%d\n", l);
+    return 0;
+}
+</pre></ul>
+
+<p><b>Nota importante:</b> GCC é um nome duma linguagem um pouco mais vasta do que o C de base. Ao contrário do ANSI-C, o GCC suporta aninhamento de funções.
+
+
+<h2>Chamada e retorno de funções</h2>
+
+Nas linguagem que suportam recursividade, o estado da invocação duma função é capturado numa estrutura chamada <b>registo de ativação (frame)</b>. Num registo de ativação guarda-se a seguinte informação: os argumentos e as variáveis locais da função, o endereço de retorno da função, e um apontador para o registo de ativação da função que fez a chamada (<b>dynamic link</b>).
+
+<p>Se a linguagem também permitir aninhamento de funções, ainda é preciso guardar no registo de ativação o ambiente de definição da função ou seja um apontador para o registo de ativação mais recente da função envolvente (<b>static link</b>). Repare que a função envolvente pode não ser a mesma função que fez a chamada.
+
+<p>Os registos de ativação organizam-se de forma natural numa pilha, a chamada <b>pilha de execução</b>. A chamada duma função causa o empilhamento dum novo registo de ativação; o retorno duma função causa o desempilhar do registo de ativação mais recente.
+
+
+<h2>Passagem de funções como argumento - closures</h2>
+
+No caso duma linguagem sem aninhamento de funções, como o C, a passagem duma função como argumento é trivial: basta passar o endereço da função.
+
+<p>No caso duma linguagem com aninhamento de funções, a passagem duma função como argumento é mais complicada.  A função passada pode ter necessidade de aceder a variáveis intermédias, e por isso, juntamente com o endereço da função tem também de ser passado o respetivo ambiente de definição (static link). 
+
+
+<p>Portanto a implementação da passagem duma função como argumento envolve tecnicamente a passagem dum par ordenado a que se chama <b>closure</b> (ou <b>fecho</b> em Português):
+
+<ul>
+closure = (endereço da função, static link)
+</ul>
+
+A razão de ser do nome closure é a seguinte: Em geral, uma função é uma entidade "aberta" (incompleta) pois o seu corpo pode referir entidades desconhecidas localmente. Mas o par <i>função + respetivo ambiente de definição</i> já é uma entidade fechada pois o ambiente de definição "fecha" (completa) o significado da função.
+
+<p>No seguinte exemplo, em GCC, ocorre uma passagem de função como argumento. Medite no código para confirmar a necessidade das closures.
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+
+int i = 1, j = 1, k = 1, l = 1;
+
+void f(void) {
+    int i = 2, j = 2;
+    void h(void) {        // função aninhada
+        int i = 3;
+        l = i + j + k;
+    }
+    void g(void p(void)) {     // outra função aninhada com par. funcional
+        int i = 7, j = 7, k = 7, l = 7;
+        p();
+    }
+    g(h);
+}
+
+int main(void)
+{
+    f();
+    printf("%d\n", l);
+    return 0;
+}
+</pre></ul>
+
+
+<h2>Funções retornadas por outras funções</h2>
+
+
+No caso duma linguagem sem aninhamento de funções, como o C, implementar o retorno duma função a partir de outra função  é trivial: basta retornar o endereço da função-resultado.
+
+
+<p>No caso duma linguagem com aninhamento de funções, como o OCaml, a implementação desse mecanismo é mais complicada. Quando se retorna uma função, o que tecnicamente precisa de ser retornado é uma closure.
+
+<p>Mas aqui pode haver problema. A closure retornada pode depender de entidades locais à função que produz o resultado. Assim quando a função retorna a closure e termina, o seu registo de ativação não pode ser destruído. Uma solução é transferir o registo de ativação para o heap, ou seja para a zona das variáveis dinâmicas. Esta é a solução adotada na linguagem funcional <a href="http://www.tecgraf.puc-rio.br/~lhf/ftp/doc/jucs05.pdf">Lua</a>. Outra solução, mais radical, consiste em abandonar completamente o modelo da pilha de execução e passar a criar todos os registos de ativação no heap (deixando que seja o gestor de memória a descobrir o momento em que eles podem ser removidos com segurança).
+
+<p>Esta complicação explica o facto do retorno de funções ser um mecanismo não suportado pela maioria das linguagens de programação. Praticamente só as linguagens funcionais é que suportam este mecanismo.
+
+
+<p>No seguinte exemplo, em OCaml, a função f retorna uma closure que depende do x local ao f. Quando a closure retornada é depois chamada, o x tem de continuar disponível, apesar da execução de f já ter terminado.
+
+<ul><pre class='notranslate'>
+let f x =
+    let g y = x + y in
+        g
+;;
+
+(f 5) 4 ;;
+</pre></ul>
+
+
+<HR><HR><h1>Modelo de execução detalhado para linguagem com escopo estático e aninhamento de funções</h1>
+
+Para concretizar melhor as ideias anteriores, vamos desenvolver um modelo de execução ainda mais detalhado para o caso das linguagens com escopo estático e aninhamento de funções.
+
+<p>Usaremos a linguagem C como veículo de formalização, para concretizar melhor as ideias. O código C que vai aparecer tem grandes semelhanças com o código duma máquina virtual típica.
+
+
+<h2>Áreas de memória e registos</h2>
+
+O nosso modelo tem três áreas de memória:
+
+<ul>
+<li><b>stack</b> - Guarda os registos de ativação e também como memória de trabalho para avaliar expressões.
+<li><b>code</b> - Guarda o código do programa que está a correr.
+<li><b>heap</b> - Guarda as variáveis dinâmicas do programa.
+</ul>
+
+Pouco será dito sobre a zona de código e sobre o heap. O stack vai receber quase toda a nossa atenção.
+
+<p>Os registos do modelo são os seguintes:
+
+<ul>
+<li><b>SP</b> - Indica o topo da pilha de execução.
+<li><b>FP</b> - Indica o registo de execução correntemente ativo, ou seja para o registo de execução que se encontra no topo da pilha de execução.
+<li><b>PC</b> - Indica qual a instrução corrente, na zona de código.
+</ul>
+
+Eis uma concretização em C destas ideias:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#define STACK_SIZE   20000
+#define CODE_SIZE    20000
+#define HEAP_SIZE    20000
+
+typedef unsigned Word;
+typedef Word *Pt;
+
+#define Push(v)      (*SP++ = (Word)(v))
+#define Pop()        (*--SP)
+
+Word stack[STACK_SIZE];
+Word code[CODE_SIZE];
+Word heap[HEAP_SIZE];
+
+Pt SP = stack;       // Stack pointer
+Pt FP = stack;      // Frame pointer
+Pt PC = code;       // Program counter
+</pre></table></ul>
+
+<h2>Avaliação de expressões</h2>
+
+Como já foi dito, usamos a pilha de execução como auxiliar da avaliação de expressões. Os argumentos das operações são empilhados e depois a operação encontra os seus argumentos no topo da pilha.
+
+<p>Eis uma concretização em C destas ideias:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+void PushConst(Word c) {
+    Push(c);              // push the constant
+}
+
+void Add(void) {
+    Word arg2 = Pop();    // pop the second argument
+    Word arg1 = Pop();    // pop the first argument
+    Push(arg1 + arg2);    // push the result
+}
+
+...
+</pre></table></ul>
+
+
+<h2>Acesso a variáveis</h2>
+
+Em tempo de execução os nomes das funções não precisam de estar disponíveis. Para referenciar uma variável em tempo de execução basta usar as chamadas <b>coordenadas da variável</b>, constituídas por dois valores:
+
+<ul>
+<li><b>Diferença de nível (nesting)</b> - Diferença de nível de aninhamento entre o ponto da referência e o ponto da declaração.
+<li><b>Deslocamento (offset)</b> - Deslocamento da variável dentro do registo de ativação a que pertence.
+</ul>
+
+<p>A diferença de nível representa o número de vezes que é necessário descer pelos static links para se atingir o registo de ativação onde se encontra a variável pretendida. No caso do acesso a uma variável local, a diferença de nível é zero.
+
+<p>O compilador da linguagem consegue determinar com muita facilidade as coordenadas que permitem referenciar cada variável. Um ser humano também o faz facilmente. Por exemplo, no primeiro exemplo desta aula, qual é a diferença de nível das utilizações das variáveis i, j, k e l dentro da função f.
+
+<p>Numa atribuição, primeiro determina-se o valor da expressão da direita, depois determina-se o endereço representado pela expressão da esquerda, e no final guarda-se o valor calculado na posição de memória indicada pelo endereço.
+
+<p>Concretização em C:
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+void LoadVarAddr(int nesting, int offset) {
+    for( Pt pt = FP ; nesting-- ; pt = SL(pt) );  // find the frame of the var
+    Push(pt + offset);            // push the var address
+}
+
+void Value() {
+    Pt pt = Pop();        // pop the var address
+    Push(*pt);            // push the value of the variable
+}
+
+void Assign() {
+    Pt pt = Pop();        // pop the var address
+    Pt value = Pop();     // pop the value to store
+    *pt = value;          // do the assignement
+}
+</pre></table></ul>
+
+
+<h2>Chamada e retorno de funções</h2>
+
+No nosso modelo, o formato dum registo de ativação é o que se apresenta abaixo. Convenciona-se que a posição do DL é o ponto de referência oficial de qualquer registo de ativação. Quem aponta para um registo de ativação aponta sempre para o respetivo DL.
+
+<p>O registo FP aponta para a célula onde é guardado o dynamic link do registo de ativação mais recente. Nos acessos aos argumentos e variáveis da função, usa-se o registo FP como ponto de referência. Assim, os argumentos da função têm offset negativo, a começar em -1, e as variáveis locais têm offset positivo, a começar em 3. No diagrama assume-se que a pilha cresce para cima.
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+          <b>&lt;- SP</b>
+Variável local n
+...
+Variável local 1
+Variável local 0
+PC
+SL
+DL        <b>&lt;- FP</b>
+Argumento m
+...
+Argumento 1
+Argumento 0
+</pre></table></ul>
+
+
+A principal complicação envolvida na ativação duma função e na criação do seu registo de ativação é o calculo do static link (que representa o ambiente de definição dessa função). O static link tem de ser guardado no registo de ativação da função para permitir o subsequente acesso a variáveis não-locais. Para determinar o static link é preciso conhecer a <b>diferença de nível (nesting)</b> entre o ponto da declaração da função e o ponto da sua chamada. A diferença de nível representa o número de vezes que é necessário descer pelos static links para se atingir o registo de ativação onde se encontra o static link a copiar. Numa chamada recursiva a diferença de nível é zero. Na chamada duma função filha, a diferença de nível é -1.
+
+<p>No nosso modelo a chamada e retorno de funções estão organizados da seguinte forma:
+
+<ul>
+<li> Antes da função ser chamada, os seus argumentos são empilhados;
+<li> No momento da chamada são empilhados o dynamic link, o static link e o endereço de retorno;
+<li> À entrada da função, esta reserva espaço para as suas variáveis locais.
+<li> Quando a função termina ela desempilha o registo de ativação completo, incluindo os argumentos.
+<li> A função deixa no topo da pilha o seu resultado.
+</ul>
+
+
+<p>Concretização em C:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+#define DL(fp)     ((fp)[0])
+#define SL(fp)     ((fp)[1])
+#define RET(fp)    ((fp)[2])
+
+void Call(int nesting, Pt addr) {
+    Push(FP);          // push dynamic link
+    if( nesting == -1 )
+        Push(FP);      // push static link
+    else {
+        for( Pt pt = FP ; nesting-- ; pt = SL(pt) );
+        Push(SL(pt));  // push static link
+    }
+    Push(PC);          // push return address
+    PC = addr;         // jump to the function
+}
+
+void Enter(int locSpace) {
+    if( STACK_SIZE - (SP - stack) &lt; locSpace + 20 ) {
+        fprintf(stderr, "Stack overflow at PC = %d\n", PC);
+        exit(1);
+    }
+    FP = SP - 3;    // FP points to the dynamic link inside the frame
+    SP += locSpace;
+}
+
+void Exit(int argSpace) {
+    Word res = Pop();     // save the result here
+    SP = FP - paramSpace; // discard the entire frame, including the arguments
+    PC = RET(FP);         // restore the program counter
+    FP = DL(FP);          // restore the previous frame pointer 
+    Push(res);            // push the result
+}
+</pre></table></ul>
+
+<h2>Passagem de funções como argumento - closures</h2>
+
+Já sabemos que a passagem duma função como argumento requer efetivamente a passagem duma closure como argumento. A principal complicação envolvida na criação da closure é o calculo do static link. Mas agora não há qualquer novidade: ele calcula-se exatamente da mesma forma que na chamada duma função normal.
+
+<p>A ativação duma função através duma closure é mais simples do que a ativação direta duma função pois o static link já se encontra calculado na closure.
+
+<p>Concretização em C:
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+void PushClosureArg(int nesting, Pt addr) {
+    if( nesting == -1 )
+        Push(FP);      // push static link
+    else {
+        for( Pt pt = FP ; nesting-- ; pt = SL(pt) );
+        Push(SL(pt));  // push static link
+    }
+    Push(addr);
+}
+
+void CallClosure(int nesting, int offset) {
+    for( Pt pt = FP ; nesting-- ; pt = SL(pt) );  // find the frame of the closure-argument
+    Pt sl = pt[offset];       // get the static link from the closure
+    Pt addr = pt[offset + 1]; // get the function address from the closure
+    Push(FP);                 // push dynamic link
+    Push(sl);                 // push static link
+    Push(PC);                 // push return address
+    PC = addr;                // jump to the function  
+}
+</pre></table></ul>
+
+
+<h2>Funções retornadas por outras funções</h2>
+
+O estudo mais detalhado desta questão é um tópico avançado que está fora do âmbito da cadeira de LAP.
+
+
+
+<HR><HR><h1>Exercícios</h1>
+
+<li>Relativamente ao primeiro exemplo desta aula, mostre o estado da pilha de execução à entrada da função h.
+
+<li>Relativamente ao segundo exemplo desta aula, mostre o estado da pilha de execução à entrada da função h.
+
+<p>Para efeitos da criação do registo de ativação inicial, convém imaginar que cada programa em C está embebido numa função chamada start, sem argumentos. É importante tratar todas as entidades globais do programa como sendo locais à função imaginária start. 
+
+<p>Assuma também que a primeira célula da pilha de execução é identificada como posição 0, a segunda célula da pilha de execução é identificada como posição 1, etc.
+
+<ul><pre class='notranslate'>
+Resolução do primeiro exercício:
+
+              &lt;- SP
+25: i  3 --h--
+    PC ?
+    SL 10
+    DL 15     &lt;- FP
+    l  7 --g--
+20: k  7
+    j  7
+    i  7
+    PC ?
+    SL 10
+15: DL 10
+    j  2 --f--
+    i  2
+    PC ?
+    SL 0
+10: DL 7
+    PC ? --main--
+    SL 0
+    DL 0
+    l  1 --start--
+ 5: k  1
+    j  1
+    i  1
+    PC ?
+    SL ?
+ 0: DL ?
+</pre></ul>
+
+<HR><HR>
+#100

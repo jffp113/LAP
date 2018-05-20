@@ -1,0 +1,412 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Prática 1</H2>
+1ªhora: Primeiro contacto com a linguagem de programação OCaml e o seu ambiente de desenvolvimento na consola.
+<br>2ªhora: Exprimir ou aproximar os mecanismos disponíveis numa dada linguagem de programação numa outra linguagem que os não possua como primitivos.
+<br>Exercícios de 1 a 10.
+<HR>
+
+<hr>
+<h2>Ambiente de referência - Linux</h2>
+<p>Nas aulas práticas o nosso ambiente de referência, tanto para trabalhar, como para os projetos, será o Linux instalado nos laboratórios. Os projetos também serão corrigidos e avaliados no Linux dos laboratórios.
+
+<hr>
+<h2>Primeiro contacto com a linguagem de programação OCaml e o seu ambiente de desenvolvimento na consola</h2>
+<p>A linguagem de programação OCaml é um dialeto da linguagem de programação ML.
+
+<p>Na 1ª parte da cadeira LAP, vamos explorar a vertente funcional da linguagem OCaml. Em OCaml, um programa é essencialmente uma sequência de definições de constantes e de definições de funções. Constantes e funções são conceitos já conhecidos da matemática. Note que numa linguagem funcional pura <b>não estão disponíveis, nem variáveis mutáveis nem ciclos</b>.
+
+
+<p>Um programa OCaml pode ser executado de duas formas distintas: (1) interpretado; ou (2) compilado e executado autonomamente. Um <b>interpretador</b> é um programa que lê o texto de um programa e o executa diretamente. Um <b>compilador</b> transforma o texto de um programa numa linguagem mais simples para mais tarde ser executado numa máquina virtual ou diretamente no hardware.</p>
+<p>Nestes primeiros exercícios vamos fazer experiências com as duas vertentes de execução de um programa OCaml.</p>
+
+
+<hr><li>1 - Numa consola Linux, lance o <b>interpretador</b> da linguagem OCaml usando o o comando <tt class='notranslate'>ocaml</tt>. O interpretador aceita três tipos de entidades:</p>
+<ul>
+  <li>Expressões para avaliar (e.g. <tt class='notranslate'>1+2;;</tt> ) - Neste caso, cada expressão é avaliada, sendo produzido e apresentado o seu valor.
+  <p><li>Definições (e.g.<tt class='notranslate'> let x = 1;;</tt> ) - Servem para dar um nome a um valor. O valor pode ser, por exemplo, um inteiro ou uma função.
+  <p><li>Diretivas para executar (e.g. <tt class='notranslate'>#quit;; </tt>) - São comandos que permitem controlar a sessão de trabalho.
+</ul>
+<p>Note que todas as entradas do interpretador são finalizadas com um ponto e vírgula duplo.</p>
+
+<p>Experimente introduzir o seguinte e observe e interpete os resultados produzidos:
+<ul><pre class='notranslate'># 1+2;;<br>- : int = 3<br># let x = 1;;<br>val x : int = 1<br># let y = x*2+1;;<br>val y : int = 3<br># #quit;;
+</pre></ul>
+Geralmente, é dado um valor como resposta, sendo ainda indicado o seu tipo e o identificador associado no caso de ser uma definição.</p>
+<p><strong>Nota</strong>: Em vez da diretiva <tt class='notranslate'>#quit;;</tt>, pode inserir <tt class='notranslate'>CTRL-D</tt> no Linux ou <tt class='notranslate'>CTRL-Z</tt> no Windows.</p>
+
+
+<hr><li>2 - Para além da produção de valores, as expressões OCaml também podem originar ações de input/output. A escrita de valores no terminal é conseguida através da invocações de funções da biblioteca padrão do OCaml. Repare que existe um "print" diferente para cada tipo de valores. (Para já não se preocupe com o tipo "unit", mas pode-se desde já dizer que é usado em muitas das situações em que o tipo "void" é usado em Java).</p>
+<p>Experimente isto:</p>
+<ul><pre class='notranslate'># print_string "Hello World!";;<br>Hello World!- : unit = ()<br># print_int (10+3);;<br>13- : unit = ()<br># print_char 'c';;<br>c- : unit = ()<br># print_float 1.0;;<br>1.- : unit = ()</pre></ul>
+
+
+<hr><li>3 - Neste exercício vamos abandonar temporariamente o interpretador de OCaml e usar o <b>compilador</b> de OCaml.
+
+<p>Usando um editor de texto, crie um ficheiro de texto chamado <tt class='notranslate'>hello.ml</tt>, escreva</strong> o miniprograma </p>
+<ul><pre class='notranslate'>print_string "Hello World!\n";;
+</pre></ul>
+e depois compile-o na linha de comando assim:</p>
+<ul><pre class='notranslate'>$ ocamlc hello.ml -o hello </pre></ul>
+<p>Este comando produz um ficheiro executável chamado <tt class='notranslate'>hello</tt> na diretoria corrente. Execute-o assim:
+<ul><pre class='notranslate'>$ ./hello
+Hello World!</pre></ul>
+
+<p>Note que o interpretador escreve automaticamente o valor das expressões avaliadas na consola, mas o compilador não faz isso. Num programa que se destine a ser compilado, temos de ser nós a mandar escrever tudo usando as operações de input/output exemplificadas no exercício anterior.
+
+<hr><li>4 - Neste exercício regressamos ao interpretador, mas agora o código a executar provirá dum ficheiro e não da consola. Carregue o ficheiro "hello.ml" no interpretador através da diretiva "use":
+<ul><pre class='notranslate'># #use "hello.ml";;
+Hello World!
+- : unit = () </pre></ul>
+<p>Observe o resultado obtido e tire conclusões.</p>
+
+<hr><li>5 - Em OCaml há duas maneiras de definir funções: com nome e anónimas. A definição de funções com nome e a sua invocação seguem a sintaxe que se exemplifica:</p>
+<ul><pre class='notranslate'># let f x = x+1;;
+ val f : int -&gt; int = &lt;fun&gt;
+# f 2 ;;
+- : int = 3</pre></ul>
+
+<p>Note que não se escrevem os tipos das entidades e que o interpretador de OCaml infere o seguinte tipo para a função: <tt class='notranslate'>int -&gt; int</tt>.</p>
+
+<p>A seguinte função anónima
+
+<ul><pre class='notranslate'># fun x -&gt; x+1;;<br>- : int -&gt; int = &lt;fun&gt;</pre></ul>
+
+<p>tem o mesmo tipo, mas não fica identificada por nenhum nome. É possível usar diretamente funções anónimas em expressões, como no exemplo:</p>
+<ul><pre class='notranslate'># (fun x-&gt; x+1) 2;;<br>- : int = 3</pre></ul>
+
+A definição da função <tt class='notranslate'>f</tt>, também pode ser escrita assim:
+
+<ul><pre class='notranslate'># let f = (fun x -> x+1);;</pre></ul>
+
+
+
+
+
+<hr><li>6 - As definições em OCaml podem ser recursivas, sendo para isso necessário indicar a palavra reservada <tt class='notranslate'>rec</tt>. Reconhece esta função?
+<ul><pre class='notranslate'>
+# let rec fact x = if x = 0 then 1 else x * fact (x-1) ;;
+val fact : int -> int = <fun>
+# fact 5 ;;
+- : int = 120
+</pre></ul>
+
+<hr><li>7 - Experimente ainda as seguintes expressões para conhecer outras características da linguagem OCaml. Com a ajuda do professor, interprete os resultados que obtiver. Tudo isto será objeto de discussão nas aulas teóricas.
+<ul><pre class='notranslate'># let f x = x + x ;;
+
+# let f x = x +. x ;;
+
+# let f x = x ^ x ;;
+
+# let f (x,y) = x + y ;;
+
+# let f (x,y) = x +. y ;;
+
+# let f (x,y) = (y, x) ;;
+
+# let f (x,y) = x = y ;;
+
+# let g x y = x + y ;;</pre></ul>
+
+<h2>Ambiente de trabalho baseado na consola e no interpretador</h2>
+
+Na primeira parte da aula de hoje, trabalhámos da forma que se descreve a seguir. Na próxima aula começaremos a usar o ambiente de trabalho Eclipse.
+<p>
+Manter três janelas abertas, no computador:
+
+<ul>
+  <li>Uma com um browser ativo, para terem acesso &agrave; página de LAP, onde se encontra o enunciado dos exercícios;
+  <li>Outra com um editor de texto para escreverem os programas;
+  <li>Uma terceira com uma consola, para correrem o interpretador OCaml.
+</ul>
+Para facilitar a criação destas três janelas no início de cada sessão, arraste para a barra que se situa no topo do ecrã os ícones das três aplicações relevantes: "Browser", "Editor de texto" e "Terminal".
+<P>O processo de desenvolvimento de programas OCaml é o seguinte:
+<ul>
+  <li>Escreve-se o programa num ficheiro de texto com a ajuda do editor de texto e grava-se;
+  <li>Carrega-se o programa no OCaml, usando a diretiva "#use";
+  <li>Testa-se o programa.
+  <li>Se houver erros:
+    <ul>
+        <li>volta-se a editar, a gravar, a carregar e a testar  
+    </ul>
+  </ul>
+<hr>
+<hr>
+
+
+<h2>Exprimir ou aproximar os mecanismos disponíveis numa dada linguagem de programação numa outra linguagem que os não possua como primitivos. </h2>
+
+Por vezes, quando estamos a trabalhar com uma linguagem L1, intessa-nos imitar um mecanismo de programação conhecido da linguagem L2 mas não disponível na linguagem L1. Exemplos: imitar as exceções do Java numa linguagem sem exceções; imitar os objetos do Java numa linguagem sem objetos; imitar o mecanismos de execução do Prolog numa linguagem sem esses mecanismos, etc.
+
+<p>Este tipo de exercícios são instrutivos e ajudam a entender bem as linguagens envolvidas e dos seus mecanismos, pois o esforço de os resolver obriga a perceber completamente o mecanismo da linguagem L2 que se quer imitar, assim como os mecanismos da linguagem L1 que são usados na imitação.
+
+<p>Segue-se alguns exercícios deste género.
+
+<hr><li>8 - Dada a ausência de variáveis imperativas e de ciclos na parte funcional da linguagem OCaml, proponha uma função recursiva em OCaml para implementar uma função equivalente ao seguinte método Java. Aqui a ideia é mesmo simular de alguma forma variáveis imperativas em OCaml.
+
+<p>A função calcula o máximo divisor comum entre dois números inteiros positivos.
+
+<ul><pre class='notranslate'>int mdc(int m, int n) {
+  int x;<br>  while( n != 0 ) {
+    x = n; n = m % n; m = x ;<br>  }
+  return m;
+}</pre></ul>
+
+Nota: Neste exercício, o ponto de partida foi um método escrito usando os mecanismos imperativos do Java. Naturalmente samos levados a simular esses mecanismos em OCaml. Contudo, como veremos nas próximas semanas, quando se resolve um problema diretamente em OCaml, não há qualquer necessidade nem interesse, sendo mesmo prejudicial pensar em termos de variáveis imperativas e de ciclos. Este exercício académico constitui uma exceção.
+
+
+
+<hr><li>9 - Considere o seguinte programa em Java:
+
+<ul><pre class='notranslate'>
+abstract class Shape {
+    abstract double area();
+}
+
+class Line extends Shape {
+    private int x0, y0;
+    private int x1, y1;
+    double area() {
+        return 0;
+    }
+}
+
+class Circle extends Shape {
+    private int x, y;
+    private double radius;
+    double area() {
+        return 3.14159 * radius * radius;
+    }
+}
+
+class Rect extends Shape {
+    private int x0, y0;
+    private  int x1, y1;
+    double area() {
+        return Math.abs((x0 - x1) * (y0 - y1));
+    }
+}
+
+class Canvas {
+    private java.util.Vector&lt;Shape> shapes;
+    double area() {
+        double sum = 0;
+        for(Shape s : shapes)
+            sum += s.area();
+        return sum;
+    }
+}
+</pre></ul>
+
+Como você sabe, uma variável de tipo Shape consegue referir objetos de tipo Line, Circle e Rect. Ao aplicar a operação "area" a essa variável, obtém-se a área da figura geométrica em causa.
+
+<p>Agora, imagine que eram retirados do Java os mecanismos de herança e subtipo, que aqui são usados. Como é que reescreveria o programa anterior, tentando capturar o conceito da classe "Shape" (que representa uma forma geométrica geral) e, já agora, sem alterar a classe cliente Canvas? [Sugestão: a melhor solução mantém as cinco classes, sendo a classe Shape que precisa duma grande reescrita.]
+
+
+
+
+
+
+
+
+<hr><li>10 - Em Java não existe a instrução <b>goto</b> (apesar desta palavra ter ficado reservada nessa linguagem). Em geral o goto não faz falta, e na maioria das situações até seria contraproducente o seu uso por favorecer o aparecimento de programas difíceis de entender [Artigo: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.92.4846&rep=rep1&type=pdf">Edsger W. Dijkstra, Go To Statement Considered Harmful, 1969</a>].
+
+<p>Mas há uma situação rara em que o uso do <strong>goto</strong> é recomendado, se estiver disponível. Trata-se da programação de autómatos finitos deterministas (máquinas de estados). Num tal autómato, para cada par (estado, input) existe uma única transição para o estado seguinte. Você vai estudar este assunto na disciplica de Teoria da Computação.
+<p>O seguinte diagrama representa um autómato finito com 5 estados que verifica se o input contém, algures lá no meio, a string "foo". Partindo do estado "START", navege mentalmente do diagrama para perceber como ele funciona.
+
+<ul><ul><img src="images/automato.png" width="400"></ul></ul>
+
+<p>O programa mais abaixo, implementa em C o autómato anterior. Olhe para o código e repare que o <b>goto</b> permite transitar de estado de forma natural e intuitiva.
+
+<p>O problema a resolver é o seguinte: <b>Escreva um programa em Java equivalente ao programa em C e teste-o.</b>
+
+<p>O Java não tem instrução <b>goto</b>. Qual será o melhor plano para efetuar a tradução? Será que existe alguma solução que permita manter a estrutura geral do código C que estamos a ver? [A resposta é <b>sim</b>! Se fosse <b>não</b>, então o goto faria falta em Java.]]
+
+
+<ul><pre class='notranslate'>
+#include &lt;stdio.h>
+
+int main() {
+    START:  switch( getchar() ) {
+                case 'f' : goto F ;
+                case EOF : goto FAIL ;
+                default  : goto START ;
+            }
+
+    F:      switch( getchar() ) {
+                case 'o' : goto FO ;
+                case 'f' : goto F ;
+                case EOF : goto FAIL ;
+                default  : goto START ;
+             }
+   
+    FO:     switch( getchar() ) {
+                case 'o' : goto SUCCESS ;
+                case 'f' : goto F ;
+                case EOF : goto FAIL ;
+                default  : goto START ;
+            }
+
+    FAIL:   printf("REJECT.\n") ;
+            return 0 ;
+
+    SUCCESS: printf("ACCEPT.\n") ;
+             return 0 ;
+}
+</pre>
+</ul>
+
+Para ler carateres, pode usar o seguinte método, que imita a função <tt class='notranslate'>getchar</tt> do C:
+<ul><pre class='notranslate'>
+private static int getchar() {
+    try {
+        return System.in.read() ;
+    } catch(IOException e) {
+        return -1 ;
+    }
+}
+</pre>
+</ul>
+
+
+
+<hr><li>11 - Imagine que o mecanismo das exceções era retirado da linguagem Java. Reescreva o seguinte programa Java, mantendo o seu comportamento, mas agora sem usar exceções. A solução que encontrar deverá poder ser aplicada a qualquer outro programa Java. Verá que existe uma solução teoricamente correta, mas muito pouco prática de usar: isso prova que o mecanismo das exceções faz falta no Java, pois não há forma simples de o imitar usando os outros mecanismos.
+
+
+<ul><pre class='notranslate'>
+import java.util.*;
+
+// Este e' um tipo-objecto:
+
+interface IntStack {
+    int Capacity() ;
+    int Size() ;
+    boolean Empty() ;
+    boolean Full() ;
+    int Top() ;
+    void Push(int v) ;
+    void PushN(int... vs) ;
+    void Pop() ;
+    void PopN(int n) ;
+}
+
+// Esta e' uma implementacao do tipo-objecto anterior:
+
+class IntStackClass implements IntStack {
+    private final static int defaultCapacity = 100 ;
+    private int[] elems ;
+    private int top ;
+
+    IntStackClass(int capacity) {
+        elems = new int[capacity] ;
+        top = 0 ;
+    }
+    IntStackClass() {
+        this(defaultCapacity) ;
+    }
+
+    public int Capacity() {
+        return elems.length ;
+    }
+    public int Size() {
+        return top ;
+    }
+    public boolean Empty() {
+        return Size() == 0 ;
+    }
+    public boolean Full() {
+        return Size() == Capacity() ;
+    }
+    public int Top() {
+        if( Empty() )
+            throw new EmptyStackException() ;
+        return elems[top-1] ;
+    }
+    public void Push(int v) {
+        if( Full() )
+            throw new StackOverflowError() ;
+        elems[top++] = v ;
+    }
+    public void PushN(int... vs) {
+        for(int v : vs)
+            Push(v) ;
+    }
+    public void Pop() {
+        if( Empty() )
+            throw new EmptyStackException() ;
+        top-- ;
+    }
+    public void PopN(int n) {
+        for( int i = 0 ; i &lt; n ; i++ )
+            Pop() ;
+    }
+
+  // TESTING
+    public static void main(String[] args) {
+        System.out.println("Welcome to the IntStackClass class!!") ;
+        IntStack s = new IntStackClass() ;
+        System.out.println(s.Capacity()) ;
+        try {
+            s.PushN(1,2,3,4,5) ;
+        }
+        catch ( StackOverflowError e ) {
+            System.out.println("Stack Overflow!") ;
+            System.out.println("Bye bye!") ;
+            System.exit(1) ;
+        }
+        catch ( EmptyStackException  e ) {
+            System.out.println("Stack Underflow!") ;
+            System.out.println("Bye bye!") ;
+            System.exit(1) ;
+        }
+        s.PushN(1,2,3,4,5) ;
+        s.PopN(9) ;
+        System.out.println(s.Top()) ;
+    }
+
+}
+</pre></ul>
+
+<b>Ajuda:</b> Pode usar a seguinte classe enumerada auxiliar. Há uma solução baseada em ideias simples que passa por inserir no código alguns ifs, alguns returns, criar uma nova função main com código fixo, e pouco mais. Mesmo assim é uma solução complicada de usar, na prática.
+
+<ul><pre class='notranslate'>
+public enum Exc {
+  // Enumeration values
+    noneExc, stackOverflowExc, emptyStackExc ;
+  // Current exception
+    private static Exc curr = noneExc ;
+  // Static methods
+    public static Exc Catch() { Exc x = curr ; curr = noneExc ; return x ; }
+    public static void Throw(Exc e) { curr = e ; }
+    public static boolean Throwed() { return curr != noneExc ; }
+    public static void DefaultHandling() {
+        switch( curr ) {
+            case noneExc :
+                break ;
+            case stackOverflowExc:
+                System.err.println("StackOverflow Exception") ;
+                System.exit(0) ;
+            case stackUnderflowExc:
+                System.err.println("StackUnderflow Exception") ;
+                System.exit(0) ;
+            default:
+                System.err.println("Unknown Exception") ;
+                System.exit(0) ;
+        }
+    }
+}
+</pre></ul>
+
+
+<hr><li>12 - Reescreva o método Java abaixo sem usar nenhum ciclo. Use apenas recursividade. Depois de resolver o problema diga se aceitável eliminar os ciclos do Java, deixando apenas a recursividade?
+
+<ul><pre class='notranslate'>
+int f(int[] array) {
+    int sum = 0;
+    for(int v : array)
+        sum += v;
+    return sum;
+}
+</pre></ul>
+<HR><HR>

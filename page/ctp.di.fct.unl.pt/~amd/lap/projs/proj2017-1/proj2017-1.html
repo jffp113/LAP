@@ -1,0 +1,479 @@
+<title>Enunciado do 1º Trabalho Prático (OCaml)</title>
+<head><meta http-equiv="refresh" content="60"></head>
+<body text="#000000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<H1>Linguagens e Ambientes de Programação (2016/2017) [Eng.Inf. - DI/FCT/UNL]</H1>
+<H2>Enunciado do 1º Projeto Prático (OCaml)</H2>
+<H4>Artur Miguel Dias</H4>
+
+<HR><h2>Datas</h2>
+<li>31/mar (12:00) - Divulgação da versão inicial do enunciado
+<li>08/abr (24:00) - Data e hora limite de entrega do 1º projeto. <b>[Atenção, o prazo foi adiado para as 24:00.]</b>
+<li>10/abr (24:00) - Data e hora limite de entrega com atraso. Um valor de penalização por cada dia de atraso.
+<p>
+<HR><h2>Changelog</h2>
+<ul>
+<li>01/abr - A descrição da representação dos polinómios já estava completa e correta, mas reforçou-se a ideia e que a lista dos coeficientes aparece pela ordem inversa.
+<li>01/abr - A descrição da função <tt><b>graph</b></tt> foi melhorada e acabou por ser completamente reescrita.
+<li>31/mar - Possíveis correções a este enunciado serão assinaladas aqui.
+</ul>
+
+
+<HR><h1><A HREF="submiss2017-1.html">Submission rules</a>
+
+
+<HR><h1><font size=+4>Express yourself!</font></h1>
+
+<p> This project is about symbolic processing of algebraic expressions with a single variable.
+
+<p>A representation of expressions is introduced and you are asked to write in OCaml several function that perform symbolic evaluation, differentiation, simplification, zero finding, etc.
+
+
+<hr><h1>Module "Expressions"</h1>
+
+
+<p>The aim of this project is to write a closed module named "Expressions" containing a data representation for algebraic expressions and containing the implementation of some functions over expressions.
+
+<p>The module interface has already been fully written and you are not allowed to change it: <a href="files/Expressions.mli">Expressions.mli<a>. As you can see, the representation of expressions is public and there is also a small number of public functions declared. All the other entities you define in the module body will be private.
+
+<p>Use this file as starting point to write your module body: <a href="files/Expressions.ml">Expressions.ml<a>.
+
+
+<hr><h1>Evaluation and grades</h1>
+
+You will submit the file "Expressions.mli" via Mooshak.
+
+<p>Around 80% of the grade of your group is automatically assigned by Mooshak. The remaining 20% is assigned manually by the teacher, who analyzes the quality of your code.
+
+<p>A special case: In case of code of extremely bad quality, or code that uses the forbidden imperative mechanisms of OCaml, or code that constantly simulates imperative mechanisms and concepts, a special rule will be used so that the grade will be always below 50%, even if the program works well.
+
+<p>To compile your module, Mooshak uses the following command
+
+<ul><pre>
+ocamlc -c Expressions.mli Expressions.ml
+</pre></ul>
+
+After the compilation, Mooshak tests the module in the interpreter like this: 
+
+<ul><pre>
+$ ocaml
+    Objective Caml version 4.01.0
+# #load "Expressions.cmo" ;;
+# open Expressions ;;
+...
+...
+</pre></ul>
+
+
+
+
+
+
+
+<p>It is not mandatory to develop this project in Linux. However, you should test the final version of your module in the laboratories because the official environmental for this project is the Linux version installed in the laboratories.
+
+<p>It is also recommended you develop the project in Eclipse but, of course, this is also not mandatory.
+
+
+
+<hr><h1>Data representation</h1>
+
+<p> The algebraic expressions of this project contain float constants, occurrences of a single variable, occurrences of the four basic arithmetic operations, and there is also a special representation for polynomials. This is the OCaml type to use:
+
+<ul><pre>
+type exp =
+	  Add of exp*exp
+	| Sub of exp*exp
+	| Mult of exp*exp
+	| Div of exp*exp
+	| Const of float
+	| V
+	| Poly of float list
+;;
+</pre></ul>
+
+In the case of a polynomial <tt><b>Poly l</b></tt>, the list <tt><b>l</b></tt> contains a sequence of coefficients of powers starting with power 0, meaning that the coefficients are in the reverse order. This is to allow inductive reasoning; the other way round does not work so well. For example, <tt><b>Poly [1.0; 2.0; 3.0]</b></tt> is our representation of <tt><b>3x²+2x+1</b></tt>.
+
+<p> To exemplify, here is an algebraic expression in conventional mathematical syntax:
+
+<ul><pre>
+(4*x*x + 2)/(x*x*x+5)
+</pre></ul>
+
+The previous expression can be written in our representation like this:
+
+<ul><pre>
+Div (
+    Add (Mult(Const 4., Mult(V, V)), Const 2.),
+    Add(Mult(V, Mult(V, V)), Const 5.)
+)
+</pre></ul>
+
+It can also be written, using polynomials, as follows:
+
+<ul><pre>
+Div (Poly [2.; 0.; 4.], Poly [5.; 0.; 0.; 1.])
+</pre></ul>
+
+<p>Note that, in our representation, the variable is always expressed by the term <tt><b>V</b></tt>.
+
+<hr><h1>Special constants</h1>
+
+You must use the following two global constants and, please, do not change their values:
+
+<ul><pre>
+let epsilon = 0.000001;;
+let step = 0.1;;
+</pre></ul>
+
+<p>The constant <tt><b>epsilon</b></tt> is useful for checking if two floats are the same. As you know, performing calculations with floats causes some small inaccuracies. In the context of this work, you must never demand exact equality for floats. Instead, you must use the following function to check if two floats are equal:
+
+<ul><pre>
+let feq f1 f2 = abs_float(f1 -. f2) <= epsilon ;;
+</pre></ul>
+
+<p>As for the constant <tt><b>step</b></tt>, it is used to navigate across the domain of an expression in small increments. The introdution of this constant spares one argument in some functions that are already a bit complicated.
+
+
+
+
+
+
+
+<hr><h1>The functions of the module</h1>
+
+There are 8 public functions to implement. Please, write the functions using the inductive method. You can also take advantage of the predefined functions of the <a href="http://caml.inria.fr/pub/docs/manual-ocaml-312/libref/List.html">module List<a>. Furthermore, in case you use other modules from the OCaml library, please make sure you never employ functions with side effects.
+
+
+<pre><b>pcount : float list -> int * int
+<i>let pcount l = ...</i>
+</b></pre>
+<ul>
+Given a list <tt><b>l</b></tt> of floats, it returns a pair of integers: the first integer is the number of non-zeros in the list; the second integer is the number of consecutive zeros occurring at the end of the list.
+
+<p>Note: This is an helper function for the function <tt>size</tt>.
+<pre>
+# let z = pcount [0.0; 1.0; 2.0; 3.0];;
+val z : int * int = (3, 0)
+# let z = pcount [0.0; 1.0; 2.0; 3.0; 0.0; 0.0];;
+val z : int * int = (3, 2)
+# let z = pcount [0.0; 1.0; 2.0; 3.0; 0.0];;
+val z : int * int = (3, 1)
+</pre></ul>
+
+
+<pre><b>size : exp -> int
+<i>let size e = ...</i>
+</b></pre>
+<ul>
+The size of an expression <tt><b>e</b></tt> is defined as the number of nodes of the expression with one exception. There is a special rule for polynomials: the significant zeros in a polynomial do not count to the size (check out the last four examples); the non-significant zeros (that is, unnecessary zeros appearing the end of the polynomial list) count to the size normally.
+
+<p>Note: This function supplies the criteria to evaluate the amount of simplification in the function <tt>simpl</tt>.
+
+<pre>
+# size (Const 5.0);;
+- : int = 1
+# size (Const 0.0);;
+- : int = 1
+# size V;;
+- : int = 1
+# size (Add (Const 5.0, Const 0.0));;
+- : int = 3
+# size (Mult (V, Add (Const 5.0, Const 0.0)));;
+- : int = 5
+# size (Mult (V, Add (Const 5.0, Poly [0.0; 1.0; 2.0; 3.0; 0.0; 0.0])));;
+- : int = 10
+# size (Poly []);;
+- : int = 1
+# size (Poly [1.0; 2.0; 3.0]);;
+- : int = 4
+# size (Poly [0.0; 1.0; 0.0; 0.0; 2.0; 0.0; 3.0]);;
+- : int = 4
+# size (Poly [1.0; 2.0; 3.0; 0.0; 0.0]);;
+- : int = 6
+</pre></ul>
+
+
+
+
+<!--
+
+<pre>
+<b>store : string -> exp -> unit</b>
+</pre>
+<ul>
+Stores an expression in a file.
+<pre>
+# store "myfile.tx (Add (Const 5.0, Const 0.0)) ;;
+- : unit = ()
+</pre></ul>
+
+
+
+<pre>
+<b>load : string -> exp</b>
+</pre>
+<ul>
+Loads an expression from a file.
+<pre>
+# load "myfile.txt" ;;
+- : exp = Add (Const 5.0, Const 0.0)
+</pre></ul>
+
+-->
+
+
+
+<pre><b>eval : float -> exp -> float
+<i>let eval v e = ...</i>
+</b></pre>
+<ul>
+Evaluates an expression <tt><b>e</b></tt> for a given value <tt><b>v</b></tt> of the variable.
+<pre>
+# eval 2.0 (Const 5.0);;
+- : float = 5.
+# eval 2.0 V;;
+- : float = 2.
+# eval 2.0 (Mult (V, Add (Const 5.0, Const 0.0)));;
+- : float = 10.
+# eval 2.0 (Mult (V, Add (Const 5.0, Poly [0.0; 1.0; 2.0; 3.0; 0.0; 0.0])));;
+- : float = 78.
+# eval 1.0 (Poly [1.0; 2.0; 3.0; 0.0; 0.0]);;
+- : float = 6.
+# eval 2.0 (Poly [0.0; 0.0; 0.0; 0.0; 1.0; 0.0]);;
+- : float = 16.
+</pre></ul>
+
+
+
+
+<pre><b>deriv : exp -> exp
+<i>let deriv e = ...</i>
+</b></pre>
+<ul>
+Differentiation of an expression <tt><b>e</b></tt>. Determines the derivative of <tt><b>e</b></tt>.
+
+<p>The result can be structured in several different ways and all the correct variants are accepted. For example, using conventional mathematical notation, the derivative of the mathematical expression "2x+7" can be written as "2", or "1+1", or "2+0", or "1+1+x*0+x-x", etc. All these variants are OK.
+<pre>
+# deriv (Const 5.0);;
+- : exp = Const 0.
+# deriv V;;
+- : exp = Const 1.
+# deriv (Mult (Const 2.0, V));;
+- : exp = Add (Mult (Const 0., V), Mult (Const 2., Const 1.))
+# deriv (Mult (Const 2.0, V));;
+- : exp = Const 2.
+# deriv (Poly [1.0; 2.0; 3.0; 4.0]);;
+- : exp = Poly [2.; 6.; 12.]
+</pre></ul>
+
+
+
+<pre><b>alike : float -> int -> exp -> exp -> bool
+<i>let alike a n e1 e2 = ...</i>
+</b></pre>
+<ul>
+Compares two expressions <tt><b>e1</b></tt> and <tt><b>e2</b></tt> at a certain set of <tt><b>n</b></tt> points. We say that <tt><b>e1</b></tt> and <tt><b>e2</b></tt> are alike if their results match at all those points. Do not forget to use the function <tt><b>feq</b></tt> to check if two results match.
+
+
+
+<p>The argument <tt><b>a</b></tt> represents the leftmost point where one comparison takes place. The other points where the two expressions are also compared are: <tt>a + step, a + 2*step,  a + 3*step, ..., a + (n-1)*step</tt>.
+ 
+
+<pre>
+# alike 0.0 20 (Const 2.) (Add (Const 1.,Const 1.));;
+- : bool = true
+# alike 0.0 20 V (Poly [0.; 1.]);;
+- : bool = true
+# alike 0.0 20 (Const 3.) (Add (Const 1.,Const 1.));;
+- : bool = false
+</pre></ul>
+
+
+
+<pre><b>newton : float -> exp -> float
+<i>let newton s e = ...</i>
+</b></pre>
+<ul>
+Determines a zero of the expression <tt><b>e</b></tt> using the <a href="https://en.wikipedia.org/wiki/Newton's_method" target="n">Newton-Raphson method</a>. You need to study this technique, but it is not complicated.
+
+<p>The argument <tt><b>s</b></tt> is an initial estimate of the zero. This technique ensures rapid convergence, assuming there exists at least a zero and that the initial estimate is good enough. You can check if you already reached a zero by evaluating <tt><b>e</b></tt> and comparing the result with 0.0, using the function <tt><b>feq</b></tt>.
+
+<p>Depending on the expression and the initial estimate, this method can also led to an infinite loop or to a division-by-zero exception. Don't be concerned with this and simply do implement the basic algorithm. It is the user that must be careful when using this function.
+
+<pre>
+# newton 0.5 (Poly [-4.0; 0.0; 1.0]);;
+- : float = 2.00000000000002531
+# newton 0.5 (Poly [-2.0; 0.0; 1.0]);;
+- : float = 1.41421356252493213
+
+</pre></ul>
+
+
+
+
+<pre><b>simpl : exp -> exp
+<i>let simpl e = ...</i>
+</b></pre>
+<ul>
+Simplifies an expression <tt><b>e</b></tt>. The resulting expression must be equivalent to <tt><b>e</b></tt>, and smaller if possible. The criteria for "smaller" is defined  by the function "size".
+
+<p>It can be proved that there is a set of equivalent expressions with minimal size, but we have no evidence of a simple algorithm that would find those optimal solutions. It is the division that complicates matters.
+
+<p>So, you are asked do find a suboptimal solution. Nevertheless, the greater the simplification, the better. Note that this problem can be solved with different levels of ambition.
+
+<p>Be careful to use the inductive method correctly, always making recursive calls over smaller arguments. This will ensure termination.
+
+<pre>
+# simpl (Add (Const 2., Const 3.));;
+- : exp = Const 5.
+# simpl (Add (Mult (Poly [1.; 2.; 3.], Const 1.), Const 3.));;
+- : exp = Poly [4.; 2.; 3.]
+</pre></ul>
+
+
+
+
+
+
+<pre><b>graph : int -> int -> float -> exp -> string list
+<i>let graph nx ny s e = ...</i>
+</b></pre>
+<ul>
+Draw the graph of an expression <tt><b>e</b></tt> on a canvas represented by a list of strings. Here is an example: the very simple expression <tt><b>V</b></tt> is plotted in a 20x20 canvas:
+
+<ul><pre>[   "          |        *";
+    "          |       * ";
+    "          |      *  ";
+    "          |     *   ";
+    "          |    *    ";
+    "          |   *     ";
+    "          |  *      ";
+    "          | *       ";
+    "          |*        ";
+    "----------*---------";
+    "         *|         ";
+    "        * |         ";
+    "       *  |         ";
+    "      *   |         ";
+    "     *    |         ";
+    "    *     |         ";
+    "   *      |         ";
+    "  *       |         ";
+    " *        |         ";
+    "*         |         "
+]
+</pre></ul>
+
+The x-axis of the Cartesian plane can be seen as a horizontal ruler containing calibrated x-markings. In the drawing, each x-marking is represented in by a '-' character, but the actual marking point is the imaginary centre of '-'. The integer <tt><b>nx</b></tt> indicates the number of x-markings. The constant <tt><b>step</b></tt> indicate the distance between two consecutive x-markings. The float <tt><b>s</b></tt> indicates the x-value of the left-most marking, where the x-axis starts.
+
+<p>The y-axis of the Cartesian plane can be seen as a vertical ruler containing calibrated y-markings. In the drawing, each y-marking is represented in by a '|' character, but the actual marking point is the imaginary centre of '|'. The integer <tt><b>ny</b></tt> indicates the number of y-markings. To determine the scale of the y-axis, it is necessary to find first the minimum <tt><b>minY</b></tt> and the maximum <tt><b>maxY</b></tt> of <tt><b>e</b></tt> across the plotting points. The distance between two consecutive y-markings is, of course, given by <tt><b>stepY = (maxY-.minY) /. float_of_int (ny-1)</b></tt>. (For example, if <tt><b>ny</b></tt>=20 then there will be 19 intervals between the 20 markings.)
+
+<p>To check is a y-value falls near a y-marking (to be plotted using a '*'), please use the following function <tt><b>near</b></tt>:
+
+<ul><pre>
+let <b>near</b> valueY markingY stepY =
+    let bottomY = markingY -. stepY /. 2.0 in
+        let topY = markingY +. stepY /. 2.0 in
+            bottomY < valueY && valueY <= topY
+;;
+</pre></ul>
+
+
+<pre>
+# graph 20 20 (-1.0) V;;
+- : string list = (* the graph above *)
+# graph 40 20 (-1.0) (Poly [-0.5;-0.5;1.0]);;
+- : string list =
+["          |                            *";
+ "          |                           * ";
+ "          |                             ";
+ "          |                          *  ";
+ "          |                         *   ";
+ "          |                        *    ";
+ "          |                       *     ";
+ "          |                             ";
+ "          |                      *      ";
+ "          |                     *       ";
+ "          |                    *        ";
+ "          |                   *         ";
+ "          |                  *          ";
+ "          |                **           ";
+ "          |               *             ";
+ "**        |             **              ";
+ "  *       |            *                ";
+ "---***--------------***-----------------";
+ "      *** |      ***                    ";
+ "         ********                       "]
+
+</pre></ul>
+
+
+
+
+
+
+
+<hr><h1>Regras principais</h1>
+<ul>
+<li>Produza um ficheiro chamado <tt>Expressions.ml</tt>. Nas regras de submissão, a publicar mais tarde, será explicada a forma de submeter no Mooshak.
+
+<li>O ficheiro "Expressions.ml" tem de incluir logo nas primeiras linhas, um comentário inicial contendo: <b>o nome e número dos dois alunos que realizaram o projeto</b>; indicação de quais as partes do trabalho que foram feitas e das que não foram feitas (para facilitar uma correção sem enganos); ainda possivelmente alertando para alguns aspetos da implementação que possam ser menos óbvios para o avaliador.
+
+<li>O projeto é para ser realizado por grupos de dois alunos. Um projeto entregue por três ou mais alunos vale zero valores. Poderão ser permitidos grupos de um aluno em circunstâncias especiais que terão de ser previamente autorizadas por AMD. 
+
+<li>Na realização deste projeto é proibido usar os mecanismos imperativos que a linguagem OCaml suporta mas não foram estudados nas aulas.
+<li>Mesmo que desenvolva o programa em Windows ou no MacOS, a versão final do seu programa deverá correr no sistema Linux instalado nos laboratórios.
+<li>Programe as funções recursivas usando o método indutivo. Também pode usar livremente funções de biblioteca, especialmente as disponíveis no módulo List.
+<li>O programa deve ser bem indentado, por forma a ficar bem legível. Além disso, a largura do programa não deve exceder as 80 colunas para poderem ser impressos. Podem haver algumas exceções, muito pontuais. Considera-se que um TAB ocupa quatro posições.
+<li>O não cumprimento das regras anteriores implica penalizações automáticas na nota.
+</ul>
+
+<hr><h1>Regras de entrega</h1> 
+<ul> 
+<li>Será ativado um concurso do Mooshak, que servirá para submeter os trabalhos. Os detalhes da forma de fazer a submissão serão divulgados nessa altura. Até lá preocupe-se apenas em escrever um bom programa.
+<li>Depois do prazo limite ainda se aceitam trabalhos atrasados, mas com penalizações na nota. Mais detalhes nas primeiras linhas deste enunciado.
+</ul> 
+ 
+<hr><h1>Outras regras</h1> 
+<ul> 
+<li>Apesar de o projeto ser de grupo, cada aluno, a título individual, tem a responsabilidade de responder por todo o projeto. Assim é indispensável que os dois membros de cada grupo programem efetivamente.
+<li>Não se proíbe que alunos de turnos práticos diferentes façam grupo. Isso é apenas desaconselhado.
+<li>Não há inscrição prévia dos grupos e basta que cada trabalho tenha 2 autores identificados.
+<li>A nota máxima do projeto é 20 valores.
+</ul> 
+ 
+<hr><h1>Avaliação</h1>
+
+O docente responsável pela gestão e pela avaliação deste trabalho é o Professor Artur Miguel Dias.
+
+<p>A nota do projeto será em grande parte determinada por meios automáticos, através do Mooshak. Portanto é essencial respeitar a especificação contida neste enunciado, em todos os seus detalhes.
+
+<p>Mas, relativamente a programas que funcionem minimamente, também haverá uma apreciação mais subjetiva da qualidade, tendo em conta aspetos, tais como:
+<ul>
+<li>organização,
+<li>clareza e simplicidade das ideias programadas,
+<li>bom uso da linguagem,
+<li>legibilidade do código,
+<li>em alguma medida, eficiência.
+</ul>
+
+Obviamente não é obrigatório fazer o trabalho todo para obter nota positiva. Mas, claro, vale a pena trabalhar para produzir uma solução bastante completa e com a melhor qualidade possível.
+<p>
+
+<hr><h1>Observações</h1>
+<ul>
+<li>Os grupos são incentivados a discutir entre si os aspetos gerais do projeto, inclusivamente no fórum. Mas sempre que chega o momento de escrever código concreto, esse tem de ser um esforço interno a cada grupo (trabalhando de forma independente de todos os outros grupos). A escrita de código exige esforço intelectual, mas só com esforço se consegue evoluir.
+<p><li>O objetivo deste projeto é levar os alunos a praticar. Um aluno que pratique de forma genuína ganha experiência e provavelmente não terá dificuldade em conseguir aprovação nos testes e exames.
+<p><li>Cuidado com as fraudes. Por exemplo, se alguém dum grupo oferecer o projeto resolvido a um elemento de outro grupo, trata-se duma fraude envolvendo dois grupos. Também se um grupo deixa distraidamente a área aberta e se alguém de outro grupo "rouba" o projeto, então também se considera fraude dos dois grupos. Ainda um terceiro caso: se dois grupos se juntam para fazer o projeto conjuntamente e depois o entregam em duplicado, então também se considera fraude. Em suma, cada grupo é responsável pelo seu projeto e não o pode mostrar ou oferecer, direta ou indiretamente, de propósito ou sem querer, o seu código a outro grupo. Note que é muito melhor ter zero num dos três projetos do que ser logo excluído da cadeira por motivo de fraude.
+</ul>
+
+
+
+
+
+<hr><h1>Final</h1>
+
+<p>Bom trabalho! Esperamos que goste.
+
+<hr><hr>

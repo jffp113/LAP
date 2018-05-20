@@ -1,0 +1,17 @@
+???
+A KDw VIs gNo rSk ACXg ANcc AYhY AjmU AurQ BFwM BRBI BcGE BnLA ByPw CJUs CUZo Cfek Cqjg DBoc DMtY DXyU DjDQ DuIM EFNI EQSE EbXA Embw Exgs FIlo FTqk Fevg FqAc GBFY GMKU GXPQ GiUM GtZI HEeE HPjA Hanw Hlss 
+"ola" = 2
+"lalalx" = 1
+"lalalz" = 1
+"one" = 1
+"two" = 3
+"z" = 4
+"ola" = 4 = "A"
+"lalalx" = 2 = "a"
+"lalalz" = 2 = "c"
+"A"
+"Z"
+"b"
+d=one, e=qqq B=two=33 B B
+"ola"
+"troloro"

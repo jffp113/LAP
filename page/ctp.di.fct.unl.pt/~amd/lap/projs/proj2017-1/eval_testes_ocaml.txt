@@ -1,0 +1,162 @@
+
+%COMMAND
+ocaml -noprompt -open Expressions -open ExTest Expressions.cmo ExTest.cmo | tail -n +3
+%end
+
+
+%T11
+pcount [0.0; 1.0; 2.0; 3.0];;
+%end
+
+%T12
+pcount [0.0; 1.0; 2.0; 0.0; 3.0; 4.0; 0.0; 0.0];;
+pcount [0.0; 0.0; 0.0; 0.0; 0.0];;
+%end
+
+
+
+
+%T21
+size (Mult (V, Add (Const 5.0, Const 0.0)));;
+%end
+
+%T22
+size (Poly [1.0; 2.0; 3.0; 4.0]);;
+size (Add (V, Add (V, Add (V, V))));;
+%end
+
+
+
+
+
+
+
+
+
+
+%T31
+myfeq (eval 2.0 (Add (V, V))) 2.0;;
+%end
+
+%T32
+myfeq (eval 2.0 (Mult (V, Add (Const 7.0, Poly [0.0; 1.0; 2.0; 3.0; 0.0; 0.0])))) 82.0;;
+%end
+
+%T33
+myfeq (eval 3.0 (Poly [0.0; 1.0; 0.0; 0.0; 1.0; 0.0])) 84.0;;
+%end
+
+
+
+
+
+
+
+%T41
+myalike (deriv (Mult (Const 2.0, V))) (Const 2.);;
+%end
+
+%T42
+myalike (deriv (Poly [1.0; 2.0; 3.0; 0.0; 4.0])) (Poly [2.; 6.; 0.; 16.]);;
+%end
+
+%T43
+let p = Poly [1.0; 2.0; 3.0; 0.0; 4.0] in
+let q = Mult(p, p) in
+myalike (deriv q) (Poly [4.; 20.; 36.; 68.; 80.; 144.; 0.; 128.]);;
+%end
+
+
+
+
+
+%T51
+alike 10.0 20 (Const 2.) (Add (Const 1.,Const 1.));;
+alike 11.0 20 (Const 3.) (Add (Const 1.,Const 1.));;
+%end
+
+
+%T52
+alike 0.0 20 (Mult (V, Const 2.)) (Add (V, V));;
+alike 0.0 20 (Mult (V, Const 3.)) (Mult (V, Const 4.));;
+alike 44.0 20 (Mult (V, Const 2.)) (Add (V, V));;
+alike 45.0 20 (Mult (V, Const 3.)) (Mult (V, Const 4.));;
+%end
+
+
+
+
+
+%T61
+let e = Poly [2.0; -1.0; -2.0; 1.0] in let z = newton 0.9 e in myfeq (myeval z e) 0.0;;
+let e = Poly [2.0; -1.0; -2.0; 1.0] in let z = newton 1.9 e in myfeq (myeval z e) 0.0;;
+let e = Poly [2.0; -1.0; -2.0; 1.0] in let z = newton (-3.0) e in myfeq (myeval z e) 0.0;;
+%end
+
+%T62
+let e = Sub(V, Const 1.) in let z = newton 0.5 e in myfeq (myeval z e) 0.0;;
+%end
+
+
+
+
+
+%T71
+let a = Add (Const 2., V) in
+let b = Mult (a, a) in
+let c = Sub (b, a) in
+let d = Mult (c, c) in
+let z = Poly [4.; 12.; 13.; 6.; 1.] in
+let r = simpl d in
+myalike r z && mysize r = 6
+;;
+
+%T72
+let a = Add (Const 2., V) in
+let b = Mult (a, a) in
+let c = Sub (b, a) in
+let d = Mult (c, c) in
+let z = Poly [4.; 12.; 13.; 6.; 1.] in
+let r = simpl d in
+myalike r z && mysize r <= 8
+;;
+%end
+
+%T73
+let a = Add (Const 2.1, V) in
+let b = Mult (a, a) in
+let c = Sub (b, a) in
+let d = Mult (c, c) in
+let e = Div (d,d) in
+let r = simpl e in
+myalike r (Const 1.0) && mysize r == 13
+;;
+%end
+
+%T74
+let a = Div (Const 1., V) in
+let b = V in
+let c = Div (Const 1., Mult(V,V)) in
+let d = Add(a, Add(b, c)) in
+let r = simpl d in
+myalike r (Div(Poly [1.; 1.; 0.; 1.], Poly [0.; 0.; 1.])) && mysize r == 7
+;;
+%end
+
+
+
+%T81
+graph 20 20 (-1.0) V;;
+%end
+
+
+%T82
+graph 40 20 (-1.0) (Poly [-0.5;-0.5;1.0]);;
+%end
+
+
+
+
+
+
+

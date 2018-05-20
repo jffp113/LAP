@@ -1,0 +1,295 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#FFE0FF" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 10 (10/abr/2018)</H2>
+Ligações, ambientes, âmbitos. Regras de escopo.
+<p><HR>
+
+<HR><h1>Ligações (bindings)</h1>
+
+De forma geral, uma <a href="http://en.wikipedia.org/wiki/Binding_%28computer_science%29">ligação</a> consiste numa associação entre duas entidades. Essas <b>entidades</b> podem ser nomes, localizações de memória, tipos, objetos, etc. Pos exemplo, uma variável imperativa do C pode ser formalizada como uma ligação entre um nome e uma localização de memória.
+
+<p>Uma ligação é sempre unidirecional e geralmente associa uma entidade mais simples a outra entidade mais complexa. O caso das duas entidades terem complexidade semelhante também ocorre por vezes. As ligações facilitam o trabalho do programador pois ele pode usar a entidade mais simples para representar a entidade mais complexa.
+
+<p>Por exemplo:
+<ul>
+<li> Ligação dum nome a um valor fixo, que pode ver um inteiro, uma função, etc. (constante). 
+<li> Ligação dum nome a uma localização de memória (variável mutável do C).
+<li> Ligação duma localização de memória a outra localização de memória (apontador).
+<li> Ligação dum nome a um valor, onde o valor pode mudar dinamicamente (variável mutável do JavaScript).
+</ul>
+
+<h2>Diferentes ligações duma entidade</h2>
+
+Para uma mesma entidade, digamos um nome, podem estar definidas multiplas ligações. Por exemplo, em C o nome duma variável global tem as seguintes ligações:
+
+<ul>
+<li> Ligação a um tipo fixo (estabelecida em tempo de compilação).
+<li> Ligação a uma localização de memória fixa (estabelecida em tempo de carregamento).
+<li> Ligação a um valor (estabelecida em tempo de execução).
+</ul>
+
+
+<h2>Semântica e ligações</h2>
+
+A semântica de qualquer linguagem de programação é determinada de forma essencial a partir:
+
+<ul>
+<li> O conjunto de formas de ligação que se podem estabelecer;
+<li> O momento em que essas ligações se estabelecem.
+</ul>
+
+<h2>Momento da ligação</h2>
+
+Eis diversos momentos em que uma ligação pode ser estabelecida:
+
+<ul>
+<li> Tempo de conceção da linguagem. Exemplo em OCaml: operador "+".
+<li> Tempo de implementação da linguagem Exemplo em OCaml: constante "max_int".
+<li> Tempo de compilação. Exemplo em C: constante "#define A 2"
+<li> Tempo de ligação. Exemplo em C: função externa "extern int f(void) ;".
+<li> Tempo de carregamento. Exemplo em C: variável global "int x ;".
+<li> Tempo de execução. Exemplo em OCaml: constante "let a = 2 + x in ...".
+</ul>
+
+
+Em geral, quanto mais tarde se estabelecem as ligações mais flexível é a linguagem.
+
+<p>Em geral, quanto mais cedo se estabelecem as ligações, mais rápida é a linguagem.
+
+<p>Por exemplo, é mais eficiente invocar um procedimento em C (ligação em tempo de ligação) do que enviar uma mensagem para um objeto em C++ (ligação em tempo de execução). Em todo o caso, justifica-se o preço a pagar em C++: é o facto da ligação entre a mensagem e o método ser estabelecida muito tarde (late binding) que permite fazer funcionar o paradigma orientado pelos objetos.
+
+
+<h2>Classificação das ligações</h2>
+
+Classificação das ligações em função do momento de ligação:
+<ul>
+<li><b>Estáticas</b>:  efetuadas antes da execução do programa (portanto até ao momento do carregtamento, inclusivé).
+<li><b>Semi-dinâmicas</b>: efetuadas em tempo de execução mas determinadas em grande parte antes de o programa começar a correr.
+<li><b>Dinâmicas</b>: efetuadas completamente em tempo de execução.
+</ul>
+
+Exemplos de ligações estáticas:
+
+<ul>
+<li>nome->valor: constantes "#define" em C;
+<li>nome->tipo: tipos, variáveis e constantes em ML e C; (ML->inferência de tipos)
+<li>nome->localização: variáveis globais em C.
+</ul>
+
+Exemplos de ligações semi-dinâmicas:
+<ul>
+<li>nome->localização: variáveis locais em C e constantes locais em ML;
+<li>nome->método: mensagens em C++ e Java.
+</ul>
+
+Discussão do caso das variáveis locais em C, um caso de ligação semi-dinâmica: Essas variáveis residem na chamada <i>pilha de execução</i> do C, e as respetivas localizações de memória são determinadas em tempo de execução. No entanto, é em tempo de compilação que se determina o <i>offset</i> dentro do registo de cativação da função onde a variável reside. As constantes locais do ML "let a = 2 + x in ..." também são implementadas da mesma forma.
+
+<p>Exemplos de ligações dinâmicas:
+<ul>
+<li>localização->valor: variáveis mutáveis em C;
+<li>localização->localização: apontadores em C;
+<li>nome->valor: variáveis mutáveis em qualquer linguagem;
+<li>nome->tipo: variáveis em Smalltalk e Ruby.
+</ul>
+
+Discussão do caso das variáveis em Smalltalk e Ruby: Estas variáveis não têm tipos estáticos associados. Aceitam valores de qualquer tipo e portanto, sempre que há uma atribuição muda o valor e o tipo dessas variáveis.
+
+
+<h2>Tempo de vida duma ligação</h2>
+
+<p>O tempo de vida duma ligação é o período de tempo da execução dum programa durante a qual essa ligação persiste. As ligações estáticas persistem durante a execução de todo o programa. As ligações semi-dinâmicas e dinâmicas persistem geralmente apenas durante parte da execução do programa.
+
+<HR><h1>Ambiente (conjunto de ligações para nomes)</h1>
+
+O conceito de ambiente aplica-se apenas a um tipo particular de ligações: as <a href="http://en.wikipedia.org/wiki/Name_binding">ligações de nomes</a>.
+
+
+<p>Chama-se <b>ambiente</b> a um conjunto de ligações que associam nomes (identificadores) a entidades. Matematicamente um ambiente é uma função de nomes para entidades, ou seja uma função com o seguinte tipo:
+
+<ul><pre class='notranslate'>
+<b>Nomes -> Entidades</b>
+</pre></ul
+
+<p>O seguinte pequeno programa em ML define quatro ambientes diferentes, consoante o ponto do programa que for considerado:
+
+<ul><pre class='notranslate'>
+let f x = x + 1 ;;
+let rec g x = f x + 1 ;;
+</pre></ul>
+
+<ol>
+<li>O ambiente antes da função f inclui apenas as ligações dos nomes predefinidos na linguagem ML. São exemplos desses nomes: max, "^", "+", int, float.
+
+<p><li>O ambiente no interior da função f inclui as ligações dos nomes predefinidos, mais a a ligação do nome "x" que representa o argumento de f. Repare que o nome "f" não tem ligação dentro da função f, porque esta função não é recursiva.
+
+<p><li>O ambiente no interior da função g inclui as ligações dos nomes predefinidos, mais a ligação do nome "x" que representa o argumento de g, mais os nomes "f" e "g" que representam funções.
+
+<p><li>O ambiente após a função g inclui as ligações dos nomes predefinidos, mais os nomes "f" e "g" que representam funções.
+</ol>
+
+
+<h2>Âmbito (escopo) duma ligação</h2>
+
+Âmbito (escopo) duma ligação é a região do programa na qual esse nome tem os atributos estabelecidos pela declaração que introduz a ligação.
+
+<p>Na maior parte das linguagens de programação, o âmbito duma ligação é determinado pela estrutura sintática do programa (ver "Escopo estático", mais abaixo).
+
+<p>Há exemplos de âmbitos na secção "Blocos", um pouco mais abaixo.
+
+<h2>Construções definidoras de âmbitos</h2>
+
+A generalidade das linguagens de programação possuem construções que têm implicações nos âmbitos das ligações que se estabelecem nos programas. Eis alguns exemplos dessas construções:
+<ul>
+<li>Blocos (C, C++, Java, Pascal, Ada)
+<li>Let-in (OCaml)
+<li>Módulos (Módula-2, OCaml)
+<li>Classes (C++, Java, C#)
+<li>Packages (Java)
+<li>Namespaces (C++, C#)
+<li>Espaço global (duma forma ou de outra, todas as linguagens dispõem dum espaço global de nomes)
+</ul>
+
+
+<h2>Blocos</h2>
+
+
+As linguagens que descendem do antigo Algol-60 possuem uma construção sintática chamada <b>bloco</b>. O Java, C e muitas outras linguagens suportam blocos. Um bloco tem duas utilidades:
+
+<ul>
+<li> Serve para introduzir um novo ambiente no qual todas as novas ligações têm aproximadamente o mesmo âmbito. (Esta é a parte que nos interessa aqui.)
+<li> Serve para agregar uma sequência de comandos num único comando, que se diz "composto".
+</ul>
+
+O seguinte bloco, em C, determina ligações para os nomes <tt class='notranslate'>i</tt>, <tt class='notranslate'>j</tt> e <tt class='notranslate'>k</tt>. Todas essas ligações têm como âmbito aproximadamente todo o interior do  bloco. "Aproximadamente", porque realmente o âmbito de <tt class='notranslate'>j</tt> é ligeiramente mais pequeno do que o âmbito de <tt class='notranslate'>i</tt>, e o âmbito de <tt class='notranslate'>k</tt> é ligeiramente mais pequeno do que o âmbito de <tt class='notranslate'>j</tt>. Onde é que começa exatamente o âmbito de cada uma das três ligações?
+
+<ul><pre class='notranslate'>
+{
+    int i = 0
+    int j = i + 2
+    int k = i + j ;
+    printf("%d %d %d\n", i, j, k) ; 
+}
+</pre></ul>
+
+<p>O seguinte exemplo, também em C, é mais interessante e ilustra um <b>bloco aninhado</b> dentro de outro bloco.
+
+
+<ul><pre class='notranslate'>
+{
+    int i ;
+    int b = 5 ;
+    i = a + b ;
+    {
+        int i = 0
+        int j = i + 2
+        int k = i + j ;
+        printf("%d %d %d\n", i, j, k) ; 
+    }
+    printf("%d %d\n", i, b) ; 	
+}
+</pre></ul>
+
+Repare que o âmbito da variável <tt class='notranslate'>b</tt>, introduzida no bloco exterior, abrange aproximadamente todo o bloco externo, o que inclui o bloco interno. No entanto o âmbito da variável <tt class='notranslate'>i</tt> introduzida no bloco exterior abrange o bloco exterior <i>menos</i> o bloco interior, porque a variável <tt class='notranslate'>i</tt> é redefinida no bloco interior. 
+
+<p>Este exemplo mostra que numa linguagem onde as construções definidores de âmbitos podem ser aninhadas, o âmbito duma ligação pode não corresponder a uma zona contígua de programa. Por outras palavras, <b>pode haver "buracos" âmbito duma ligação</b>!
+
+
+<h2>Resolução de nomes</h2>
+
+Chama-se <b>resolução de nomes</b> ao processo de descoberta do significado (ou seja, da ligação) de alguns nomes num ponto do programa onde esses nomes são usados.
+
+
+<h2>Escopo estático</h2>
+
+<b>Escopo estático</b> é o nome da regra de resolução de nomes usada na maioria das linguagem modernas, incluindo o OCaml, C, C++ e Java.
+
+<p>A regra é muito simples e diz apenas o seguinte:
+
+<ul>
+<li> Um uso dum nome refere-se sempre à ligação sintaticamente envolvente, mais próxima.
+</ul>
+
+Portanto, para saber o que o significado dum nome num dado ponto do programa, basta olhar para o código "à volta" (de acordo com as regras da sintaxe da linguagem), e procurar aí a declaração mais próxima desse nome. Um caso particular: se o nome estiver declarado localmente, então é essa declaração local que vale para o nome em causa.
+
+<p>Quem aprendeu a programar numa linguagem moderna, está tão habituado a esta regra que geralmente nem se apercebe dele. Bem, nos exemplos da secção "Blocos", atrás, nós já usámos esta regra "sem dar por isso"...
+
+<p>Mais um exemplo, agora em ML:
+
+<ul><pre class='notranslate'>
+let z = 5 in
+    let <b>f x = x + z</b> in
+        let z = 6 in
+            <b>f 0</b>
+</pre></ul>
+
+Neste exemplo aparece uma utilização duma variável <tt class='notranslate'>z</tt>, dentro da função <tt class='notranslate'>f</tt>, que pode criar dúvidas. Será que uso do nome <tt class='notranslate'>z</tt> se refere à declaração de <tt class='notranslate'>z</tt> exterior, ou à declaração de <tt class='notranslate'>z</tt> interior?
+ 
+<p>Como a linguagens ML usa a regra de escopo estático, a resposta correta é: o uso do nome <tt class='notranslate'>z</tt> refere-se à declaração de <tt class='notranslate'>z</tt> exterior (ou seja, envolvente).
+
+<p>Pergunta: Quando o valor da expressão do exemplo, 5 ou 6?
+<br>Resposta: 5.
+
+
+<h2>Escopo dinâmico</h2>
+
+<b>Escopo dinâmico</b> é o nome da regra de resolução de nomes atualmente em desuso, mas que importa conhecer para se estabelecerem contrastes com a regra de escopo estático. É usado em algumas versões da linguagem Lisp e também na linguagem APL, por exemplo.
+
+<p>A regra também é muito simples e diz apenas o seguinte:
+
+<ul>
+<li> Um uso dum nome refere-se sempre à ligação mais recentemente estabelecida para esse nome, temporalmente, durante a execução do programa.
+</ul>
+
+<p>Regressemos ao exemplo:
+
+<ul><pre class='notranslate'>
+let z = 5 in
+    let <b>f x = x + z</b> in
+        let z = 6 in
+            <b>f 0</b>
+</pre></ul>
+
+<p>Pergunta: Usando a regra de escopo dinâmico, qual o valor da expressão do exemplo, 5 ou 6?
+<br>Resposta: 6.
+
+<p>A resposta é 6 porque, repare, quando a função <tt class='notranslate'>f</tt> é chamada, a ligação mais recente para <tt class='notranslate'>z</tt> é que foi estabelecida na declaração de <tt class='notranslate'>z</tt> interior.
+
+
+<h2>Efeitos das regras</h2>
+
+Em muitas situações, como por exemplo quando estão em causa nomes declarados localmente, as duas regras de escopo acabam por dar os mesmos resultados, ou seja, resolvem os nomes da mesma forma. Só perante situações semelhantes à do exemplo anterior é que os efeitos são diferentes.
+
+<p>Em rigor, os efeitos das regras só diferem quando estão em causa acessos a nomes não-locais a partir do interior de funções. Por isso as duas regras de escopo podem ser apresentadas da seguinte forma alternativa:
+<ul>
+<li><b>Escopo estático</b> - As funções são chamadas no ambiente da sua definição.
+<li><b>Escopo dinâmico</b> - As funções são chamadas no ambiente de quem os invoca.
+</ul>
+
+<h2>Comparação</h2>
+
+O escopo estático é usado em praticamente em todas as linguagens modernas pois faz com que a estrutura estática de um programa se aproxime do seu comportamento dinâmico. Isto simplifica imenso a compreensão dos programas.
+
+<p>A regra de escopo dinâmico tem ainda mais estas desvantagens:
+<ul>
+<li>Não permite fazer verificação de tipos estática;
+<li>O comportamento dum programa fica sensível aos nomes escolhidos para as suas variáveis e procedimentos.
+</ul>
+
+
+
+
+<HR><h1>Estado (conjunto de ligações para localizações)</h1>
+
+O conceito de estado tem a ver com um tipo particular de ligações: as ligações de localizações a outras entidades.
+
+<p>Chama-se <b>estado</b> a um conjunto de ligações que associam localizações de memória a entidades. Matematicamente um estado é uma função de localizações para entidades, ou seja uma função com o seguinte tipo:
+
+<ul><pre class='notranslate'>
+<b>Localizações -> Entidades</b>
+</pre></ul>
+
+<p>As linguagens funcionais puras não possuem estado. Este facto tem a desvantagem de reduzir a variedade de ligações que se podem estabelecer. Mas tem a vantagem de simplificar a linguagem; outra vantagem é o facto da linguagem ficar mais segura pois sabe-se que a maioria dos dos bugs dos programas estão relacionados com variáveis mutáveis ou com apontadores.
+
+<HR><HR>
+#110

@@ -1,0 +1,641 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 12 (17/abr/2018)</H2>
+Operadores.<br />
+Avaliação de expressões.<br />
+Tipos derivados.<br />
+Passagem de parâmetros.<br />
+Apontadores e sua utilidade.<br />
+Apontadores: Parâmetros de saída de funções.<br />
+Apontadores: Manipulação de vetores e relação entre vetores e apontadores.<br />
+Apontadores: Manipulação de memória a baixo nível.
+<p>
+<HR>
+
+<HR><h1>Operadores</h1>
+
+Eis a lista completa dos operadores do C que podem ser usados em expressões:
+
+<ul><pre class='notranslate'>
+aritméticos:    +  -  *  /  %
+lógicos:        !  &&  ||
+relacionais:    &lt;  >  &lt;=  >=  ==  !=
+bits:           >> &lt;&lt; & ^ |~
+atribuição:     =  +=  -=  *=  /=  %=  &=  |=  ^=  &lt;&lt;=  >>=
+condicional     ?:
+cast:           (type)
+inc/dec:        expr++  ++expr  expr--  --expr
+sequenciação:   ,
+sizeof:         sizeof
+apontadores:    *  &  ->  []
+field:          .               (para acesso a campos de registos e uniões)
+agrupamento:    (expr)
+</pre></ul>
+
+Note que em C (tal como em Java), a atribuição produz um resultado e por isso é considerada uma expressão, não um comando. O valor da expressão <tt class='notranslate'>v = exp</tt> é o valor que fica na variável <tt class='notranslate'>v</tt> depois da expressão <tt class='notranslate'>exp</tt> ter sido avaliada e depois da atribuição ter sido concretizada.
+
+<p>O C suporta sobrecarga (overloading) de alguns operadores. Por exemplo, o operador + é usado para denotar três operações diferentes: a soma inteira; a soma real; a soma entre um apontador e um inteiro.
+
+<h2>Precedências e associatividades</h2>
+
+Precedências dos operadores por ordem decrescente de prioridade:
+
+<ul><pre class='notranslate'>
+()
+[] -> . expr++ expr--                           esq
+! ~ ++ -- - (type) * & sizeof ++expr --expr     dir
+* / %                                           esq
++ -                                             esq
+&lt;&lt; >>                                           esq
+&lt; &lt;= > >=                                       esq
+== !=                                           esq
+&                                               esq
+^                                               esq
+|                                               esq
+&&                                              esq
+||                                              esq
+?:                                              esq
+= += -= etc.                                    dir
+,                                               esq
+</pre></ul>
+
+
+Exemplo. A complexa expressão logica abaixo não precisa de nenhum parêntesis:
+
+<ul><pre class='notranslate'>
+if( <b>year % 4 == 0 && year % 100 != 0 || year % 400 == 0</b> )
+    printf("Ano bissexto\n") ;
+else
+    printf("Ano comum\n") ;
+</pre></ul>
+
+
+<HR><h1>Avaliação de expressões</h1>
+
+<h2>Ordem de avaliação</h2>
+
+O compilador tem a liberdade de rearranjar as expressões por forma a otimizar a eficiência da sua avaliação mesmo que esta envolva efeitos laterais. Os parêntesis podem mesmo não ser respeitados. O que é importante é que não se viole nenhuma das regras da álgebra. O compilador também ter a liberdade de avaliar os argumentos nas chamadas das funções por qualquer ordem.
+
+<p>Portanto a ordem de avaliação não está geralmente definida e devemos evitar escrever expressões cujos efeitos ou resultados dependam da ordem de avaliação.
+
+Exemplos:
+<ul><pre class='notranslate'>
+i = i++ ;          /* o valor final de i não está definido */
+f(i++, i++) ;      /* o valor dos argumentos não está definido, mas o valor final de i não tem problema */
+f(*p1++, *p2++) ;  /* o valor dos argumentos não está definido no caso dos dois apontadores referirem a mesma posição de memória */
+f() + g()          /* qualquer das funções pode ser executada em primeiro lugar */
+</pre></ul>
+
+O último exemplo só é problemático se as duas funções produzirem efeitos laterais que sejam dependentes da ordem de avaliação.
+
+<h2>Pontos de sequenciação</h2>
+
+Mas nem tudo está indefinido na ordem de avaliação de expressões. Temos os <b>pontos de sequenciação</b> para nos ajudar. São pontos dentro das expressões que garantem que os efeitos laterais das expressões anteriores já foram completamente concretizados.
+
+<p>Os pontos de sequenciação do C estão associados aos seguintes operadores: 
+
+<ul><pre class='notranslate'>
+,  &&  ||  ?:
+</pre></ul>
+
+
+<h2>Hierarquia dos tipos numéricos</h2>
+
+Os tipos numéricos podem ser livremente misturados em expressões. Quando isso acontece, são efetuadas promoções automáticas de tipo de acordo com a  seguinte hierarquia:
+
+<ul><pre class='notranslate'>
+char short
+int
+unsigned int
+long int
+unsigned long int
+long long int
+unsigned long long int
+double
+long double
+</pre></ul>
+
+<h2>Conversões automáticas de tipos numéricos</h2>
+ 
+Aplicam se sempre sucessivamente as seguintes regras na avaliação de uma expressão:
+
+<ol>
+<li>char, short, enum -> int; float -> double
+<li>Para cada operando binário com operandos de tipo diferente, o menos importante é convertido no tipo do mais importante, antes de se efetuar a operação.
+<li>Nas atribuições (v = exp) o tipo do valor da direita é convertido num valor do tipo da esquerda antes de se fazer a atribuição. Muitas vezes isso implica uma despromoção de tipo e uma truncagem de valor.
+</ol>
+
+
+Exemplos:
+<ul><pre class='notranslate'>
+5 + 2.0 * 'a'
+(5.3 + 5) + 7
+int i = 200 * 'a'
+</pre></ul>
+
+
+
+
+
+
+<hr><h1>Tipos derivados </h1>
+
+Há 4 variedades de tipos derivados:
+
+<ul>
+<li>Vetores (arrays)
+<li>Registos (structures)
+<li>Uniões
+<li>Apontadores
+</ul>
+
+Podem ser usados diretamente, como na seguinte definição de variável
+
+<ul><pre class='notranslate'>
+struct
+{
+    double re, im ;
+} myvar ;
+</pre></ul>
+
+mas muitas vezes usa-se a construção <b>typedef</b> para lhes associar um nome. Exemplos:
+ 
+
+<ul><pre class='notranslate'>
+typedef struct
+{
+    double re, im ;
+} Complex;
+
+typedef union
+{
+    int x;
+    char c;
+} IntChar;
+
+typedef int Vetor[5];
+
+typedef int Matriz[2][3];
+
+typedef char String[256];
+
+typedef void *Pointer;
+
+typedef int *IntPointer;
+
+typedef IntPointer *PointerToIntPointer;
+
+typedef int **PointerToIntPointer;
+
+typedef int IntFunction(void);
+
+typedef IntFunction IntFunctionArray[100];
+</pre></ul>
+
+Eis algumas definições de variáveis usando os tipos definidos anteriormente:
+
+<ul><pre class='notranslate'>
+Complex z;
+IntChar u;
+Vetor vetor;
+Matriz matriz;
+String str;
+Pointer v;
+IntPointer pt;
+IntFunctionArray ops ;
+</pre></ul>
+
+<hr><h1>Um tipo soma </h1>
+
+
+Agora exemplo maior, que combina diversos tipos derivados e que mostra como é que se definem habitualmente <b>tipos soma</b> em C. Analise bem.
+
+
+<ul><pre class='notranslate'>
+#define MAX_SHAPES   200
+
+typedef enum {
+    LINE, CIRCLE, RECTANGLE
+} ShapeKind ;
+
+typedef struct {
+    double x, y;
+} Point;
+
+typedef struct {
+    Point p1, p2;
+} Line;
+
+typedef struct {
+    Point centre;
+    int radius;
+} Circle;
+
+typedef struct {
+    Point top_left;
+    double width, height;
+} Rectangle;
+
+typedef struct {   // Isto é um tipo SOMA, programado com a ajuda duma UNION
+    ShapeKind kind;
+    int color;
+    union {
+        Line line; 
+        Circle circle;
+        Rectangle rectangle; 
+    } u;
+} Shape;
+
+typedef Shape Shapes[MAX_SHAPES];
+</pre></ul>
+
+
+
+<HR><h1>Passagem de parâmetros para funções</h1>
+
+<h4>Tipos primitivos e tipos registo</h4>
+
+Os parâmetros de tipos primitivos e de tipos-registo são passados por "valor", sendo portanto sempre <b>parâmetros de entrada</b>: os valores dos parâmetros circulam apenas de fora da função para dentro da função.
+
+<p>Do ponto de vista técnico, os parâmetros de tipos primitivos e de registos são implementados como simples variáveis locais que têm a particularidade de serem inicializadas no momento da chamada da função. Se, porventura, dentro duma função se fizer uma atribuição a um desses parâmetro, está-se apenas a alterar a variável local; nada está a ser alterado no exterior da função.
+
+<h4>Tipos vetores</h4>
+
+<p> Sobre a passagem de vetores como parâmetro há duas particularidades especiais. Para se trabalhar em C com vetores, é preciso realmente assimilar estas duas ideias:
+
+<ol>
+<li> Quando se define um parâmetro de tipo vetor numa função, <b>nunca se deve indicar o tamanho da primeira dimensão</b>, pois as funções do C aceitam vetores em que essa primeira dimensão pode ter um tamanho qualquer. O tamanho da primeira dimensão é normalmente passado num argumento inteiro, ao lado do vetor.
+
+<p>Esta opção da linguagem C tem a seguinte justificação: assim a função fica mais geral e torna-se útil em mais situações.
+
+<p><li> Os parâmetros de tipo vetor são <b>parâmetros de entrada e saída</b>. Dentro duma função, um parâmetro de tipo vetor representa sempre o vetor original que foi passado, porque a passagem é implementada usando um apontador.
+</ol>
+
+Exemplo: Leitura e preenchimento integral dum vetor de tamanho <tt class='notranslate'>n</tt>.
+
+
+<ul><table border="1"><tr><td><pre class='notranslate'>
+void read_values(int vector[], int n)
+{
+    int i;
+    for( i = 0 ; i &lt; n ; i++ ) {
+        printf("vector[%d] = ", i);
+        scanf("%d", &amp;vector[i]);
+    }
+}
+
+</pre></table></ul>
+
+
+
+<HR><h1>Apontadores</h1>
+
+<h2>Introdução: Variáveis e apontadores</h2>
+
+Os programas processam dados armazenados na memória do computador. O mecanismo mais simples que permite aceder a essa memória são as <b>variáveis</b>. Cada variável tem um nome e um tipo e representa um pedaço da memória do computador onde podem ser guardados valores desse tipo.
+
+<p>Através da utilização de variáveis, é possível ir muito longe na escrita de programas em C. Mas há algumas situações em que o uso de variáveis não é suficiente e é necessário usar mecanismo mais flexível de manipulação da memória:
+
+<ul>
+<li>Trata-se do mecanismo dos <b>apontadores</b>!
+</ul>
+
+<h2>Conceitos básicos sobre apontadores</h2>
+
+Portanto os apontadores constituem uma segundo mecanismo de acesso à memória:
+
+<ul>
+<li> Em vez de se usar um nome para identificar um pedaço da memória, usa-se diretamente o endereço dessa zona de memória para a identificar e chama-se a esse endereço um <b>apontador</b>. Diz-se que o apontador <b>aponta</b> para uma determinada zona de memória.
+</ul>
+
+Normalmente os apontadores são guardados em <b>variáveis de tipo apontador</b>.
+
+<p>Em C há tipos específicos para representar apontadores. O tipo dos apontadores que apontam para valores de tipo T escreve-se:
+
+<ul><pre class='notranslate'>
+T *
+</pre></ul>
+
+Para exemplificar, eis a definição duma variável de tipo apontador para inteiro:
+
+<ul><pre class='notranslate'>
+int *pt ;
+</pre></ul>
+
+Em C, há duas operações principais para manipular apontadores: o operador <tt class='notranslate'><b>&</b></tt> permite obter um apontador para uma variável qualquer, assim
+
+<ul><pre class='notranslate'>
+&#38;Variável
+<pre class='notranslate'></ul>
+
+e o operador <tt class='notranslate'><b>*</b></tt> permite aceder ao valor apontado por um apontador, assim:
+
+<ul><pre class='notranslate'>
+*Apontador
+<pre class='notranslate'></ul>
+
+<p>Vejamos um exemplo. Abaixo, define-se uma variável inteira normal <tt class='notranslate'>v</tt>. A seguir define-se uma variável de tipo apontador para inteiros <tt class='notranslate'>x</tt> e fazemo-la apontar para a variável v. Depois, usamos o apontador para colocar o valor 42 na zona de memória apontada por <tt class='notranslate'>x</tt>.
+
+<ul><pre class='notranslate'>
+int v = 0 ;
+int *x = &v ;
+*x = 42
+<pre class='notranslate'></ul>
+
+A seguinte figura, ilustra a situação após a atribuição do valor 42 a <tt class='notranslate'>*x</tt>.
+    
+<p><img src="images/pointer1.jpg"></A>
+
+<p>Repare que a variável <tt class='notranslate'>v</tt> pode ser acedida de duas formas: (1) usando o nome <tt class='notranslate'>v</tt>; (2) usando a expressão <tt class='notranslate'>*x</tt>.
+
+
+
+<p>Para perceber melhor as possibilidades dos apontadores vamos definir agora um segundo apontador, <tt class='notranslate'>y</tt> a fazê-lo também apontar para a variável <tt class='notranslate'>v</tt>:
+
+<ul><pre class='notranslate'>
+int *y = x ;
+<pre class='notranslate'></ul>
+
+Obtém-se a seguinte situação:
+
+<p><img src="images/pointer2.jpg"></A>
+
+<p>Agora o conteúdo da variável <tt class='notranslate'>v</tt> pode ser acedido de três formas diferentes: (1) usando o nome <tt class='notranslate'>v</tt>; (2) usando a expressão <tt class='notranslate'>*x</tt>; (3) usando a expressão <tt class='notranslate'>*y</tt>.
+
+<p>O operador <tt class='notranslate'>&</tt> chama-se <b>operador endereço</b>.  O operador <tt class='notranslate'>*</tt> chama-se <b>operador de desreferenciação</b>.
+
+<p>Repare na seguinte curiosa equivalência, que é válida em C para qualquer variável <tt class='notranslate'>v</tt>:
+
+<ul><pre class='notranslate'>
+*&v == v
+</pre></ul>
+
+<p>Falta ainda uma referência à constante predefinida de tipo apontador, <tt class='notranslate'><b>NULL</b></tt>. Garante-se que este apontador constante não aponta para sítio nenhum. Pode ser atribuído a uma variável de tipo apontador, por exemplo assim:
+
+<ul><pre class='notranslate'>
+int *z = NULL ;
+<pre class='notranslate'></ul>
+
+Neste caso serve para assinalar que a variável <tt class='notranslate'>z</tt> não está a apontar para sítio nenhum, de momento.
+
+<p>O apontador NULL também pode ser usado em testes, assim:
+
+<ul><pre class='notranslate'>
+if (z == NULL) ...
+<pre class='notranslate'></ul>
+
+<p>O apontador NULL não pode ser desreferenciado, pois não aponta para sítio nenhum.
+
+
+<h2>Apontadores para registos</h2>
+
+
+O seguinte tipo registo permite representar datas:
+
+<ul><pre class='notranslate'>
+typedef struct {
+    int day, month, year ;
+} Date ;
+</pre></ul>
+
+Vamos definir agora uma variável de tipo <tt class='notranslate'>Date</tt> e coloquemos um apontador de tipo <tt class='notranslate'>Date *</tt> a apontar para a primeira:
+
+<ul><pre class='notranslate'>
+Date d = {25, 12, 2008};
+Date *p = &d;
+</pre></ul>
+
+Para aceder, através do apontador, ao ano da data <tt class='notranslate'>d</tt>, podemos escrever:
+
+<ul><pre class='notranslate'>
+(*p).year
+</pre></ul>
+
+Mas a utilização de apontadores para registos em C é tão frequente, que foi criada uma notação mais compacta e sugestiva para fazer isso: o operador <tt class='notranslate'><b>-></b></tt>. A seguinte expressão é equivalente à anterior:
+
+<ul><pre class='notranslate'>
+p->year
+</pre></ul>
+
+Em geral, a seguinte notação geral permite aceder a campos de registos através de apontadores:
+
+<ul><pre class='notranslate'>
+Apontador->Etiqueta
+</pre></ul>
+
+
+<h2>Compatibilidade entre apontadores</h2>
+
+Em C, tipos de apontadores que apontem para valores de tipos diferentes são incompatíveis entre si. Com uma exceção: o tipo especial <tt class='notranslate'>void *</tt> - o tipo <tt class='notranslate'>void *</tt> é compatível com todos os tipos de operadores.
+
+<ul><pre class='notranslate'>
+int *pti;
+double *ptd ;
+void *v ;
+
+pti = ptd ;             /* Errado */
+pti = (int *)ptd ;      /* Válido por causa do cast */
+
+v = ptd ;               /* Válido porque se trata de void * */
+pti = v ;               /* Válido porque se trata de void * */
+</pre></ul>
+
+
+<h2>Utilidade dos apontadores</h2>
+
+Os exemplos anteriores são interessantes, mas não mostram ainda as situações práticas em que a utilização de apontadores é essencial na linguagem C. As situações práticas em que se usam apontadores em C são as seguintes:
+
+<b>
+<ol>
+<li>Implementação de parâmetros de saída nas funções. 
+<li>Manipulação de vetores.
+<li>Manipulação de memória a baixo nível.
+<li>Manipulação de variáveis criadas dinamicamente usando a função de biblioteca <tt class='notranslate'>malloc</tt>.
+<li>Programação genérica através de apontadores de tipo <tt class='notranslate'>void *</tt>.
+</ol>
+</b>
+
+<HR><h1>Apontadores: Parâmetros de saída de funções</h1>
+
+Vamos tentar programar uma função para trocar o valor de duas variáveis inteiras. Este é um exemplo clássico que ilustra a necessidade de suportar <b>parâmetros de saída</b> na linguagem C.
+
+<p>Esta primeira tentativa não funciona:
+
+<ul><pre class='notranslate'>
+void swap(int a, int b)   /* Não funciona!!!! */
+{
+    int temp = a;
+    a = b;
+    b = temp;
+}
+</pre></ul>
+
+<p>A chamada de <tt class='notranslate'>swap(x,y)</tt> não muda nada, porque os parâmetros das funções são implementados usando variáveis locais, inicializadas com cópias dos valores que aparecem na chamada. A função <tt class='notranslate'>swap</tt> faz a troca das cópias locais, mas não troca o conteúdo das variáveis originais. Diz-se que os parâmetros <tt class='notranslate'>a</tt> e <tt class='notranslate'>b</tt> são <b>parâmetros de entrada</b>, porque eles permitem apenas transferir dados de fora para dentro da função.
+
+<p>Para resolver este problema, temos de usar apontadores. A função <tt class='notranslate'>swap</tt> precisa de aceder às variáveis originais através dos apontadores para efetuar a troca. Fica assim:
+
+<ul><pre class='notranslate'>
+void swap(int *a, int *b)   /* Funciona!!!! */
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+</pre></ul>
+
+Agora a chamada escreve-se <tt class='notranslate'>swap(&x,&y)</tt> e a troca é realmente efetuada. Diz-se que os parâmetros <tt class='notranslate'>a</tt> e <tt class='notranslate'>b</tt> são <b>parâmetros de saída</b>, porque eles permitem passar dados de dentro para fora da função.
+
+<p>Repare que agora ficámos a conhecer duas maneiras de fazer uma função produzir dados para o seu exterior:
+
+<ol>
+<li>Através do seu resultado. 
+<li>Através de parâmetros de saída (usando apontadores).
+</ol>
+
+O seguinte exemplo mostra uma função com dois <i>resultados</i>, sendo os <i>resultados</i> implementados usando parâmetros de saída. A função faz o seguinte: dado um vetor de reais e o respetivo comprimento, a função calcula o máximo e o mínimo do vetor, ao mesmo tempo:
+
+<ul><pre class='notranslate'>
+void maxMin(double v[], int n, double *max, double *min) /* precondição: n > 0 */
+{
+    double lmax = v[0];
+    double lmin = v[0];
+    int i;
+    for( i = 1 ; i &lt; n ; i++ ) {
+        if (v[i] > lmax) lmax = v[i] ;
+        if (v[i] &lt; lmin) lmin = v[i] ;
+    }
+    *max = lmax;
+    *min = lmin;
+}
+</pre></ul>
+ 
+Exemplo de chamada:
+
+<ul><pre class='notranslate'>
+double vect[] = {1.0, 2.9, 34.6, 44.2,  0.01};
+double max, min;
+maxMin(vect, 5, &max, &min);
+</pre></ul>
+
+Algumas funções de biblioteca também usam parâmetros de saída. Por exemplo, é o caso da função de biblioteca <tt class='notranslate'>scanf</tt>. Veja um exemplo de utilização:
+
+<ul><pre class='notranslate'>
+scanf("%d %lf %c", &i, &r, &c);
+</pre></ul>
+
+<HR><h1>Apontadores: Manipulação de vetores e relação entre vetores e apontadores</h1>
+
+Provavelmente você vai ficar surpreendido(a), mas em C o nome duma variável de tipo vetor representa um apontador constante para a primeira componente do vetor guardado na variável.
+
+<p>Considere o seguinte vetor</p>
+
+<ul><pre class='notranslate'>
+int vetor[100];
+</pre></ul>
+
+Para aceder ao primeiro elemento do vetor, normalmente nós escrevemos:
+
+<ul><pre class='notranslate'>
+vetor[0]
+</pre></ul>
+
+Mas também podemos escrever o que está a seguir, pois o resultado é exatamente o mesmo.
+
+<ul><pre class='notranslate'>
+*vetor
+</pre></ul>
+
+<p>A linguagem C também permite a seguinte atribuição:
+
+<ul><pre class='notranslate'>
+int *pt = vetor;
+</pre></ul>
+
+e, inclusivamente, permite-se a aplicação de operações sobre vetores a argumentos de tipo apontador. Por exemplo as seguintes expressões são legítimas:
+
+<ul><pre class='notranslate'>
+pt[0]
+pt[5]
+pt[99]
+</pre></ul>
+
+Note que, quando de passa um vetor como parâmetro para uma função, o que realmente se passa é um apontador para a primeira componente do vetor. Portanto um parâmetro de tipo vetor é sempre um parâmetro de saída, apesar de não ser explicitamente declarado como apontador.
+
+
+
+<h2>Aritmética de apontadores</h2>
+
+Do ponto de vista dum apontador de tipo T*, toda a memória apontada é um grande vetor de valores de tipo T.
+
+<p>Os operadores + e - podem ser aplicados a apontadores para T e inteiros nos seguintes casos:
+
+<ul>
+<p><li> <b>pt + i</b> - o resultado é um apontador que referência um valor de tipo T que esteja i posições depois de pt. Cada posição tem o tamanho de T.
+
+<p><li><b>pt - i</b> - o resultado é um apontador que referência um valor de tipo T que esteja i posições antes de pt. Cada posição tem o tamanho de T.
+
+<p><li><b>pt1 - pt2</b> - o resultado é um inteiro que indica o numero de valores de tipo T entre pt1 e pt2. Estes dois apontadores  têm de ser do mesmo tipo T*.
+</ul>
+
+<p>Para o vetor abaixo são verdadeiras as equivalências indicadas:
+
+<ul><pre class='notranslate'>
+Vetor v ;
+
+v[0] == *v
+v[1] == *(v+1)
+v[-1] == *(v-1)
+&v[0] == v
+&v[1] == v + 1
+</pre></ul>
+
+Fazer <tt class='notranslate'>v = v + 1</tt> é proibido pois v é um apontador constante.
+
+<h4>Exemplo - Duas formas diferentes de copiar vetores (neste caso bidimensionais)</h4>
+
+<ul><pre class='notranslate'>
+#define SIZE    20
+
+int i1[SIZE][SIZE], i2[SIZE][SIZE] ;
+int *pt1, *pt2, *ptEnd ;
+int i, j;
+
+/* Forma 1 */
+for( i = 0 ; i &lt; SIZE ; i++ )
+    for( j = 0 ; j &lt; SIZE ; j++ )
+        i2[i][j] = i1[i][j] ;
+
+/* Forma 2 */
+for( pt1 =i1 , pt2 = i2, ptEnd = pt2 + SIZE * SIZE ;
+            pt2 &lt; ptEnd ;
+                *pt1++ = *pt2++ ) ;
+</pre></ul>
+
+Repare que a primeira forma envolve um ciclo embutido noutro e que, durante a execução, é necessário fazer muitas contas para repetidamente determinar quais as localizações correspondentes às expressões <tt class='notranslate'>i2[i][j]</tt> e <tt class='notranslate'>i1[i][j]</tt>.
+
+<p>Quanto à segunda forma, envolve um único ciclo e evita a necessidade de se fazerem as contas atrás referidas.
+
+<p>A segunda forma é mais difícil de perceber, mas é um pouco mais eficiente do que a primeira.
+
+<HR><h1>Apontadores: Manipulação de memória a baixo nível</h1>
+
+Para interpretar uma zona de memória como um valor dum tipo <tt class='notranslate'>T</tt>, basta fazer um apontador de tipo <tt class='notranslate'>T*</tt> apontar para lá e ler.
+
+<p>Por exemplo, no código abaixo, define-se um bloco de memória chamado <tt class='notranslate'>b</tt>, e usa-se um apontador de tipo <tt class='notranslate'>double*</tt> para ler um valor real que se encontra guardado a partir do byte 5.
+
+<p>Repare como a variável <tt class='notranslate'>pt</tt> é inicializada: obtém-se o endereço do byte 5 (esse endereço é um apontador de tipo <tt class='notranslate'>Byte*</tt>) e depois aplica-se um cast para o converter num apontador de tipo <tt class='notranslate'>double*</tt>.
+
+<ul><pre class='notranslate'>
+#define BLOCK_SIZE 32
+typedef unsigned char Byte;
+typedef Byte Block[BLOCK_SIZE]; 
+
+Block b;                       // um bloco
+double *pt = (double *)&b[5];  // conversão de tipo de apontador
+double d = *pt;                // leitura do valor através do apontador pt
+</pre></ul>
+
+
+<HR><HR>
+#100

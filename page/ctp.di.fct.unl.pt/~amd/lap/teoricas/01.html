@@ -1,0 +1,303 @@
+<head><meta charset="UTF-8"></head>
+<body text="#00000" bgcolor="#E0F0E0" link="#0000EE" vlink="#551A8B" #FF0000">
+<HR><HR><H1>Linguagens e Ambientes de Programação (2017/2018)</H1>
+<HR><HR><H2>Teórica 01 (06/mar/2018)</H2>
+Apresentação da disciplina.
+<br>Discussão introdutória sobre alguns aspetos importantes da temática das Linguagens de Programação.
+<p>
+<HR>
+
+<HR><h1>Sequência da apresentação da matéria de LAP, ao longo do semestre</h1>
+<ul>
+<li>Paradigma de programação funcional. Linguagem OCaml (fragmento funcional).
+<p><li>Plataformas computacionais. Técnicas de implementação de linguagens de programação.
+<p><li>Ligações, ambientes, âmbitos.
+<p><li>Programação imperativa com acesso direto aos recursos da máquina e muitos outros aspetos úteis. Linguagem C.
+<p><li>Modelo de execução para linguagens com aninhamento de funções. 
+<p><li>Paradigma orientado pelos objetos no contexto duma linguagem de scripting. Linguagem JavaScript.
+<p><li>Programação multiparadigma (funcional + imperativa + objetos) em JavaScript.
+<p><li>Um pouco de programação para a Web em JavaScript.
+<p><li>Interoperabilidade entre JavaScript e Java.
+<p><li>Sistemas de tipos. Polimorfismo.
+<p><li>Ambientes de programação.
+</ul>
+
+<!--
+<HR><h1>Domínios de aplicação das Linguagens de Programação</h1>
+
+<ul>
+<li><b>Aplicações cientificas</b> - Usam estruturas de dados simples mas manipulam quantidades enormes de números reais. Fortran.
+<li><b>Aplicações de Negócios</b> - Acesso a base de dados e produção de relatórios.
+<li><b>Inteligência Artificial</b> - Manipulação simbólica. List, Prolog.
+<li><b>Programação de Sistemas</b> - Possibilidade de aceder ao nível da máquina (baixo nível). 
+<li><b>WEB</b> - Independência da plataforma, 
+</ul>
+-->
+
+<HR><h1>Dimensões do estudo das Linguagens de Programação</h1>
+<ul>
+<li><b>Sintaxe</b> - Estuda as construções válidas da linguagem, independentemente do significado dessas construções. Os tópicos mais importantes são a especificação formal da sintaxe e o desenvolvimento de técnicas de reconhecimento eficientes. Por uma questão prática, a sintaxe costuma ser tratada a dois níveis:
+
+<ul>
+<li><b>Nível independente de contexto</b> - Considera apenas a estrutura dos termos da linguagem. Especifica-se usando gramáticas independentes do contexto ou outras técnicas.
+<li><b>Nível contextual</b> - Considera também as restrições de contexto, como por exemplo "um identificador só pode ser usado depois de declarado". Especifica-se usando gramáticas de atributos ou outras técnicas.
+</ul>
+
+<p><li><b>Semântica</b> - Estuda o significado das construções duma linguagem ou seja os efeitos da execução dos programas. Por vezes descreve-se a semântica informalmente, mas existem muitas técnicas formais em uso: gramáticas de atributos, semântica operacional estruturada, semântica matemática, semântica axiomática, etc.
+
+
+<p><li><b>Pragmática</b> - Estuda tudo o que se relaciona com o uso prático das linguagens incluindo: como usar bem uma linguagem; análise critica das vantagens e desvantagens práticas de cada mecanismo; como escolher a melhor linguagem para resolver um dado problema?
+</ul>
+
+
+A cadeira LAP concentra-se na pragmática e, de forma subsidiária, na semântica informal.
+
+
+<HR><h1>Porque há tantas Linguagens de Programação?</h1>
+
+Realmente existem milhares de linguagens de programação diferentes. Eis algumas razões:
+
+<ul>
+<li><b>Juventude da Informática</b> - A Informática é uma disciplina recente, e estão constantemente a ser descobertas novas e melhores maneiras de fazer as coisas.
+<p><li><b>Domínios de aplicação</b> - A maioria das linguagens são de uso geral, mas mesmo assim cada uma delas tende a estar mais bem adaptada à resolução de certos problemas.
+<ul>
+<li>O Lisp, ML e Prolog são ótimos para manipulação simbólica e para aplicações de IA.
+<li>O C é ótimo para programação de sistemas.
+<li>O Java e C# são ótimos para desenvolver aplicações com interface gráfico e que correm na WEB.
+<li>O C++ é excelente para programar jogos de vídeo sofisticados e rápidos.
+<li>O CDuce é excelente para processar documentos XML.
+</ul>
+
+<p><li><b>Preferência pessoal</b> - A diversidade de preferências pessoais contribui para a diversidade de linguagens.
+<ul>
+<li>Há quem prefira pensar recursivamente mas outros preferem usar iteração.
+<li>Há quem esteja habituado aos apontadores do C e C++ e goste deles mas outros preferem a desreferenciação implícita do Java e do ML.
+<li>Há quem aprecie a simplicidade, compacidade e enorme flexibilidade do C, mas outros preferem usar linguagens com sistemas de tipos mais seguros como o Java ou ML.
+<li>Há quem considere que o C++ é o melhor compromisso entre a possibilidade de programar com classes e criar programas muito eficientes, mas outros preferem a maior simplicidade e consistência da linguagem Java, não dispensando também a sua extensa biblioteca de classes. 
+</ul>
+</ul>
+
+
+<HR><h1>Qualidade duma Linguagem de Programação</h1>
+
+Eis alguns critérios de avaliação de qualidade:
+<ul>
+<li><b>Legibilidade</b> - Facilidade em, através do exame de um programa, seguir a sua lógica e descobrir a presença de erros. Muito importante para a manutenção dos programas. <br>Para isso são importantes os seguintes fatores:
+<p><ul>
+<li><b>Simplicidade</b> - Ajuda a conhecer bem a linguagem, em todos os seus detalhes.
+<li><b>Ortogonalidade</b> - Este termo descreve o fenómeno dum conjunto de primitivas pode ser combinado dum número de formas conhecido, sendo legítimas todas as combinações imagináveis. Pode ser uma forma habilidosa de combinar simplicidade com expressividade, desde que o número de primitivas e de combinações sejam pequenos.
+<li><b>Estruturas de Controlo</b> - Os seus efeitos devem ser claros e fáceis de descrever. Cuidado com a instrução 'goto'.
+<li><b>Estruturas de dados</b> - Devem ser suficientemente claras para ajudar a perceber as intenções contidas nos programas.
+<li><b>Sintaxe</b> - Para diferentes significados usar formas sintáticas diferentes. 
+</ul>
+
+
+<p><li><b>Redigibilidade</b> - Possibilidade de expressar os problemas de uma forma natural, sem que a atenção do programador seja desviada por detalhes ou "truques" da linguagem. <br>Para isso são importantes os seguintes fatores:
+
+<p><ul>
+<li><b>Simplicidade</b> - Assim há menos hipóteses de cometer erros.
+<li><b>Expressividade</b> - Convém que haja suporte natural (direto) para o estilo de programação usado. 
+<li><b>Ortogonalidade</b> - Ajuda a que não se perca tempo a pensar em exceções às regras gerais da linguagem.
+<li><b>Estruturas de Controlo</b> - Devem ser suficientemente diversas para permitir expressividade.
+<li><b>Estruturas de dados</b> - Devem ser suficientemente diversas para facilitar a expressividade. Mas cuidado com determinados mecanismos, como os apontadores.
+<li><b>Suporte para abstração</b> - Ajuda a dominar a complexidade dos problemas pois permite esquecer os detalhes que não são importantes em cada contexto. Os humanos não conseguem abarcar ao mesmo tempo todos os detalhes duma entidade complexa.
+<li><b>Sintaxe</b> - Não deve haver restrições desnecessárias, e.g. comprimento dos identificadores.
+</ul>
+
+<p><li><b>Segurança</b> - Possibilidade de escrever programas que deem garantias de que atingem o efeito desejado, ou seja que obedecem à sua especificação (em todas as situações). <br>Para isso são importantes os seguintes fatores:
+<p><ul>
+<li><b>Verificação de tipos</b> - Estática ou dinâmica, há vantagem e desvantagens em cada um delas. Sistemas de tipos estático detetam todas as incompatibilidades de tipo em tempo de compilação, o que é bom, mas também excluem algumas situações legítimas. Sistemas de tipos <a href="http://www.swa.hpi.uni-potsdam.de/dls/dls08/">dinâmicos</a> descobrem os erros de tipo só em tempo de execução, mas podem funcionar bem se os programas forem desenvolvidos seguindo uma metodologia de <a href="http://en.wikipedia.org/wiki/Unit_testing">unit tests</a>.
+<li><b>Exceções</b> - Tratamento de erros e de situações excecionais ajuda a que o programa funcione de acordo com o esperado em TODAS as situações.
+<li><b>Aliasing (sinonímia)</b> - Fator negativo. Permite flexibilidade mas pode ser perigoso deixar uma mesma entidade ser conhecida por dois nomes diferentes.
+</ul>
+
+
+
+<p><li><b>Eficiência</b> - Atualmente a eficiência já não é mais medida apenas com base velocidade de execução dos programas e na economia no uso da memória. Considera-se também o esforço necessário para produzir os programas e o esforço necessário para os manter.
+
+<p><li><b>Rigor</b> - A definição da linguagem deve ser rigorosa, para não levantar dúvidas aos implementadores e aos utilizadores.
+</ul>
+
+
+
+
+<HR><h1>Popularidade das Linguagens de Programação atuais</h1>
+
+O site <a href="http://www.tiobe.com/tpci.htm">Tiobe</a> calcula mensalmente um índice de popularidade de Linguagens de Programação.Citação: <i>"The ratings are based on the world-wide availability of skilled engineers, courses and third party vendors. The popular search engines Google, MSN, Yahoo!, and YouTube are used to calculate the ratings."</i>
+
+<h2>Popularidade em Fev/2018</h2>
+<img src="images/popular.jpg">
+
+<h2>Evolução da popularidade ao longo dos anos</h2>
+<img src="images/trends.jpg" width=800>
+
+
+
+
+<HR><h1>História: Linguagem máquina</h1>
+
+No final da década de 40, não existiam alternativas ao uso de linguagem máquina.
+
+<h2>Características</h2>
+<ul>
+<li>Instruções especificadas por meio de códigos numéricos, em binário.
+<li>Utilização direta de endereços absolutos nos programas.
+</ul>
+
+<h2>Discussão</h2>
+<ul>
+<li>Programas difíceis de escrever e quase impossíveis de ler.
+<li>Grande facilidade em cometer erros.
+<li>Os programas só funcionam no tipo específico de hardware para que foram escritos.
+<li>Dificuldade em inserir ou remover instruções nos programas, por causa dos endereços absolutos (a instrução <b>nop</b> ajuda a minorar um pouco este problema).
+</ul>
+
+<HR><h1>História: Assemblers</h1>
+
+Começaram a surgir no início dos anos 50.
+
+<h2>Características</h2>
+<ul>
+<li>Começaram a surgir no início dos anos 50.
+<li>Permitem atribuir nomes a códigos de operação (mnemónicas), a localizações de memória (etiquetas) e a constantes.
+<li>Um tradutor - chamado <b>assembler</b> - traduz instruções assembler em instruções máquina. 
+<li>Um programa pode conter diretivas que não dão origem a código: declaração de constantes, por exemplo.
+</ul>
+
+
+<h2>Discussão</h2>
+<ul>
+<li>Os aspetos negativos mais dramáticos da linguagem máquina ficam minorados.
+<li>No entanto os programas continuam a ser difíceis de escrever e de ler.
+<li>Os programas também continuam a ter de ser escritos para arquiteturas particulares.
+<li>Mas já se observam algumas "sementes" das futuras linguagens de programação.
+</ul>
+
+<h2>Exemplo: Programa "fatorial" escrito para o Pentium</h2>
+
+<ul><pre class='notranslate'>
+.file   "fact.c"
+        .section    .rodata
+.LC0:   .string "> "
+.LC1:   .string "%d"
+.LC2:   .string "fact(%d) = %d\n"
+.text
+.globl main
+.type main, @function
+        pushl   %ebp
+        movl    %esp, %ebp
+        subl    $40, %esp
+        andl    $-16, %esp
+        movl    $0, %eax
+        addl    $15, %eax
+        addl    $15, %eax
+        shrl    $4, %eax
+        sall    $4, %eax
+        subl    %eax, %esp
+        movl    $.LC0, (%esp)
+        call    printf
+        leal    -12(%ebp), %eax
+        movl    %eax, 4(%esp)
+        movl    $.LC1, (%esp)
+        call    scanf
+        movl    $1, -4(%ebp)
+        movl    $1, -8(%ebp)
+        jmp     .L2
+.L3:    movl    -4(%ebp), %eax
+        imull   -8(%ebp), %eax
+        movl    %eax, -4(%ebp)
+        leal    -8(%ebp), %eax
+        addl    $1, (%eax)
+.L2:    movl    -12(%ebp), %eax
+        cmpl    %eax, -8(%ebp)
+        jle     .L3
+        movl    -12(%ebp), %edx
+        movl    -4(%ebp), %eax
+        movl    %eax, 8(%esp)
+        movl    %edx, 4(%esp)
+        movl    $.LC2, (%esp)
+        call    printf
+        movl    $0, %eax
+        leave
+        ret
+.size main, .-main	
+</pre></ul>
+
+
+<HR><h1>História: Fortran</h1>
+
+<img src="images/Backus.GIF"><br /><b>John Backus</b>
+
+<p>O Fortran foi anunciado por John Backus da IBM em 1954. A implementação inicial, designada Fortran I, ficou disponível em 1957, com compiladores para IBM 704 e IBM 709.
+
+<h2>Prometia</h2> 
+<ul>
+<li>Eficiência dos programas escritos em assembler. [Quase! O Fortran sempre foi conhecido pela excelente qualidade do código gerado pelos seus compiladores.]
+<li>Simplificar a escrita de programas mediante o uso de notação matemática (Fortran = "FORmula TRANslator"). [Confirmou-se!]
+<li>Eliminar praticamente todos os erros de programação. [Mentira!]
+</ul>
+
+
+<h2>Características</h2> 
+<ul>
+<li>Instruções de controlo pobres e influenciadas pelas instruções da máquina IBM 704. Necessário recorrer muito à instrução goto.
+<li>Suporte para inteiros, reais e arrays, mas não para registos (records).
+<li>Suporte para variáveis estáticas. Impossível criar novas variáveis em tempo de execução.
+<li>Suporte para sub-rotinas não recursivas.
+</ul>
+
+<h2>Discussão</h2>
+<ul>
+<li>Depois do Fortran I foram surgindo versões melhoradas: Fortran II em 1958, Fortran IV em 1962, Fortran 77 em 1978 e Fortran 90 em 1990.
+<li>Tornou-se na primeira linguagem de programação popular e, a partir do início dos anos 60, mudou de forma revolucionária a forma como os computadores eram usados.
+<li>Ainda é bastante usada atualmente em aplicações de cálculo numérico!
+<li>Passou a ser possível escrever programas portáveis!
+</ul>
+
+<h2>Exemplo: Programa "fatorial" escrito em Fortran</h2>
+<ul><pre class='notranslate'>
+     READ 10,I
+10   FORMAT(I3)
+     J=1
+     DO 20 K=1,I
+     J=J*K
+20   CONTINUE
+     PRINT 10,J
+     STOP
+</pre></ul>
+
+<HR><h1>História: Outras linguagem pioneiras</h1>
+
+<img src="images/AlgolHOPL.GIF"><br /><b>Comité do Algol 60</b>
+
+<p>
+Início dos anos 60.
+
+<ul>
+<li><b>Algol 60</b> - Primeiro passo em direção à sofisticação das linguagens modernas.
+<li><b>Lisp</b> - Dominou as aplicações de IA durante 25 anos.
+<li><b>Cobol</b> - Linguagem das empresas e do DoD.
+<li><b>Basic</b> - Muito simples de aprender, destinada a não especialistas.
+</ul>
+
+<HR><h1>Mais um pouco de história</h1>
+
+
+Ver: <a href="http://ei.cs.vt.edu/~history/50th/30.minute.show.html">Key Events in the History of Computing</a>
+
+
+<p><h2>Algumas linguagens de 1957 até 2007</h2>
+<img src="images/diagram.png">
+
+<p><h2>O primeiro bug :)</h2>
+Provavelmente, foi em 1947 que o termo <b>bug</b> foi pela primeira vez associado de forma explícita (e usando ironia) aos computadores "modernos". Um computador Mark II bloqueou porque uma traça ficou presa num comutador mecânico.
+<P><img src="images/Bug.jpg">
+<P>Mas a palavra <b>bug</b> sempre foi associada a mecanismos defeituosos. Pense no Bugs Bunny, criado em 1940, e cujo nome significa coelho "com bugs", ou seja coelho avariado ou coelho maluco.
+<p><img src="images/bugsbunny.jpg">
+
+
+
+
+<HR><HR>
+
+#100
