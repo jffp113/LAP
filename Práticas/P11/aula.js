@@ -96,9 +96,58 @@ class SucSum extends Suc{
 
 class SucAlt extends Suc{
 	constructor(ai,bi){
-		super(ai.first)
+		super(ai.first());
 		this.ai = ai;
 		this.bi = bi;
+		this.is_ai = true;
+	}
+	
+	next(){
+		
+		if(this.is_ai){
+			this.c = this.ai.next();
+			this.is_ai = false;
+		}
+		else{
+			this.c = this.bi.next();
+			this.is_ai = true;
+		}
+		
+		return this.curr();
+	}
+	
+	first(){
+		this.bi.first();
+		return this.c = this.ai.first();
+	}
+	
+}
+
+class SucFilt extends Suc{
+	constructor(ai,filter){
+		super(0);
+		this.ai = ai;
+		this.filter = filter;
+		this.next();
+	}
+	
+	next(){
+		do{
+			this.c = this.ai.next();
+		}while((this.curr() % this.filter) != 0)
+		
+		return this.curr();
+		
+	}
+	
+	first(){
+		this.c = this.ai.first();
+		if(this.c % this.filter != 0){
+			return this.next()
+		}
+		else{
+			return this.curr();
+		}
 	}
 	
 }
@@ -138,61 +187,101 @@ class Tests extends UnitTest{
     static testSucArit() {
         var a = new SucArit(10,1);
 	
-		super.assertEquals(a.curr(),10);
-		super.assertEquals(a.first(),10);
-		super.assertEquals(a.next(),11);
-		super.assertEquals(a.next(),12);
-        super.assertEquals(a.next(),13);
-        super.assertEquals(a.curr(),13);
-		super.assertEquals(a.next(),14);
-		super.assertEquals(a.curr(),14);
-		super.assertEquals(a.at(10),20);
-		a.print(10);
+		this.assertEquals(a.curr(),10);
+		this.assertEquals(a.first(),10);
+		this.assertEquals(a.next(),11);
+		this.assertEquals(a.next(),12);
+        this.assertEquals(a.next(),13);
+        this.assertEquals(a.curr(),13);
+		this.assertEquals(a.next(),14);
+		this.assertEquals(a.curr(),14);
+		this.assertEquals(a.at(10),20);
+		//a.print(10);
     }
 	
 	static testSucAritOpt() {
         var a = new SucAritOpt(10,1);
 	
-		super.assertEquals(a.at(10),20);
+		this.assertEquals(a.at(10),20);
 		
-		a.print(10);
+		//a.print(10);
     }
 
 	static testSucGeo() {
         var a = new SucGeo(10,2);
 	
-		super.assertEquals(a.curr(),10);
-		super.assertEquals(a.first(),10);
-		super.assertEquals(a.next(),20);
-		super.assertEquals(a.next(),40);
-        super.assertEquals(a.next(),80);
-        super.assertEquals(a.curr(),80);
-		super.assertEquals(a.next(),160);
-		super.assertEquals(a.curr(),160);
+		this.assertEquals(a.curr(),10);
+		this.assertEquals(a.first(),10);
+		this.assertEquals(a.next(),20);
+		this.assertEquals(a.next(),40);
+        this.assertEquals(a.next(),80);
+        this.assertEquals(a.curr(),80);
+		this.assertEquals(a.next(),160);
+		this.assertEquals(a.curr(),160);
 		//super.assertEquals(a.at(10),20);
-		a.print(10);
+		//a.print(10);
     }
 	
 	static testSucSum() {
         var a = new SucSum(new SucArit(10,2), new SucArit(10,2));
 		
-		super.assertEquals(a.curr(),20);
-		super.assertEquals(a.first(),20);
-		super.assertEquals(a.next(),24);
-		super.assertEquals(a.next(),28);
-        super.assertEquals(a.next(),32);
-        super.assertEquals(a.curr(),32);
-		super.assertEquals(a.next(),36);
-		super.assertEquals(a.curr(),36);
+		this.assertEquals(a.curr(),20);
+		this.assertEquals(a.first(),20);
+		this.assertEquals(a.next(),24);
+		this.assertEquals(a.next(),28);
+        this.assertEquals(a.next(),32);
+        this.assertEquals(a.curr(),32);
+		this.assertEquals(a.next(),36);
+		this.assertEquals(a.curr(),36);
 		//super.assertEquals(a.at(10),20);
-		a.print(10);
+		//a.print(10);
     }
+	
+	static testSucAlt() {
+        var a = new SucAlt(new SucArit(1,1), new SucArit(1,1));
+		
+		this.assertEquals(a.curr(),1);
+		this.assertEquals(a.first(),1);
+		this.assertEquals(a.next(),2);
+		this.assertEquals(a.next(),2);
+        this.assertEquals(a.next(),3);
+        this.assertEquals(a.curr(),3);
+		this.assertEquals(a.next(),3);
+		this.assertEquals(a.curr(),3);
+		this.assertEquals(a.first(),1);
+		this.assertEquals(a.next(),2);
+		this.assertEquals(a.next(),2);
+        this.assertEquals(a.next(),3);
+        this.assertEquals(a.curr(),3);
+		this.assertEquals(a.next(),3);
+		this.assertEquals(a.curr(),3);
+		super.assertEquals(a.at(100),51);
+		//a.print(10);
+    }
+	
+	static testSucFilt() {
+		var a = new SucFilt(new SucArit(1,1),2);
+		
+		this.assertEquals(a.curr(),2);
+		this.assertEquals(a.next(),4);
+		this.assertEquals(a.curr(),4);
+		this.assertEquals(a.next(),6);
+		this.assertEquals(a.next(),8);
+		this.assertEquals(a.first(),2);
+		this.assertEquals(a.curr(),2);
+		this.assertEquals(a.next(),4);
+		this.assertEquals(a.curr(),4);
+		this.assertEquals(a.next(),6);
+		this.assertEquals(a.next(),8);
+	}
 	
     static run() {
         this.testSucArit();
 		this.testSucGeo();
 		this.testSucSum();
-		this.testSucAritOpt()
+		this.testSucAritOpt();
+		this.testSucAlt()
+		this.testSucFilt();
     }
 }
 
